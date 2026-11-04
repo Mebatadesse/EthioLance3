@@ -1,0 +1,156 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  password   String
+  firstName  String
+  lastName   String
+  phone      String?  @unique
+  role       UserRole @default(FREELANCER)
+  isVerified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  jobs      Job[]
+  proposals Proposal[]
+
+  contractAsClient     Contract[] @relation("ClientContracts")
+  contractAsFreelancer Contract[] @relation("FreelancerContracts")
+}
+
+enum UserRole {
+  FREELANCER
+  CLIENT
+  ADMIN
+}
+
+model Job {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String
+  budget      Float
+  status      JobStatus @default(OPEN)
+
+  clientId Int
+  client   User @relation(fields: [clientId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  proposals Proposal[]
+}
+
+enum JobStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model Proposal {
+  id           Int            @id @default(autoincrement())
+  coverLetter  String
+  bidAmount    Float
+  deliveryTime Int
+  status       ProposalStatus @default(PENDING)
+  freelancerId Int
+  jobId        Int
+
+  freelancer User @relation(fields: [freelancerId], references: [id])
+  job        Job  @relation(fields: [jobId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contract Contract?
+
+  @@unique([freelancerId, jobId])
+}
+
+enum ProposalStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model Contract {
+  id           Int            @id @default(autoincrement())
+  proposalId   Int            @unique
+  clientId     Int            @map("clinetId")
+  freelancerId Int
+  totalAmount  Float
+  startDate    DateTime?
+  status       ContractStatus @default(PENDING)
+
+  proposal   Proposal @relation(fields: [proposalId], references: [id])
+  client     User     @relation("ClientContracts", fields: [clientId], references: [id])
+  freelancer User     @relation("FreelancerContracts", fields: [freelancerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  milestones Milestone[]
+}
+
+enum ContractStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+model Milestone {
+  id         Int             @id @default(autoincrement())
+  title      String
+  amount     Float
+  dueDate    DateTime
+  status     MilestoneStatus @default(PENDING)
+  contractId Int
+
+  contract Contract @relation(fields: [contractId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payment   Payment?
+}
+
+enum MilestoneStatus {
+  PENDING
+  IN_PROGRESS
+  DELIVERED
+  APPROVED
+  PAID
+}
+
+model Payment {
+  id           Int            @id @default(autoincrement())
+  milestoneId  Int            @unique
+  amount       Float     
+  method       PaymentMethod  @default(CHAPA)
+  txRef        String?        @unique
+  status       PaymentStatus  @default(INITIATED)
+
+  milestone    Milestone      @relation(fields: [milestoneId], references: [id])
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+enum PaymentMethod {
+  CHAPA
+  TELEBIRR
+}
+
+enum PaymentStatus {
+  INITIATED
+  COMPLETED
+  FAILED
+}

@@ -1,0 +1,120 @@
+/* Navbar container */
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(255, 255, 255, 0.96);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(14px);
+  }
+  
+  .nav-container {
+    min-height: 78px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 26px;
+  }
+  
+  /* Navigation links */
+  
+  .nav-links,
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+  }
+  
+  .nav-links a,
+  .login-link {
+    color: #35463c;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .nav-links a:hover,
+  .login-link:hover {
+    color: var(--green);
+  }
+  
+  .nav-actions {
+    gap: 20px;
+  }
+  
+  /* Get started button spacing */
+  
+  .nav-signup {
+    white-space: nowrap;
+  }
+  
+  /* Mobile menu controls */
+  
+  .menu-toggle,
+  .mobile-nav-actions {
+    display: none;
+  }
+  
+  /* Responsive navbar */
+  
+  @media (max-width: 1000px) {
+    .nav-links {
+      gap: 15px;
+    }
+  }
+  
+  @media (max-width: 780px) {
+    .nav-container {
+      min-height: 70px;
+    }
+  
+    .menu-toggle {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: white;
+      color: var(--ink);
+      cursor: pointer;
+    }
+  
+    .nav-actions {
+      display: none;
+    }
+  
+    .nav-links {
+      position: absolute;
+      top: 69px;
+      left: 0;
+      right: 0;
+      display: none;
+      align-items: stretch;
+      flex-direction: column;
+      gap: 0;
+      padding: 15px 22px 22px;
+      border-bottom: 1px solid var(--line);
+      background: white;
+      box-shadow: 0 15px 25px rgba(24, 49, 32, 0.08);
+    }
+  
+    .nav-links.nav-open {
+      display: flex;
+    }
+  
+    .nav-links > a {
+      padding: 15px 0;
+      border-bottom: 1px solid #eef1ee;
+    }
+  
+    .mobile-nav-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      padding-top: 18px;
+    }
+  }
