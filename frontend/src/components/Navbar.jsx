@@ -1,5 +1,14 @@
+
 import { useState } from "react";
-import { ArrowRight, Menu, X } from "lucide-react";
+import {
+  Home,
+  Search,
+  Bell,
+  ChevronDown,
+  Menu,
+  X,
+} from "lucide-react";
+
 import "./Navbar.css";
 
 function Navbar({ onLoginClick, onRegisterClick }) {
@@ -21,83 +30,111 @@ function Navbar({ onLoginClick, onRegisterClick }) {
 
   return (
     <header className="navbar">
-      <div className="container nav-container">
-        <a
-          className="brand"
-          href="#home"
-          onClick={closeMenu}
-        >
-          <span className="brand-mark">e</span>
+      <div className="nav-container">
 
-          <span>
-            ethio<span className="brand-accent">lance</span>
-          </span>
-        </a>
+        {/* Logo */}
+        <a className="brand" href="#home" onClick={closeMenu}>
+  <img
+    src="/ethiolance-emblem.png"
+    alt="EthioLance emblem"
+    className="brand-emblem"
+  />
 
-        <button
-          className="menu-toggle"
-          type="button"
-          aria-label={
-            menuOpen ? "Close navigation" : "Open navigation"
-          }
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((previous) => !previous)}
-        >
-          {menuOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
+  <img
+    src="/ethiolance-wordmark.png"
+    alt="EthioLance"
+    className="brand-wordmark"
+  />
+</a>
 
+        {/* Desktop Navigation */}
         <nav className={`nav-links ${menuOpen ? "nav-open" : ""}`}>
-          <a href="#find-work" onClick={closeMenu}>
-            Find Work
+
+          <a href="#home" className="nav-link active" onClick={closeMenu}>
+            <Home size={17} />
+            Home
           </a>
 
-          <a href="#hire-talent" onClick={closeMenu}>
-            Hire Talent
+          <a href="#find-jobs" className="nav-link" onClick={closeMenu}>
+            Find Jobs
           </a>
 
-          <a href="#categories" onClick={closeMenu}>
-            Explore Skills
+          <a href="#find-freelancers" className="nav-link" onClick={closeMenu}>
+            Find Freelancers
           </a>
 
-          <a href="#how-it-works" onClick={closeMenu}>
-            How It Works
+          <a href="#categories" className="nav-link" onClick={closeMenu}>
+            Categories
+            <ChevronDown size={15} />
           </a>
 
+          <a href="#about" className="nav-link" onClick={closeMenu}>
+            About
+          </a>
+
+          <a href="#contact" className="nav-link" onClick={closeMenu}>
+            Contact
+          </a>
+
+          {/* Mobile buttons */}
           <div className="mobile-nav-actions">
-            <a
-              href="/login"
-              onClick={handleLoginClick}
-            >
-              Log in
+            <a href="/login" onClick={handleLoginClick}>
+              Sign In
             </a>
 
-            <a
-              className="button button-primary"
-              href="/register"
-              onClick={handleRegisterClick}
-            >
-              Sign up <ArrowRight size={16} />
+            <a href="/register" onClick={handleRegisterClick}>
+              Sign Up
             </a>
           </div>
         </nav>
 
+        {/* Right side */}
         <div className="nav-actions">
+
+          {/* Search */}
+          <div className="nav-search">
+            <Search size={20} />
+            <input
+              type="text"
+              placeholder="Search jobs or freelancers..."
+            />
+          </div>
+
+          {/* Notifications */}
+          <button className="nav-notification" aria-label="Notifications">
+            <Bell size={21} />
+            <span className="notification-count">3</span>
+          </button>
+
+          {/* Authentication */}
           <a
-            className="login-link"
             href="/login"
+            className="nav-login"
             onClick={handleLoginClick}
           >
-            Log in
+            Sign In
           </a>
 
           <a
-            className="button button-primary nav-signup"
             href="/register"
+            className="nav-register"
             onClick={handleRegisterClick}
           >
-            Get started <ArrowRight size={16} />
+            Sign Up
           </a>
         </div>
+
+        {/* Mobile menu button */}
+        <button
+          className="nav-menu-toggle"
+          type="button"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((previous) => !previous)}
+        >
+          {menuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
       </div>
     </header>
   );
