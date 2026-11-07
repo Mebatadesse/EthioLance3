@@ -1,0 +1,414 @@
+.ethio-myproposals-page {
+  min-height: 100vh;
+  padding: 35px;
+  background: #f7f6f2;
+  color: #202020;
+  font-family: inherit;
+}
+
+.ethio-myproposals-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #171717;
+  color: #fff;
+  padding: 35px;
+  border-radius: 18px;
+  margin-bottom: 25px;
+}
+
+.ethio-myproposals-eyebrow {
+  color: #e5ae45;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.ethio-myproposals-header h1 {
+  font-size: 30px;
+  margin: 10px 0;
+}
+
+.ethio-myproposals-header p {
+  color: #c6c3bc;
+  margin: 0;
+}
+
+.ethio-myproposals-header-icon {
+  width: 65px;
+  height: 65px;
+  display: grid;
+  place-items: center;
+  color: #e5ae45;
+  background: rgba(229, 174, 69, .12);
+  border-radius: 16px;
+}
+
+.ethio-myproposals-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 25px;
+}
+
+.ethio-myproposals-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: #fff;
+  padding: 22px;
+  border: 1px solid #eeeae1;
+  border-radius: 15px;
+}
+
+.ethio-myproposals-stat-icon {
+  width: 47px;
+  height: 47px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: #f7f1e4;
+  color: #bd8524;
+}
+
+.ethio-myproposals-stat-card span {
+  font-size: 13px;
+  color: #777;
+}
+
+.ethio-myproposals-stat-card h2 {
+  margin: 5px 0 0;
+  font-size: 25px;
+}
+
+.ethio-myproposals-content {
+  background: #fff;
+  border: 1px solid #eeeae1;
+  border-radius: 17px;
+  padding: 27px;
+}
+
+.ethio-myproposals-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.ethio-myproposals-toolbar h2 {
+  margin: 0 0 6px;
+  font-size: 21px;
+}
+
+.ethio-myproposals-toolbar p {
+  color: #858585;
+  font-size: 13px;
+  margin: 0;
+}
+
+.ethio-myproposals-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border: 1px solid #e9e6df;
+  border-radius: 10px;
+  color: #999;
+  min-width: 260px;
+}
+
+.ethio-myproposals-search input {
+  border: none;
+  outline: none;
+  width: 100%;
+  background: transparent;
+  color: #222;
+}
+
+.ethio-myproposals-filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 25px 0;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+
+.ethio-myproposals-filters button {
+  border: 1px solid #e8e5dd;
+  background: #fff;
+  padding: 9px 17px;
+  border-radius: 8px;
+  color: #555;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.ethio-myproposals-filters button.active {
+  background: #1b1b1b;
+  border-color: #1b1b1b;
+  color: #f3bd55;
+}
+
+.ethio-myproposals-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.ethio-myproposals-card {
+  border: 1px solid #eeeae1;
+  padding: 22px;
+  border-radius: 13px;
+  transition: .2s ease;
+}
+
+.ethio-myproposals-card:hover {
+  border-color: #d6ad61;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, .04);
+}
+
+.ethio-myproposals-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ethio-myproposals-job-icon {
+  width: 43px;
+  height: 43px;
+  display: grid;
+  place-items: center;
+  background: #f8f1e4;
+  color: #bd8524;
+  border-radius: 11px;
+}
+
+.ethio-myproposals-status {
+  padding: 7px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.ethio-myproposals-status.pending {
+  background: #fff4d9;
+  color: #a77718;
+}
+
+.ethio-myproposals-status.accepted {
+  background: #e5f6ec;
+  color: #20814c;
+}
+
+.ethio-myproposals-status.rejected {
+  background: #ffebeb;
+  color: #c03939;
+}
+
+.ethio-myproposals-card h3 {
+  font-size: 18px;
+  margin: 18px 0 5px;
+}
+
+.ethio-myproposals-client {
+  color: #858585;
+  font-size: 13px;
+  margin: 0;
+}
+
+.ethio-myproposals-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 22px 0;
+}
+
+.ethio-myproposals-details div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #777;
+  font-size: 13px;
+}
+
+.ethio-myproposals-details svg {
+  color: #bd8524;
+}
+
+.ethio-myproposals-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+  color: #bd8524;
+}
+
+.ethio-myproposals-view-btn {
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #252525;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ethio-myproposals-view-btn:hover {
+  color: #bd8524;
+}
+
+.ethio-myproposals-empty {
+  padding: 65px 20px;
+  text-align: center;
+}
+
+.ethio-myproposals-empty-icon {
+  width: 75px;
+  height: 75px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 18px;
+  background: #f8f1e4;
+  color: #bd8524;
+  border-radius: 50%;
+}
+
+.ethio-myproposals-empty h3 {
+  font-size: 19px;
+}
+
+.ethio-myproposals-empty p {
+  max-width: 420px;
+  margin: auto;
+  color: #888;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.ethio-myproposals-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, .65);
+  backdrop-filter: blur(5px);
+}
+
+.ethio-myproposals-modal {
+  width: 100%;
+  max-width: 650px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 17px;
+}
+
+.ethio-myproposals-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 25px;
+  background: #191919;
+  color: white;
+}
+
+.ethio-myproposals-modal-header span {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #e5ae45;
+}
+
+.ethio-myproposals-modal-header h2 {
+  margin: 10px 0 0;
+}
+
+.ethio-myproposals-modal-header button {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.ethio-myproposals-modal-body {
+  padding: 25px;
+}
+
+.ethio-myproposals-modal-info {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.ethio-myproposals-modal-info span {
+  color: #888;
+}
+
+.ethio-myproposals-modal-info strong {
+  text-align: right;
+}
+
+.ethio-myproposals-cover-letter {
+  margin-top: 25px;
+}
+
+.ethio-myproposals-cover-letter p {
+  line-height: 1.8;
+  color: #666;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 900px) {
+  .ethio-myproposals-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ethio-myproposals-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .ethio-myproposals-page {
+    padding: 15px;
+  }
+
+  .ethio-myproposals-header {
+    padding: 23px;
+  }
+
+  .ethio-myproposals-header h1 {
+    font-size: 23px;
+  }
+
+  .ethio-myproposals-stats {
+    gap: 10px;
+  }
+
+  .ethio-myproposals-stat-card {
+    padding: 14px;
+    gap: 9px;
+  }
+
+  .ethio-myproposals-stat-card h2 {
+    font-size: 20px;
+  }
+
+  .ethio-myproposals-content {
+    padding: 17px;
+  }
+
+  .ethio-myproposals-search {
+    min-width: 100%;
+  }
+}

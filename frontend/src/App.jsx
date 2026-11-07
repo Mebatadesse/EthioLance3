@@ -7,6 +7,7 @@ import LoginPage from "./pages/Login.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import CreateProfile from "./pages/freelancer/CreateProfile";
+import SettingsPage from "./pages/sections/Settings.jsx";
 import "./App.css";
 
 function HomeLayout({
@@ -82,6 +83,7 @@ function App() {
           />
         }
       />
+      <Route path="/settings" element={<SettingsPage />} />
       <Route
       path="/freelancer/create-profile"
        element={<CreateProfile />}
