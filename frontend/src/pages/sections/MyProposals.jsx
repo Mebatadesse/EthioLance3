@@ -1,4 +1,5 @@
-import { useMemo, useState, useEffect } from "react";
+
+import { useMemo, useState, useEffect, useCallback } from "react";
 import {
   FileText,
   Clock3,
@@ -9,59 +10,241 @@ import {
   Wallet,
   BriefcaseBusiness,
   Eye,
-  Send,
   ArrowUpRight,
   Inbox,
+  RefreshCw,
+  X,
 } from "lucide-react";
 
 import "./MyProposals.css";
 
 const STORAGE_KEY = "ethioLanceMyProposals";
+const USER_KEY = "ethioLanceUser";
+
+// Get the currently logged-in user
+function getCurrentUserId() {
+  try {
+    const user =
+      JSON.parse(localStorage.getItem(USER_KEY) || "null") ||
+      JSON.parse(sessionStorage.getItem(USER_KEY) || "null");
+
+    return (
+      user?.userId ||
+      user?.id ||
+      user?.user?.userId ||
+      user?.user?.id ||
+      null
+    );
+  } catch (error) {
+    console.error("Unable to read current user:", error);
+    return null;
+  }
+}
+
+// Read proposals from browser storage
+function getStoredProposals() {
+  const localData = JSON.parse(
+    localStorage.getItem(STORAGE_KEY) || "[]"
+  );
+
+  const sessionData = JSON.parse(
+    sessionStorage.getItem(STORAGE_KEY) || "[]"
+  );
+
+  return [
+    ...(Array.isArray(localData) ? localData : []),
+    ...(Array.isArray(sessionData) ? sessionData : []),
+  ];
+}
+
+// Normalize proposal data
+function normalizeProposal(proposal) {
+  const job = proposal.job || {};
+  const client = job.client || proposal.client || {};
+
+  return {
+    ...proposal,
+
+    id:
+      proposal.id ||
+      `${proposal.jobId || job.id}-${proposal.createdAt || ""}`,
+
+    jobId: proposal.jobId || job.id,
+
+    jobTitle:
+      proposal.jobTitle ||
+      job.title ||
+      "Untitled Job",
+
+    clientName:
+      proposal.clientName ||
+      [client.firstName, client.lastName]
+        .filter(Boolean)
+        .join(" ") ||
+      client.name ||
+      "Client",
+
+    bidAmount: Number(
+      proposal.bidAmount ??
+      proposal.proposedBudget ??
+      0
+    ),
+
+    deliveryTime:
+      proposal.deliveryTime ??
+      proposal.deliveryDays ??
+      "",
+
+    coverLetter:
+      proposal.coverLetter || "",
+
+    status:
+      (proposal.status || "PENDING").toUpperCase(),
+
+    createdAt:
+      proposal.createdAt ||
+      new Date().toISOString(),
+  };
+}
 
 function MyProposals() {
   const [proposals, setProposals] = useState([]);
   const [activeFilter, setActiveFilter] = useState("ALL");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProposal, setSelectedProposal] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  // Load proposals belonging to the logged-in freelancer
+  const loadProposals = useCallback(() => {
+    setLoading(true);
+
     try {
-      const saved = JSON.parse(
-        localStorage.getItem(STORAGE_KEY) || "[]"
+      const currentUserId = getCurrentUserId();
+
+      if (!currentUserId) {
+        setProposals([]);
+        return;
+      }
+
+      const saved = getStoredProposals();
+
+      const userProposals = saved.filter((proposal) => {
+        const freelancerId =
+          proposal.freelancerId ||
+          proposal.userId ||
+          proposal.freelancer?.id ||
+          proposal.freelancer?.userId;
+
+        return (
+          freelancerId &&
+          String(freelancerId) === String(currentUserId)
+        );
+      });
+
+      // Remove duplicate proposals
+      const unique = new Map();
+
+      userProposals.forEach((proposal) => {
+        const normalized = normalizeProposal(proposal);
+
+        const key = String(
+          normalized.id ||
+          `${normalized.jobId}-${normalized.createdAt}`
+        );
+
+        unique.set(key, normalized);
+      });
+
+      const result = Array.from(unique.values()).sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() -
+          new Date(a.createdAt).getTime()
       );
 
-      setProposals(Array.isArray(saved) ? saved : []);
-    } catch {
+      setProposals(result);
+    } catch (error) {
+      console.error("Error loading proposals:", error);
       setProposals([]);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
-  const stats = useMemo(() => ({
-    total: proposals.length,
-    pending: proposals.filter(p => p.status === "PENDING").length,
-    accepted: proposals.filter(p => p.status === "ACCEPTED").length,
-    rejected: proposals.filter(p => p.status === "REJECTED").length,
-  }), [proposals]);
+  // Initial load and automatic refresh
+  useEffect(() => {
+    loadProposals();
 
+    const handleUpdate = () => {
+      loadProposals();
+    };
+
+    const handleStorage = (event) => {
+      if (
+        event.key === STORAGE_KEY ||
+        event.key === USER_KEY
+      ) {
+        loadProposals();
+      }
+    };
+
+    window.addEventListener(
+      "ethioLanceProposalsUpdated",
+      handleUpdate
+    );
+
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("focus", handleUpdate);
+
+    return () => {
+      window.removeEventListener(
+        "ethioLanceProposalsUpdated",
+        handleUpdate
+      );
+
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("focus", handleUpdate);
+    };
+  }, [loadProposals]);
+
+  // Statistics
+  const stats = useMemo(
+    () => ({
+      total: proposals.length,
+
+      pending: proposals.filter(
+        (p) => p.status === "PENDING"
+      ).length,
+
+      accepted: proposals.filter(
+        (p) => p.status === "ACCEPTED"
+      ).length,
+
+      rejected: proposals.filter(
+        (p) => p.status === "REJECTED"
+      ).length,
+    }),
+    [proposals]
+  );
+
+  // Search and filter
   const filteredProposals = useMemo(() => {
-    return proposals.filter(proposal => {
+    return proposals.filter((proposal) => {
       const matchesFilter =
         activeFilter === "ALL" ||
         proposal.status === activeFilter;
 
+      const search = searchTerm.trim().toLowerCase();
+
       const matchesSearch =
-        (proposal.jobTitle || "")
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        (proposal.clientName || "")
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
+        proposal.jobTitle.toLowerCase().includes(search) ||
+        proposal.clientName.toLowerCase().includes(search);
 
       return matchesFilter && matchesSearch;
     });
   }, [proposals, activeFilter, searchTerm]);
 
-  const formatDate = date => {
+  // Date formatting
+  const formatDate = (date) => {
     if (!date) return "Date unavailable";
 
     const parsed = new Date(date);
@@ -77,12 +260,26 @@ function MyProposals() {
     });
   };
 
-  const getStatusClass = status => {
+  // Delivery time formatting
+  const formatDeliveryTime = (time) => {
+    if (!time) return "Not specified";
+
+    const days = Number(time);
+
+    return Number.isFinite(days)
+      ? `${days} ${days === 1 ? "day" : "days"}`
+      : String(time);
+  };
+
+  // Status styling
+  const getStatusClass = (status) => {
     switch (status) {
       case "ACCEPTED":
         return "accepted";
+
       case "REJECTED":
         return "rejected";
+
       default:
         return "pending";
     }
@@ -113,7 +310,6 @@ function MyProposals() {
 
       {/* STATISTICS */}
       <section className="ethio-myproposals-stats">
-
         <StatCard
           label="Total Proposals"
           value={stats.total}
@@ -141,7 +337,6 @@ function MyProposals() {
           icon={<XCircle />}
           type="rejected"
         />
-
       </section>
 
       {/* PROPOSALS CONTENT */}
@@ -150,7 +345,9 @@ function MyProposals() {
         <div className="ethio-myproposals-toolbar">
           <div>
             <h2>Your Applications</h2>
-            <p>Manage and track your submitted proposals.</p>
+            <p>
+              Manage and track your submitted proposals.
+            </p>
           </div>
 
           <div className="ethio-myproposals-search">
@@ -160,43 +357,51 @@ function MyProposals() {
               type="text"
               placeholder="Search jobs or clients..."
               value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
 
         {/* FILTERS */}
         <div className="ethio-myproposals-filters">
-          {["ALL", "PENDING", "ACCEPTED", "REJECTED"].map(filter => (
-            <button
-              key={filter}
-              className={
-                activeFilter === filter ? "active" : ""
-              }
-              onClick={() => setActiveFilter(filter)}
-            >
-              {filter === "ALL"
-                ? "All Proposals"
-                : filter.charAt(0) +
-                  filter.slice(1).toLowerCase()}
-            </button>
-          ))}
+          {["ALL", "PENDING", "ACCEPTED", "REJECTED"].map(
+            (filter) => (
+              <button
+                key={filter}
+                className={
+                  activeFilter === filter ? "active" : ""
+                }
+                onClick={() => setActiveFilter(filter)}
+              >
+                {filter === "ALL"
+                  ? "All Proposals"
+                  : filter.charAt(0) +
+                    filter.slice(1).toLowerCase()}
+              </button>
+            )
+          )}
         </div>
 
-        {/* PROPOSAL LIST */}
-        {filteredProposals.length > 0 ? (
+        {/* LOADING */}
+        {loading ? (
+          <div className="ethio-myproposals-empty">
+            <RefreshCw
+              size={30}
+              className="animate-spin"
+            />
 
+            <h3>Loading proposals...</h3>
+          </div>
+        ) : filteredProposals.length > 0 ? (
+
+          /* PROPOSAL LIST */
           <div className="ethio-myproposals-list">
-
-            {filteredProposals.map(proposal => (
-
+            {filteredProposals.map((proposal) => (
               <article
                 className="ethio-myproposals-card"
                 key={proposal.id}
               >
-
                 <div className="ethio-myproposals-card-top">
-
                   <div className="ethio-myproposals-job-icon">
                     <BriefcaseBusiness size={23} />
                   </div>
@@ -206,66 +411,63 @@ function MyProposals() {
                       proposal.status
                     )}`}
                   >
-                    {proposal.status || "PENDING"}
+                    {proposal.status}
                   </span>
-
                 </div>
 
-                <h3>{proposal.jobTitle || "Untitled Job"}</h3>
+                <h3>{proposal.jobTitle}</h3>
 
                 <p className="ethio-myproposals-client">
-                  Client: {proposal.clientName || "Client"}
+                  Client: {proposal.clientName}
                 </p>
 
                 <div className="ethio-myproposals-details">
-
                   <div>
                     <Wallet size={17} />
+
                     <span>
-                      ETB {Number(proposal.bidAmount || 0).toLocaleString()}
+                      ETB {proposal.bidAmount.toLocaleString()}
                     </span>
                   </div>
 
                   <div>
                     <Clock3 size={17} />
+
                     <span>
-                      {proposal.deliveryTime || "Not specified"}
+                      {formatDeliveryTime(proposal.deliveryTime)}
                     </span>
                   </div>
 
                   <div>
                     <CalendarDays size={17} />
+
                     <span>
                       {formatDate(proposal.createdAt)}
                     </span>
                   </div>
-
                 </div>
 
                 <div className="ethio-myproposals-card-footer">
-
                   <button
                     className="ethio-myproposals-view-btn"
-                    onClick={() => setSelectedProposal(proposal)}
+                    onClick={() =>
+                      setSelectedProposal(proposal)
+                    }
                   >
                     <Eye size={17} />
                     View Proposal
                   </button>
 
                   <ArrowUpRight size={19} />
-
                 </div>
-
               </article>
-
             ))}
-
           </div>
 
         ) : (
 
+          /* EMPTY STATE */
           <div className="ethio-myproposals-empty">
-
             <div className="ethio-myproposals-empty-icon">
               <Inbox size={38} />
             </div>
@@ -278,77 +480,102 @@ function MyProposals() {
                 : "You haven't submitted any proposals yet. Explore available jobs and send your first proposal."}
             </p>
 
+            <button
+              type="button"
+              onClick={loadProposals}
+              className="ethio-myproposals-view-btn"
+            >
+              <RefreshCw size={16} />
+              Refresh
+            </button>
           </div>
-
         )}
-
       </section>
 
       {/* PROPOSAL DETAILS MODAL */}
       {selectedProposal && (
-
         <div
           className="ethio-myproposals-modal-overlay"
           onClick={() => setSelectedProposal(null)}
         >
-
           <section
             className="ethio-myproposals-modal"
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
-
             <div className="ethio-myproposals-modal-header">
               <div>
                 <span>PROPOSAL DETAILS</span>
+
                 <h2>{selectedProposal.jobTitle}</h2>
               </div>
 
               <button
+                type="button"
                 onClick={() => setSelectedProposal(null)}
+                aria-label="Close proposal details"
               >
-                ×
+                <X size={21} />
               </button>
             </div>
 
             <div className="ethio-myproposals-modal-body">
-
               <div className="ethio-myproposals-modal-info">
                 <span>Client</span>
                 <strong>
-                  {selectedProposal.clientName || "Client"}
+                  {selectedProposal.clientName}
                 </strong>
               </div>
 
               <div className="ethio-myproposals-modal-info">
                 <span>Your Bid</span>
+
                 <strong>
-                  ETB {Number(selectedProposal.bidAmount || 0).toLocaleString()}
+                  ETB {selectedProposal.bidAmount.toLocaleString()}
                 </strong>
               </div>
 
               <div className="ethio-myproposals-modal-info">
                 <span>Delivery Time</span>
+
                 <strong>
-                  {selectedProposal.deliveryTime || "Not specified"}
+                  {formatDeliveryTime(
+                    selectedProposal.deliveryTime
+                  )}
+                </strong>
+              </div>
+
+              <div className="ethio-myproposals-modal-info">
+                <span>Submission Date</span>
+
+                <strong>
+                  {formatDate(selectedProposal.createdAt)}
+                </strong>
+              </div>
+
+              <div className="ethio-myproposals-modal-info">
+                <span>Status</span>
+
+                <strong
+                  className={getStatusClass(
+                    selectedProposal.status
+                  )}
+                >
+                  {selectedProposal.status}
                 </strong>
               </div>
 
               <div className="ethio-myproposals-cover-letter">
                 <h3>Your Cover Letter</h3>
+
                 <p>
                   {selectedProposal.coverLetter ||
                     "No cover letter available."}
                 </p>
               </div>
-
             </div>
-
           </section>
-
         </div>
-
       )}
-
     </main>
   );
 }

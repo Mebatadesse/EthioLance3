@@ -1,0 +1,484 @@
+
+.ethio-notifications {
+  width: 100%;
+  min-height: 100%;
+  padding: 28px;
+  color: #252525;
+  background: #fffaf6;
+}
+
+.ethio-notifications-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+
+.ethio-notifications-eyebrow {
+  color: #b77a12;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.ethio-notifications-header h1 {
+  margin: 8px 0 5px;
+  color: #151515;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.ethio-notifications-header p {
+  margin: 0;
+  color: #77717a;
+  font-size: 14px;
+}
+
+.ethio-notifications-header-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 55px;
+  height: 55px;
+  border: 1px solid #f0dfbf;
+  border-radius: 14px;
+  background: #fff3d9;
+  color: #b77a12;
+}
+
+.ethio-notifications-header-icon span {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 21px;
+  height: 21px;
+  padding: 0 5px;
+  border: 2px solid #fffaf6;
+  border-radius: 20px;
+  background: #d94a3d;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.ethio-notifications-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.ethio-notification-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  border: 1px solid #eee6dc;
+  border-radius: 13px;
+  background: #ffffff;
+}
+
+.ethio-notification-stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: #fff1d3;
+  color: #b77a12;
+}
+
+.ethio-notification-stat-icon.unread {
+  background: #fff0e9;
+  color: #d4773d;
+}
+
+.ethio-notification-stat-card span {
+  display: block;
+  margin-bottom: 5px;
+  color: #77717a;
+  font-size: 12px;
+}
+
+.ethio-notification-stat-card strong {
+  color: #151515;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.ethio-notifications-panel {
+  overflow: hidden;
+  border: 1px solid #eee6dc;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 5px 20px rgba(30, 20, 10, 0.035);
+}
+
+.ethio-notifications-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 22px 24px;
+  border-bottom: 1px solid #eee8df;
+}
+
+.ethio-notifications-toolbar-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ethio-notifications-toolbar-title h2 {
+  margin: 0;
+  color: #151515;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.ethio-notifications-toolbar-title span {
+  padding: 5px 9px;
+  border-radius: 20px;
+  background: #f7f2e9;
+  color: #8a8178;
+  font-size: 11px;
+}
+
+.ethio-notifications-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ethio-notification-text-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 0;
+  border: none;
+  background: transparent;
+  color: #9a6814;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ethio-notification-text-btn.delete-all {
+  color: #c15b4e;
+}
+
+.ethio-notification-text-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ethio-notifications-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0ebe4;
+}
+
+.ethio-notifications-filter-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-right: 5px;
+  color: #77717a;
+  font-size: 12px;
+}
+
+.ethio-notification-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border: 1px solid #eee6dc;
+  border-radius: 20px;
+  background: #ffffff;
+  color: #77717a;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.ethio-notification-filter:hover {
+  border-color: #d99a25;
+  color: #9a6814;
+}
+
+.ethio-notification-filter.active {
+  border-color: #f4ad28;
+  background: #fff3d9;
+  color: #805000;
+}
+
+.ethio-notification-filter span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 20px;
+  background: #f4ad28;
+  color: #151515;
+  font-size: 10px;
+}
+
+.ethio-notification-group {
+  padding: 20px 24px 5px;
+}
+
+.ethio-notification-group h3 {
+  margin: 0 0 13px;
+  color: #8a8178;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ethio-notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 18px 15px;
+  border: 1px solid transparent;
+  border-bottom-color: #f0ebe4;
+  border-radius: 9px;
+  transition: background 0.2s ease;
+}
+
+.ethio-notification-item:last-child {
+  border-bottom-color: transparent;
+}
+
+.ethio-notification-item:hover {
+  background: #fffdf9;
+}
+
+.ethio-notification-item.unread {
+  background: #fffbf2;
+}
+
+.ethio-notification-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 43px;
+  height: 43px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: #fff1d3;
+  color: #b77a12;
+}
+
+.ethio-notification-icon.message {
+  background: #edf2ff;
+  color: #5575c8;
+}
+
+.ethio-notification-icon.job {
+  background: #eaf6ed;
+  color: #4b9560;
+}
+
+.ethio-notification-icon.payment {
+  background: #f1eefe;
+  color: #8263c5;
+}
+
+.ethio-notification-icon.contract {
+  background: #e9f5f2;
+  color: #3b9581;
+}
+
+.ethio-notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.ethio-notification-title-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 1px 0 6px;
+}
+
+.ethio-notification-title-row h4 {
+  margin: 0;
+  color: #252525;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.ethio-notification-unread-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #f0a51d;
+}
+
+.ethio-notification-content p {
+  margin: 0 0 9px;
+  color: #77717a;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.ethio-notification-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #a39a90;
+  font-size: 11px;
+}
+
+.ethio-notification-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.ethio-notification-item-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #9a6814;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.ethio-notification-item-actions button:hover {
+  background: #fff0cf;
+}
+
+.ethio-notification-item-actions button.delete {
+  color: #c15b4e;
+}
+
+.ethio-notification-item-actions button.delete:hover {
+  background: #fff0ed;
+}
+
+.ethio-notifications-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 65px 20px;
+  text-align: center;
+}
+
+.ethio-notifications-empty > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 65px;
+  height: 65px;
+  margin-bottom: 17px;
+  border-radius: 50%;
+  background: #fff3d9;
+  color: #b77a12;
+}
+
+.ethio-notifications-empty h3 {
+  margin: 0 0 8px;
+  color: #252525;
+  font-size: 16px;
+}
+
+.ethio-notifications-empty p {
+  margin: 0;
+  color: #8a8178;
+  font-size: 13px;
+}
+
+.ethio-notifications-empty button {
+  margin-top: 17px;
+  padding: 9px 15px;
+  border: 1px solid #d99a25;
+  border-radius: 8px;
+  background: #fff3d9;
+  color: #805000;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 700px) {
+  .ethio-notifications {
+    padding: 17px;
+  }
+
+  .ethio-notifications-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .ethio-notifications-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 18px;
+  }
+
+  .ethio-notifications-actions {
+    flex-wrap: wrap;
+  }
+
+  .ethio-notifications-filters {
+    flex-wrap: wrap;
+    padding: 14px 18px;
+  }
+
+  .ethio-notification-group {
+    padding: 18px 14px 5px;
+  }
+
+  .ethio-notification-item {
+    gap: 10px;
+    padding: 15px 5px;
+  }
+
+  .ethio-notification-icon {
+    width: 37px;
+    height: 37px;
+  }
+
+  .ethio-notification-item-actions {
+    flex-direction: column;
+  }
+
+  .ethio-notification-item-actions button {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (max-width: 420px) {
+  .ethio-notifications-header h1 {
+    font-size: 24px;
+  }
+
+  .ethio-notifications-header-icon {
+    width: 45px;
+    height: 45px;
+  }
+
+  .ethio-notification-content p {
+    font-size: 11px;
+  }
+}

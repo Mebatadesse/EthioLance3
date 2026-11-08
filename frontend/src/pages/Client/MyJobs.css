@@ -1,0 +1,234 @@
+
+.ethio-my-jobs {
+  width: 100%;
+  color: #252525;
+}
+
+.ethio-my-jobs-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.ethio-my-jobs-heading h1 {
+  font-size: 27px;
+  color: #151515;
+  margin: 0 0 8px;
+}
+
+.ethio-my-jobs-heading p {
+  color: #77717a;
+  margin: 0;
+  font-size: 14px;
+}
+
+.ethio-my-jobs-add {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #f4ad28;
+  color: #151515;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ethio-my-jobs-add:hover {
+  background: #d99a25;
+}
+
+.ethio-my-jobs-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 30px;
+}
+
+.ethio-my-jobs-stat {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px;
+  background: white;
+  border: 1px solid #eee7dc;
+  border-radius: 12px;
+}
+
+.ethio-my-jobs-stat > svg {
+  color: #d99a25;
+}
+
+.ethio-my-jobs-stat span {
+  color: #77717a;
+  font-size: 13px;
+}
+
+.ethio-my-jobs-stat h3 {
+  font-size: 23px;
+  margin: 5px 0 0;
+  color: #151515;
+}
+
+.ethio-my-jobs-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 18px;
+}
+
+.ethio-my-jobs-list-header h2 {
+  font-size: 19px;
+  margin: 0;
+}
+
+.ethio-my-jobs-list-header select {
+  padding: 10px 13px;
+  border: 1px solid #e5dfd5;
+  border-radius: 7px;
+  background: white;
+  outline: none;
+}
+
+.ethio-my-jobs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.ethio-my-job-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 22px;
+  background: white;
+  border: 1px solid #eee7dc;
+  border-radius: 12px;
+}
+
+.ethio-my-job-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ethio-my-job-icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #fff3d8;
+  color: #bd8010;
+}
+
+.ethio-my-job-info h3 {
+  font-size: 16px;
+  margin: 0 0 6px;
+  color: #151515;
+}
+
+.ethio-my-job-info > span {
+  font-size: 13px;
+  color: #77717a;
+}
+
+.ethio-my-job-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 12px;
+}
+
+.ethio-my-job-meta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #77717a;
+  font-size: 12px;
+}
+
+.ethio-my-job-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.ethio-my-job-details strong {
+  color: #151515;
+  font-size: 16px;
+}
+
+.ethio-job-status {
+  padding: 6px 11px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.ethio-job-status.open {
+  background: #eaf8ee;
+  color: #24743b;
+}
+
+.ethio-job-status.in_progress {
+  background: #fff3d8;
+  color: #946200;
+}
+
+.ethio-job-status.completed {
+  background: #eaf0ff;
+  color: #3158a5;
+}
+
+.ethio-job-status.cancelled {
+  background: #fff0f0;
+  color: #c62828;
+}
+
+.ethio-my-jobs-empty {
+  padding: 55px 20px;
+  text-align: center;
+  background: white;
+  border: 1px solid #eee7dc;
+  border-radius: 12px;
+}
+
+.ethio-my-jobs-empty svg {
+  color: #d99a25;
+}
+
+.ethio-my-jobs-empty h3 {
+  margin-bottom: 8px;
+}
+
+.ethio-my-jobs-empty p {
+  color: #77717a;
+}
+
+@media (max-width: 700px) {
+  .ethio-my-jobs-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .ethio-my-job-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .ethio-my-job-details {
+    align-items: flex-start;
+    padding-left: 64px;
+  }
+
+  .ethio-my-jobs-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

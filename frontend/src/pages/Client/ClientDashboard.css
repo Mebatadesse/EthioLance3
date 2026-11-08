@@ -1,0 +1,996 @@
+
+/* =========================================
+   ETHIOLANCE CLIENT DASHBOARD
+   Premium Ivory, White, Black & Gold Theme
+========================================= */
+
+.ethio-client-dashboard {
+  --gold: #f4ad28;
+  --gold-dark: #d99a25;
+  --gold-deep: #805000;
+
+  --ivory: #fffaf6;
+  --white: #ffffff;
+  --black: #151515;
+
+  --text: #29251f;
+  --muted: #817b73;
+  --border: #eee9e2;
+
+  --sidebar-width: 68px;
+  --sidebar-expanded: 245px;
+  --header-height: 76px;
+
+  min-height: 100vh;
+  width: 100%;
+  background: var(--ivory);
+  color: var(--text);
+  font-family: "Inter", "Segoe UI", sans-serif;
+  transition: background 0.25s, color 0.25s;
+}
+
+/* =========================================
+   SIDEBAR - DAY MODE
+========================================= */
+
+.ethio-client-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+
+  background: #ffffff;
+  color: #151515;
+
+  display: flex;
+  flex-direction: column;
+
+  z-index: 1000;
+  overflow: hidden;
+
+  border-right: 1px solid #eee9e2;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.04);
+
+  transition: width 0.3s ease;
+}
+
+.ethio-client-sidebar:hover {
+  width: var(--sidebar-expanded);
+}
+
+/* BRAND */
+
+.ethio-client-sidebar-brand {
+  height: var(--header-height);
+  min-height: var(--header-height);
+
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  padding: 0 19px;
+
+  border-bottom: 1px solid #eee9e2;
+  white-space: nowrap;
+}
+
+.ethio-client-brand-icon {
+  width: 31px;
+  height: 31px;
+  min-width: 31px;
+
+  border-radius: 9px;
+  background: var(--gold);
+  color: #151515;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.ethio-client-brand-name {
+  font-size: 19px;
+  font-weight: 800;
+  color: #151515;
+
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.ethio-client-sidebar:hover .ethio-client-brand-name {
+  opacity: 1;
+}
+
+/* NAVIGATION */
+
+.ethio-client-sidebar-nav {
+  flex: 1;
+
+  padding: 20px 10px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.ethio-client-sidebar-nav::-webkit-scrollbar {
+  width: 3px;
+}
+
+.ethio-client-sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(244, 173, 40, 0.5);
+  border-radius: 10px;
+}
+
+.ethio-client-nav-item {
+  width: 100%;
+  height: 45px;
+  min-height: 45px;
+
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  padding: 0 13px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: transparent;
+  color: #77717a;
+
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.ethio-client-nav-item svg {
+  min-width: 21px;
+  color: #77717a;
+  transition: color 0.2s;
+}
+
+.ethio-client-nav-item:hover {
+  background: #fff5e1;
+  color: var(--gold-deep);
+}
+
+.ethio-client-nav-item:hover svg {
+  color: var(--gold-dark);
+}
+
+.ethio-client-nav-item.active {
+  background: #fff3d9;
+  color: var(--gold-deep);
+  font-weight: 750;
+}
+
+.ethio-client-nav-item.active svg {
+  color: var(--gold-deep);
+}
+
+.ethio-client-nav-item.active::before {
+  content: "";
+
+  position: absolute;
+  left: -10px;
+  top: 8px;
+
+  height: 29px;
+  width: 3px;
+
+  border-radius: 5px;
+  background: var(--gold);
+}
+
+.ethio-client-nav-label {
+  opacity: 0;
+  font-size: 13px;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.ethio-client-sidebar:hover .ethio-client-nav-label {
+  opacity: 1;
+}
+
+/* SIDEBAR BOTTOM */
+
+.ethio-client-sidebar-bottom {
+  padding: 13px 10px 20px;
+  border-top: 1px solid #eee9e2;
+}
+
+/* =========================================
+   MAIN AREA
+========================================= */
+
+.ethio-client-main {
+  min-height: 100vh;
+  margin-left: var(--sidebar-width);
+  transition: margin-left 0.3s ease;
+}
+
+.ethio-client-sidebar:hover ~ .ethio-client-main {
+  margin-left: var(--sidebar-expanded);
+}
+
+/* =========================================
+   HEADER
+========================================= */
+
+.ethio-client-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: var(--sidebar-width);
+
+  height: var(--header-height);
+
+  z-index: 900;
+
+  padding: 0 30px;
+
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+
+  border-bottom: 1px solid var(--border);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  transition: left 0.3s ease, background 0.25s;
+}
+
+.ethio-client-sidebar:hover ~ .ethio-client-main
+.ethio-client-header {
+  left: var(--sidebar-expanded);
+}
+
+.ethio-client-header-left,
+.ethio-client-header-right {
+  display: flex;
+  align-items: center;
+}
+
+.ethio-client-header-left {
+  gap: 15px;
+}
+
+.ethio-client-header-right {
+  gap: 17px;
+}
+
+/* HEADER TITLE */
+
+.ethio-client-header-title h2 {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0;
+  color: #151515;
+}
+
+.ethio-client-header-title p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.ethio-client-menu-button,
+.ethio-client-mobile-close {
+  display: none;
+}
+
+/* =========================================
+   SEARCH
+========================================= */
+
+.ethio-client-search {
+  width: 230px;
+  height: 39px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 0 13px;
+
+  border: 1px solid var(--border);
+  border-radius: 8px;
+
+  background: #fffaf6;
+  color: var(--muted);
+
+  transition: 0.2s;
+}
+
+.ethio-client-search:focus-within {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(244, 173, 40, 0.1);
+}
+
+.ethio-client-search input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.ethio-client-search input::placeholder {
+  color: #a49d94;
+}
+
+/* =========================================
+   HEADER ICONS
+========================================= */
+
+.ethio-client-header-icon {
+  width: 39px;
+  height: 39px;
+
+  border: 1px solid var(--border);
+  border-radius: 9px;
+
+  background: #ffffff;
+  color: #5c554c;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.ethio-client-header-icon:hover {
+  color: var(--gold-deep);
+  background: #fff6e4;
+  border-color: #f1d49e;
+}
+
+.ethio-client-notification-dot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+
+  height: 7px;
+  width: 7px;
+
+  border-radius: 50%;
+  background: #e44d42;
+  border: 1px solid #fff;
+}
+
+/* =========================================
+   PROFILE DROPDOWN
+========================================= */
+
+.ethio-client-profile-wrapper {
+  position: relative;
+}
+
+.ethio-client-profile-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 4px 8px;
+
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+  color: var(--text);
+
+  border-radius: 9px;
+}
+
+.ethio-client-profile-button:hover {
+  background: #fff6e4;
+}
+
+.ethio-client-avatar {
+  width: 37px;
+  height: 37px;
+
+  border-radius: 50%;
+
+  background: var(--gold);
+  color: #151515;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.ethio-client-profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+
+.ethio-client-profile-info strong {
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.ethio-client-profile-info span {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.ethio-client-profile-button > svg {
+  color: var(--muted);
+}
+
+.ethio-client-profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 12px);
+
+  width: 190px;
+  padding: 7px;
+
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+
+  z-index: 1200;
+  animation: ethioDropdown 0.2s ease;
+}
+
+@keyframes ethioDropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ethio-client-profile-dropdown button {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 11px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: transparent;
+  color: var(--text);
+
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ethio-client-profile-dropdown button:hover {
+  background: #fff5e1;
+  color: var(--gold-deep);
+}
+
+/* =========================================
+   PAGE CONTENT
+========================================= */
+
+.ethio-client-content {
+  min-height: 100vh;
+
+  padding:
+    calc(var(--header-height) + 25px)
+    28px
+    30px;
+
+  background: var(--ivory);
+}
+/* =========================================
+   DARK MODE
+   MATCHES FREELANCER DASHBOARD
+========================================= */
+
+.ethio-client-dark {
+  --ivory: #11151d;
+  --white: #1c2430;
+  --black: #080808;
+
+  --text: #f2f4f7;
+  --muted: #a5afbd;
+  --border: #303a49;
+
+  background: #11151d;
+  color: #f2f4f7;
+}
+
+/* SIDEBAR */
+
+.ethio-client-dark .ethio-client-sidebar {
+  background: #1c2430;
+  color: #ffffff;
+  border-right-color: #303a49;
+}
+
+.ethio-client-dark .ethio-client-sidebar-brand {
+  border-bottom-color: #303a49;
+}
+
+.ethio-client-dark .ethio-client-brand-name {
+  color: #ffffff;
+}
+
+.ethio-client-dark .ethio-client-sidebar-bottom {
+  border-top-color: #303a49;
+}
+
+/* NAVIGATION */
+
+.ethio-client-dark .ethio-client-nav-item {
+  color: #a7b0c0;
+}
+
+.ethio-client-dark .ethio-client-nav-item svg {
+  color: #a7b0c0;
+}
+
+.ethio-client-dark .ethio-client-nav-item:hover {
+  background: rgba(245, 173, 8, 0.12);
+  color: #f4ad28;
+}
+
+.ethio-client-dark .ethio-client-nav-item:hover svg {
+  color: #f4ad28;
+}
+
+.ethio-client-dark .ethio-client-nav-item.active {
+  background: #d99805;
+  color: #ffffff;
+}
+
+.ethio-client-dark .ethio-client-nav-item.active svg {
+  color: #ffffff;
+}
+
+/* HEADER */
+
+.ethio-client-dark .ethio-client-header {
+  background: rgba(25, 32, 43, 0.96);
+  border-color: #303a49;
+}
+
+.ethio-client-dark .ethio-client-header-title h2 {
+  color: #ffffff;
+}
+
+/* SEARCH */
+
+.ethio-client-dark .ethio-client-search {
+  background: #222c3a;
+  border-color: #354052;
+  color: #cbd5e1;
+}
+
+.ethio-client-dark .ethio-client-search input {
+  color: #f2f4f7;
+}
+
+.ethio-client-dark .ethio-client-search input::placeholder {
+  color: #a5afbd;
+}
+
+/* HEADER ICONS */
+
+.ethio-client-dark .ethio-client-header-icon {
+  background: #222c3a;
+  border-color: #354052;
+  color: #e7e0d5;
+}
+
+.ethio-client-dark .ethio-client-header-icon:hover {
+  background: #354052;
+  color: #ffca43;
+}
+
+/* PROFILE */
+
+.ethio-client-dark .ethio-client-profile-button {
+  color: #ffffff;
+}
+
+.ethio-client-dark .ethio-client-profile-dropdown {
+  background: #1c2430;
+  border-color: #303a49;
+}
+
+.ethio-client-dark .ethio-client-profile-dropdown button {
+  color: #eeeeee;
+}
+
+.ethio-client-dark .ethio-client-profile-dropdown button:hover {
+  background: #273243;
+  color: #f4ad28;
+}
+
+/* MOBILE MENU */
+
+.ethio-client-dark .ethio-client-menu-button {
+  background: #222c3a;
+  color: #ffffff;
+  border-color: #354052;
+}
+
+/* MOBILE CLOSE */
+
+.ethio-client-dark .ethio-client-mobile-close {
+  color: #ffffff;
+}
+
+/* CONTENT */
+
+.ethio-client-dark .ethio-client-content {
+  background: #11151d;
+}
+
+/* BRAND */
+
+.ethio-client-dark .ethio-text {
+  color: #ffffff;
+}
+
+.ethio-client-dark .lance-text {
+  color: #f4ad28;
+}
+/* =========================================
+   RESPONSIVE DESIGN
+========================================= */
+
+@media (max-width: 900px) {
+  .ethio-client-header {
+    padding: 0 18px;
+  }
+
+  .ethio-client-header-right {
+    gap: 10px;
+  }
+
+  .ethio-client-search {
+    width: 175px;
+  }
+
+  .ethio-client-content {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+/* MOBILE SIDEBAR */
+
+@media (max-width: 700px) {
+  .ethio-client-sidebar {
+    width: 245px;
+
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+
+    z-index: 1100;
+  }
+
+  .ethio-client-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .ethio-client-sidebar .ethio-client-brand-name,
+  .ethio-client-sidebar .ethio-client-nav-label {
+    opacity: 1;
+  }
+
+  .ethio-client-mobile-close {
+    display: flex;
+    margin-left: auto;
+
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    background: transparent;
+    color: #151515;
+
+    cursor: pointer;
+  }
+
+  .ethio-client-dark .ethio-client-mobile-close {
+    color: #ffffff;
+  }
+
+  .ethio-client-main {
+    margin-left: 0 !important;
+  }
+
+  .ethio-client-header,
+  .ethio-client-sidebar:hover ~ .ethio-client-main
+  .ethio-client-header {
+    left: 0;
+    padding: 0 14px;
+  }
+
+  .ethio-client-menu-button {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    background: #ffffff;
+    color: var(--text);
+
+    cursor: pointer;
+  }
+
+  .ethio-client-overlay {
+    display: block;
+
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1050;
+  }
+
+  .ethio-client-search {
+    display: none;
+  }
+
+  .ethio-client-profile-info,
+  .ethio-client-profile-button > svg {
+    display: none;
+  }
+
+  .ethio-client-header-right {
+    gap: 8px;
+  }
+
+  .ethio-client-content {
+    padding: calc(var(--header-height) + 18px) 14px 25px;
+  }
+}
+
+/* SMALL MOBILE */
+
+@media (max-width: 420px) {
+  .ethio-client-header-title h2 {
+    font-size: 15px;
+  }
+
+  .ethio-client-header-title p {
+    font-size: 10px;
+  }
+
+  .ethio-client-header-icon {
+    width: 35px;
+    height: 35px;
+  }
+
+  .ethio-client-avatar {
+    width: 33px;
+    height: 33px;
+  }
+}
+/* SIDEBAR BRAND */
+.ethio-client-sidebar-brand {
+  position: relative;
+  min-height: 105px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px 12px;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(244, 173, 40, 0.18);
+}
+
+/* LOGO */
+.ethio-client-sidebar-logo {
+  width: 43px;
+  height: 43px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.ethio-client-sidebar-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* BRAND NAME */
+.ethio-client-brand-name {
+  font-size: 17px;
+  font-weight: 750;
+  color: var(--gold, #f4ad28);
+  position: relative;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+/* WATERMARK */
+.ethio-client-sidebar-watermark {
+  position: absolute;
+  inset: 0;
+  background-image: url("/watermark.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 115px;
+  opacity: 0.055;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* CLOSE BUTTON */
+.ethio-client-mobile-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+}
+/* SIDEBAR BRAND */
+.ethio-client-sidebar-brand {
+  position: relative;
+  height: 100px;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(244, 173, 40, 0.18);
+}
+
+.ethio-client-sidebar-logo {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.ethio-client-sidebar-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.ethio-client-brand-name {
+  font-size: 17px;
+  font-weight: 750;
+  color: var(--gold, #f4ad28);
+  white-space: nowrap;
+  position: relative;
+  z-index: 2;
+}
+
+.ethio-client-sidebar-watermark {
+  position: absolute;
+  inset: 0;
+  background: url("/watermark.png") center / 115px no-repeat;
+  opacity: 0.055;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* =========================================
+   SIDEBAR LOGO - COLLAPSED & EXPANDED
+========================================= */
+
+/* Collapsed sidebar */
+.ethio-client-sidebar:not(:hover) .ethio-client-sidebar-brand {
+  width: var(--sidebar-width);
+  height: 100px;
+  min-height: 100px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  gap: 0;
+}
+
+.ethio-client-sidebar:not(:hover) .ethio-client-sidebar-logo {
+  width: 43px;
+  height: 43px;
+  margin: 0 auto;
+}
+
+.ethio-client-sidebar:not(:hover) .ethio-client-brand-name {
+  display: none;
+}
+
+/* Expanded sidebar */
+.ethio-client-sidebar:hover .ethio-client-sidebar-brand {
+  width: var(--sidebar-expanded);
+  justify-content: flex-start;
+  padding: 0 19px;
+  gap: 12px;
+}
+
+.ethio-client-sidebar:hover .ethio-client-sidebar-logo {
+  width: 43px;
+  height: 43px;
+}
+
+.ethio-client-sidebar:hover .ethio-client-brand-name {
+  display: block;
+  opacity: 1;
+}
+
+/* Keep watermark centered */
+.ethio-client-sidebar-watermark {
+  background-position: center;
+}
+/* ETHIOLANCE BRAND COLORS */
+
+/* Ethio - Black */
+.ethio-client-dashboard .ethio-text {
+  color: #151515;
+}
+
+/* Lance - Orange */
+.ethio-client-dashboard .lance-text {
+  color: #f4ad28;
+}
+
+/* Dark mode: Ethio becomes white for visibility */
+.ethio-client-dark .ethio-text {
+  color: #ffffff;
+}
+
+.ethio-client-dark .lance-text {
+  color: #f4ad28;
+}
+
+/* Header brand */
+.ethio-client-header-title h2 {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+/* Sidebar brand */
+.ethio-client-brand-name {
+  font-size: 17px;
+  font-weight: 800;
+  white-space: nowrap;
+}

@@ -3,22 +3,24 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
+  LayoutDashboard,
+  Compass,
+  ClipboardList,
   BriefcaseBusiness,
+  MessageCircle,
   Bell,
-  ChevronDown,
-  FileText,
-  History,
-  Home,
+  WalletCards,
+  ReceiptText,
+  CircleUserRound,
   Images,
+  SlidersHorizontal,
+  ChevronDown,
   LogOut,
   Menu,
-  MessageSquare,
   Moon,
   Search,
-  Settings as SettingsIcon,
   Sun,
   UserRound,
-  Wallet,
   X,
 } from "lucide-react";
 
@@ -36,10 +38,6 @@ import SettingsPage from "./sections/Settings";
 
 import "./DashboardPage.css";
 
-// =========================================
-// GET AUTHENTICATED USER
-// =========================================
-
 function getSavedUser() {
   try {
     const savedUser =
@@ -53,45 +51,28 @@ function getSavedUser() {
   }
 }
 
-// =========================================
-// FREELANCER DASHBOARD
-// =========================================
-
 function DashboardPage({ role = "FREELANCER" }) {
   const navigate = useNavigate();
-
   const profileMenuRef = useRef(null);
 
-  // USER
   const [user, setUser] = useState(null);
 
-  // THEME
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("ethioLanceTheme") === "dark";
   });
 
-  // SIDEBAR
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  // SEARCH
   const [searchTerm, setSearchTerm] = useState("");
-
-  // ACTIVE SECTION
   const [activeSection, setActiveSection] = useState("Dashboard");
 
-  // EXPANDABLE SIDEBAR MENUS
   const [expandedMenu, setExpandedMenu] = useState({
     financial: false,
     profile: false,
   });
 
-  // PROFILE DROPDOWN
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
-  // =========================================
   // AUTHENTICATION
-  // =========================================
-
   useEffect(() => {
     const savedUser = getSavedUser();
 
@@ -103,10 +84,7 @@ function DashboardPage({ role = "FREELANCER" }) {
     setUser(savedUser);
   }, [navigate, role]);
 
-  // =========================================
   // SAVE THEME
-  // =========================================
-
   useEffect(() => {
     localStorage.setItem(
       "ethioLanceTheme",
@@ -114,10 +92,7 @@ function DashboardPage({ role = "FREELANCER" }) {
     );
   }, [darkMode]);
 
-  // =========================================
-  // CLOSE PROFILE DROPDOWN ON OUTSIDE CLICK
-  // =========================================
-
+  // CLOSE PROFILE DROPDOWN
   useEffect(() => {
     const handleOutsideClick = (event) => {
       if (
@@ -131,6 +106,7 @@ function DashboardPage({ role = "FREELANCER" }) {
     const handleEscape = (event) => {
       if (event.key === "Escape") {
         setProfileMenuOpen(false);
+        setSidebarOpen(false);
       }
     };
 
@@ -143,19 +119,17 @@ function DashboardPage({ role = "FREELANCER" }) {
     };
   }, []);
 
-  // =========================================
-  // NAVIGATION GROUPS
-  // =========================================
-
+  // FREELANCER NAVIGATION
+  // All original sidebar items and their order are preserved.
   const navigationGroups = [
     {
       title: "WORKSPACE",
       items: [
-        { label: "Dashboard", icon: Home },
-        { label: "Browse Jobs", icon: Search },
-        { label: "My Proposals", icon: FileText },
+        { label: "Dashboard", icon: LayoutDashboard },
+        { label: "Browse Jobs", icon: Compass },
+        { label: "My Proposals", icon: ClipboardList },
         { label: "My Contracts", icon: BriefcaseBusiness },
-        { label: "Messages", icon: MessageSquare, count: 3 },
+        { label: "Messages", icon: MessageCircle, count: 3 },
         { label: "Notifications", icon: Bell, count: 3 },
       ],
     },
@@ -164,12 +138,12 @@ function DashboardPage({ role = "FREELANCER" }) {
       items: [
         {
           label: "Earnings & Payments",
-          icon: Wallet,
+          icon: WalletCards,
           id: "financial",
           children: [
             {
               label: "Transaction History",
-              icon: History,
+              icon: ReceiptText,
             },
           ],
         },
@@ -180,7 +154,7 @@ function DashboardPage({ role = "FREELANCER" }) {
       items: [
         {
           label: "My Profile",
-          icon: UserRound,
+          icon: CircleUserRound,
           id: "profile",
           children: [
             {
@@ -191,25 +165,18 @@ function DashboardPage({ role = "FREELANCER" }) {
         },
         {
           label: "Settings",
-          icon: SettingsIcon,
+          icon: SlidersHorizontal,
         },
       ],
     },
   ];
 
-  // =========================================
-  // NAVIGATION HANDLER
-  // =========================================
-
+  // NAVIGATION
   const handleNavigation = (section) => {
     setActiveSection(section);
     setSidebarOpen(false);
     setProfileMenuOpen(false);
   };
-
-  // =========================================
-  // PROFILE NAVIGATION
-  // =========================================
 
   const handleProfileNavigation = (section) => {
     setActiveSection(section);
@@ -217,20 +184,12 @@ function DashboardPage({ role = "FREELANCER" }) {
     setSidebarOpen(false);
   };
 
-  // =========================================
-  // SUBMENU TOGGLE
-  // =========================================
-
   const toggleSubmenu = (menuId) => {
     setExpandedMenu((previous) => ({
       ...previous,
       [menuId]: !previous[menuId],
     }));
   };
-
-  // =========================================
-  // ACTIVE NAVIGATION CHECK
-  // =========================================
 
   const isGroupActive = (item) => {
     return (
@@ -241,18 +200,7 @@ function DashboardPage({ role = "FREELANCER" }) {
     );
   };
 
-  // =========================================
-  // THEME SWITCH
-  // =========================================
-
-  const toggleTheme = () => {
-    setDarkMode((previous) => !previous);
-  };
-
-  // =========================================
   // LOGOUT
-  // =========================================
-
   const handleLogout = () => {
     localStorage.removeItem("ethioLanceToken");
     localStorage.removeItem("ethioLanceUser");
@@ -261,14 +209,18 @@ function DashboardPage({ role = "FREELANCER" }) {
     sessionStorage.removeItem("ethioLanceUser");
 
     setProfileMenuOpen(false);
-
     navigate("/", { replace: true });
   };
 
-  // =========================================
-  // RENDER ACTIVE SECTION
-  // =========================================
+  // USER DISPLAY INFORMATION
+  const displayName =
+    user?.firstName ||
+    user?.name?.split(" ")[0] ||
+    "there";
 
+  const userInitial = displayName.charAt(0).toUpperCase();
+
+  // ACTIVE SECTION
   const renderActiveSection = () => {
     switch (activeSection) {
       case "Dashboard":
@@ -321,24 +273,9 @@ function DashboardPage({ role = "FREELANCER" }) {
     }
   };
 
-  // =========================================
-  // AUTHENTICATION LOADING
-  // =========================================
-
   if (!user || user.role !== role) {
     return null;
   }
-
-  const displayName =
-    user.firstName ||
-    user.name?.split(" ")[0] ||
-    "there";
-
-  const userInitial = displayName.charAt(0).toUpperCase();
-
-  // =========================================
-  // PAGE
-  // =========================================
 
   return (
     <div
@@ -346,25 +283,24 @@ function DashboardPage({ role = "FREELANCER" }) {
         darkMode ? "freelancer-dark-mode" : ""
       }`}
     >
-      {/* =====================================
-          SIDEBAR
-      ===================================== */}
-
+      {/* SIDEBAR */}
       <aside
         className={`freelancer-sidebar ${
           sidebarOpen ? "freelancer-sidebar-open" : ""
         }`}
       >
         {/* SIDEBAR BRAND */}
-
         <div className="freelancer-sidebar-brand">
+          <div className="freelancer-sidebar-watermark" />
+
           <img
             src="/ethiolance-emblem.png"
-            alt="EthioLance"
+            alt="EthioLance logo"
           />
 
-          <span>
-            Ethio<span>Lance</span>
+          <span className="freelancer-sidebar-brand-name">
+            <span className="ethio-text">Ethio</span>
+            <span className="lance-text">Lance</span>
           </span>
 
           <button
@@ -378,8 +314,10 @@ function DashboardPage({ role = "FREELANCER" }) {
         </div>
 
         {/* SIDEBAR NAVIGATION */}
-
-        <nav className="freelancer-sidebar-nav">
+        <nav
+          className="freelancer-sidebar-nav"
+          aria-label="Freelancer navigation"
+        >
           {navigationGroups.map((group) => (
             <div
               className="freelancer-nav-group"
@@ -403,8 +341,6 @@ function DashboardPage({ role = "FREELANCER" }) {
                     className="freelancer-nav-parent"
                     key={item.label}
                   >
-                    {/* PARENT ITEM */}
-
                     <button
                       type="button"
                       title={item.label}
@@ -423,10 +359,7 @@ function DashboardPage({ role = "FREELANCER" }) {
                         }
                       }}
                     >
-                      <Icon
-                        size={21}
-                        strokeWidth={2.1}
-                      />
+                      <Icon size={21} strokeWidth={1.9} />
 
                       <span>{item.label}</span>
 
@@ -443,8 +376,6 @@ function DashboardPage({ role = "FREELANCER" }) {
                         />
                       )}
                     </button>
-
-                    {/* SUBMENU */}
 
                     {item.children && isExpanded && (
                       <div className="freelancer-submenu">
@@ -466,8 +397,8 @@ function DashboardPage({ role = "FREELANCER" }) {
                               }
                             >
                               <ChildIcon
-                                size={18}
-                                strokeWidth={2}
+                                size={19}
+                                strokeWidth={1.9}
                               />
 
                               <span>{child.label}</span>
@@ -483,25 +414,9 @@ function DashboardPage({ role = "FREELANCER" }) {
           ))}
         </nav>
 
-        {/* LOGOUT */}
-
-        <div className="freelancer-sidebar-bottom">
-          <button
-            type="button"
-            className="freelancer-nav-item freelancer-logout-nav"
-            onClick={handleLogout}
-            title="Log out"
-          >
-            <LogOut size={21} />
-            <span>Log out</span>
-          </button>
-        </div>
       </aside>
 
-      {/* =====================================
-          MOBILE BACKDROP
-      ===================================== */}
-
+      {/* MOBILE BACKDROP */}
       {sidebarOpen && (
         <button
           type="button"
@@ -511,102 +426,77 @@ function DashboardPage({ role = "FREELANCER" }) {
         />
       )}
 
-      {/* =====================================
-          MAIN AREA
-      ===================================== */}
-
+      {/* MAIN AREA */}
       <div className="freelancer-main">
 
-        {/* =====================================
-            ORIGINAL ETHIOLANCE HEADER
-        ===================================== */}
-
+        {/* HEADER */}
         <header className="freelancer-topbar">
 
-          {/* MOBILE MENU */}
-
-          <button
-            type="button"
-            className="freelancer-mobile-menu"
-            onClick={() => setSidebarOpen(true)}
-            aria-label="Open navigation"
-          >
-            <Menu size={23} />
-          </button>
-
-          {/* BRAND */}
-
-          <a
-            href="/"
-            className="freelancer-topbar-brand"
-          >
-            <img
-              src="/ethiolance-emblem.png"
-              alt=""
-            />
-
-            <span>
-              Ethio<span>Lance</span>
-            </span>
-          </a>
-
-          {/* SEARCH */}
-
-          <div className="freelancer-search">
-            <Search size={21} />
-
-            <input
-              type="search"
-              placeholder="Search jobs, freelancers..."
-              value={searchTerm}
-              onChange={(event) =>
-                setSearchTerm(event.target.value)
-              }
-            />
-
-            <kbd>Ctrl + K</kbd>
-          </div>
-
-          {/* HEADER ACTIONS */}
-
-          <div className="freelancer-topbar-actions">
-
-            {/* THEME SWITCH */}
-
-            <div className="freelancer-theme-switch">
-              <button
-                type="button"
-                className={!darkMode ? "selected" : ""}
-                onClick={() => setDarkMode(false)}
-                aria-label="Light mode"
-              >
-                <Sun size={21} />
-              </button>
-
-              <button
-                type="button"
-                className={darkMode ? "selected" : ""}
-                onClick={() => setDarkMode(true)}
-                aria-label="Dark mode"
-              >
-                <Moon size={21} />
-              </button>
-            </div>
-
-            {/* NOTIFICATIONS */}
+          {/* HEADER LEFT */}
+          <div className="freelancer-header-left">
 
             <button
               type="button"
-              className="freelancer-notification"
-              aria-label="Notifications"
-              onClick={() => handleNavigation("Notifications")}
+              className="freelancer-mobile-menu"
+              onClick={() => setSidebarOpen(true)}
+              aria-label="Open navigation"
             >
-              <Bell size={24} />
-              <span>3</span>
+              <Menu size={22} />
+            </button>
+
+            <a href="/" className="freelancer-topbar-brand">
+              <span className="ethio-text">Ethio</span>
+              <span className="lance-text">Lance</span>
+            </a>
+
+          </div>
+
+          {/* HEADER RIGHT */}
+          <div className="freelancer-header-right">
+
+            {/* SEARCH */}
+            <div className="freelancer-search">
+              <Search size={18} />
+
+              <input
+                type="search"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(event) =>
+                  setSearchTerm(event.target.value)
+                }
+                aria-label="Search dashboard"
+              />
+            </div>
+
+            {/* THEME TOGGLE */}
+            <button
+              type="button"
+              className="freelancer-header-icon"
+              onClick={() => setDarkMode(!darkMode)}
+              title="Toggle theme"
+              aria-label="Toggle theme"
+            >
+              {darkMode ? (
+                <Sun size={20} />
+              ) : (
+                <Moon size={20} />
+              )}
+            </button>
+
+            {/* NOTIFICATIONS */}
+            <button
+              type="button"
+              className="freelancer-header-icon freelancer-notification"
+              onClick={() => handleNavigation("Notifications")}
+              title="Notifications"
+              aria-label="Notifications"
+            >
+              <Bell size={20} />
+              <span className="freelancer-notification-dot" />
             </button>
 
             {/* PROFILE DROPDOWN */}
-
             <div
               className="freelancer-profile-wrapper"
               ref={profileMenuRef}
@@ -627,10 +517,13 @@ function DashboardPage({ role = "FREELANCER" }) {
                   {userInitial}
                 </div>
 
-                <span>{displayName}</span>
+                <div className="freelancer-profile-info">
+                  <strong>{displayName}</strong>
+                  <span>Freelancer</span>
+                </div>
 
                 <ChevronDown
-                  size={17}
+                  size={16}
                   className={
                     profileMenuOpen
                       ? "profile-chevron-open"
@@ -642,22 +535,21 @@ function DashboardPage({ role = "FREELANCER" }) {
               {profileMenuOpen && (
                 <div className="freelancer-profile-dropdown">
 
-                  {/* USER INFORMATION */}
-
                   <div className="freelancer-profile-dropdown-header">
                     <div className="freelancer-avatar">
                       {userInitial}
                     </div>
 
                     <div>
-                      <strong>{user.name || displayName}</strong>
+                      <strong>
+                        {user.name || displayName}
+                      </strong>
+
                       <span>{user.email}</span>
                     </div>
                   </div>
 
                   <div className="freelancer-profile-dropdown-divider" />
-
-                  {/* MY PROFILE */}
 
                   <button
                     type="button"
@@ -669,21 +561,17 @@ function DashboardPage({ role = "FREELANCER" }) {
                     <span>My Profile</span>
                   </button>
 
-                  {/* SETTINGS */}
-
                   <button
                     type="button"
                     onClick={() =>
                       handleProfileNavigation("Settings")
                     }
                   >
-                    <SettingsIcon size={18} />
+                    <SlidersHorizontal size={18} />
                     <span>Settings</span>
                   </button>
 
                   <div className="freelancer-profile-dropdown-divider" />
-
-                  {/* LOGOUT */}
 
                   <button
                     type="button"
@@ -691,21 +579,21 @@ function DashboardPage({ role = "FREELANCER" }) {
                     onClick={handleLogout}
                   >
                     <LogOut size={18} />
-                    <span>Log out</span>
+                    <span>Logout</span>
                   </button>
+
                 </div>
               )}
             </div>
+
           </div>
         </header>
 
-        {/* =====================================
-            DYNAMIC CONTENT
-        ===================================== */}
-
+        {/* PAGE CONTENT */}
         <main className="freelancer-content">
           {renderActiveSection()}
         </main>
+
       </div>
     </div>
   );

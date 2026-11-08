@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 
@@ -8,6 +9,8 @@ import RegisterPage from "./pages/RegisterPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import CreateProfile from "./pages/freelancer/CreateProfile";
 import SettingsPage from "./pages/sections/Settings.jsx";
+import ClientDashboard from "./pages/Client/ClientDashboard.jsx";
+
 import "./App.css";
 
 function HomeLayout({
@@ -83,11 +86,17 @@ function App() {
           />
         }
       />
-      <Route path="/settings" element={<SettingsPage />} />
+
       <Route
-      path="/freelancer/create-profile"
-       element={<CreateProfile />}
-       />
+        path="/settings"
+        element={<SettingsPage />}
+      />
+
+      <Route
+        path="/freelancer/create-profile"
+        element={<CreateProfile />}
+      />
+
       <Route
         path="/login"
         element={<LoginPage />}
@@ -105,10 +114,9 @@ function App() {
 
       <Route
         path="/client-dashboard"
-        element={<DashboardPage role="CLIENT" />}
+        element={<ClientDashboard />}
       />
     </Routes>
-    
   );
 }
 
