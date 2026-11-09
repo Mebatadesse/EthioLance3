@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -10,6 +11,8 @@ import {
   Code2,
   BriefcaseBusiness,
   X,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 import "./RegisterPage.css";
@@ -28,16 +31,13 @@ function RegisterPage({ onClose, onLoginClick }) {
   const [role, setRole] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
 
   const [message, setMessage] = useState("");
   const [googleMessage, setGoogleMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [registrationSucceeded, setRegistrationSucceeded] =
-    useState(false);
 
-  // Close the registration popup.
   const handleClose = () => {
     if (onClose) {
       onClose();
@@ -46,7 +46,6 @@ function RegisterPage({ onClose, onLoginClick }) {
     }
   };
 
-  // Switch to the login popup.
   const handleLoginLink = (event) => {
     if (onLoginClick) {
       event.preventDefault();
@@ -54,15 +53,10 @@ function RegisterPage({ onClose, onLoginClick }) {
     }
   };
 
-  // Close the popup when Escape is pressed.
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
-        if (onClose) {
-          onClose();
-        } else {
-          navigate("/");
-        }
+        handleClose();
       }
     };
 
@@ -73,20 +67,17 @@ function RegisterPage({ onClose, onLoginClick }) {
     };
   }, [onClose, navigate]);
 
-  // Google sign-up placeholder.
   function handleGoogleSignUp() {
     setGoogleMessage(
       "Google sign-up is not configured yet. Google authentication needs to be connected."
     );
   }
 
-  // Register a new user through the backend.
   async function handleSubmit(event) {
     event.preventDefault();
 
     setMessage("");
     setGoogleMessage("");
-    setRegistrationSucceeded(false);
 
     if (password !== confirmPassword) {
       setMessage("Passwords do not match.");
@@ -95,6 +86,11 @@ function RegisterPage({ onClose, onLoginClick }) {
 
     if (!role) {
       setMessage("Please select an account type.");
+      return;
+    }
+
+    if (password.length < 8) {
+      setMessage("Password must contain at least 8 characters.");
       return;
     }
 
@@ -111,7 +107,7 @@ function RegisterPage({ onClose, onLoginClick }) {
           body: JSON.stringify({
             firstName: firstName.trim(),
             lastName: lastName.trim(),
-            email: email.trim(),
+            email: email.trim().toLowerCase(),
             password,
             role,
           }),
@@ -128,14 +124,52 @@ function RegisterPage({ onClose, onLoginClick }) {
         return;
       }
 
-      setRegistrationSucceeded(true);
+      // Get the registered user from the backend response.
+      // If the backend returns only success/message, create
+      // a local user object using the submitted information.
+      const backendUser = data.user || data.data?.user || {};
 
-      setMessage(
-        "Account created successfully! You can now log in with your email and password."
+      const registeredUser = {
+        ...backendUser,
+        firstName: backendUser.firstName || firstName.trim(),
+        lastName: backendUser.lastName || lastName.trim(),
+        email: backendUser.email || email.trim().toLowerCase(),
+        role: backendUser.role || role,
+      };
+
+      // Save the newly registered account locally.
+      localStorage.setItem(
+        "ethioLanceUser",
+        JSON.stringify(registeredUser)
       );
 
-      // The backend does not return a login token during registration.
-      // The user must log in after the account is created.
+      localStorage.setItem(
+        "user",
+        JSON.stringify(registeredUser)
+      );
+
+      // Clear old profile information and skip status.
+      localStorage.removeItem("ethioLanceProfile");
+      localStorage.removeItem("ethioLanceProfileSkipped");
+
+      // Remove any stale frontend token.
+      // This does not create a backend authentication token.
+      localStorage.removeItem("token");
+
+      // Redirect according to account type.
+      if (registeredUser.role === "FREELANCER") {
+        navigate("/freelancer/create-profile", {
+          replace: true,
+        });
+      } else if (registeredUser.role === "CLIENT") {
+        navigate("/client/dashboard", {
+          replace: true,
+        });
+      } else {
+        setMessage(
+          "Account created, but the account type is invalid."
+        );
+      }
     } catch (error) {
       console.error("Registration error:", error);
 
@@ -149,85 +183,109 @@ function RegisterPage({ onClose, onLoginClick }) {
 
   return (
     <div
-      className="register-modal-overlay"
+      className={`ethio-register-overlay ${
+        darkMode ? "ethio-register-dark-mode" : ""
+      }`}
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
           handleClose();
         }
       }}
     >
+      {/* Theme toggle */}
+      <div className="ethio-register-theme-toggle">
+        <button
+          type="button"
+          className={!darkMode ? "active" : ""}
+          onClick={() => setDarkMode(false)}
+          aria-label="Light mode"
+          title="Light mode"
+        >
+          <Sun size={20} />
+        </button>
+
+        <span />
+
+        <button
+          type="button"
+          className={darkMode ? "active" : ""}
+          onClick={() => setDarkMode(true)}
+          aria-label="Dark mode"
+          title="Dark mode"
+        >
+          <Moon size={20} />
+        </button>
+      </div>
+
       <main
-        className="register-page"
+        className="ethio-register-page"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="register-title"
+        aria-labelledby="ethio-register-title"
       >
         {/* Close button */}
         <button
           type="button"
-          className="register-close-button"
+          className="ethio-register-close-button"
           onClick={handleClose}
           aria-label="Close registration form"
         >
-          <X size={21} />
+          <X size={20} />
         </button>
 
-        {/* Form panel */}
-        <section className="register-card">
-          {/* Branding */}
+        {/* Registration form */}
+        <section className="ethio-register-card">
           <Link
             to="/"
-            className="register-brand"
+            className="ethio-register-brand"
             onClick={handleClose}
           >
-            <span className="brand-mark">e</span>
+            <img
+              src="/ethiolance-emblem.png"
+              alt="EthioLance emblem"
+              className="ethio-register-brand-logo"
+            />
 
             <span>
-              ethio<span className="brand-accent">lance</span>
+              Ethio<span className="ethio-register-brand-accent">Lance</span>
             </span>
           </Link>
 
           {/* Heading */}
-          <div className="register-heading">
-            <h1 id="register-title">
-              Create your account
-            </h1>
-
+          <div className="ethio-register-heading">
+            <h1 id="ethio-register-title">Create your account</h1>
             <p>
               Join EthioLance and connect skills with opportunity.
             </p>
           </div>
 
-          {/* Continue with Google */}
-          <div className="register-social-actions">
+          {/* Google registration */}
+          <div className="ethio-register-social-section">
             <button
               type="button"
-              className="register-google-button"
+              className="ethio-register-google-button"
               onClick={handleGoogleSignUp}
               disabled={isLoading}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
-                width="21"
-                height="21"
+                width="20"
+                height="20"
                 aria-hidden="true"
               >
                 <path
                   fill="#4285F4"
                   d="M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.51h6.44a5.5 5.5 0 0 1-2.39 3.61l3.86 2.99c2.25-2.08 3.58-5.14 3.58-8.84Z"
                 />
-
                 <path
                   fill="#34A853"
                   d="M12 24c3.24 0 5.96-1.07 7.95-2.89l-3.86-2.99c-1.07.72-2.43 1.15-4.09 1.15-3.14 0-5.8-2.12-6.75-4.97l-3.99 3.09C3.23 21.02 7.25 24 12 24Z"
                 />
-
                 <path
                   fill="#FBBC05"
                   d="M5.25 14.3A7.24 7.24 0 0 1 4.87 12c0-.8.14-1.57.38-2.3L1.26 6.61A11.9 11.9 0 0 0 0 12c0 1.93.46 3.76 1.27 5.39l3.98-3.09Z"
                 />
-
                 <path
                   fill="#EA4335"
                   d="M12 4.73c1.77 0 3.35.61 4.6 1.81l3.45-3.45C17.96 1.15 15.24 0 12 0 7.25 0 3.23 2.98 1.26 6.61l3.99 3.09C6.2 6.85 8.86 4.73 12 4.73Z"
@@ -238,29 +296,28 @@ function RegisterPage({ onClose, onLoginClick }) {
             </button>
 
             {googleMessage && (
-              <p className="register-message" role="status">
+              <p className="ethio-register-message" role="status">
                 {googleMessage}
               </p>
             )}
 
-            <div className="register-divider">
+            <div className="ethio-register-divider">
               <span>OR SIGN UP WITH EMAIL</span>
             </div>
           </div>
 
-          {/* Email registration form */}
+          {/* Form */}
           <form
-            className="register-form"
+            className="ethio-register-form"
             onSubmit={handleSubmit}
           >
-            {/* First and last name */}
-            <div className="register-name-grid">
-              <div className="register-field">
+            <div className="ethio-register-name-grid">
+              <div className="ethio-register-field">
                 <label htmlFor="register-first-name">
                   First name
                 </label>
 
-                <div className="register-input-wrapper">
+                <div className="ethio-register-input-wrapper">
                   <UserRound size={18} />
 
                   <input
@@ -273,17 +330,17 @@ function RegisterPage({ onClose, onLoginClick }) {
                     }
                     autoComplete="given-name"
                     required
-                    disabled={isLoading || registrationSucceeded}
+                    disabled={isLoading}
                   />
                 </div>
               </div>
 
-              <div className="register-field">
+              <div className="ethio-register-field">
                 <label htmlFor="register-last-name">
                   Last name
                 </label>
 
-                <div className="register-input-wrapper">
+                <div className="ethio-register-input-wrapper">
                   <UserRound size={18} />
 
                   <input
@@ -296,19 +353,16 @@ function RegisterPage({ onClose, onLoginClick }) {
                     }
                     autoComplete="family-name"
                     required
-                    disabled={isLoading || registrationSucceeded}
+                    disabled={isLoading}
                   />
                 </div>
               </div>
             </div>
 
-            {/* Email */}
-            <div className="register-field">
-              <label htmlFor="register-email">
-                Email address
-              </label>
+            <div className="ethio-register-field">
+              <label htmlFor="register-email">Email address</label>
 
-              <div className="register-input-wrapper">
+              <div className="ethio-register-input-wrapper">
                 <Mail size={18} />
 
                 <input
@@ -321,18 +375,15 @@ function RegisterPage({ onClose, onLoginClick }) {
                   }
                   autoComplete="email"
                   required
-                  disabled={isLoading || registrationSucceeded}
+                  disabled={isLoading}
                 />
               </div>
             </div>
 
-            {/* Password */}
-            <div className="register-field">
-              <label htmlFor="register-password">
-                Password
-              </label>
+            <div className="ethio-register-field">
+              <label htmlFor="register-password">Password</label>
 
-              <div className="register-input-wrapper">
+              <div className="ethio-register-input-wrapper">
                 <LockKeyhole size={18} />
 
                 <input
@@ -345,19 +396,17 @@ function RegisterPage({ onClose, onLoginClick }) {
                   }
                   autoComplete="new-password"
                   required
-                  disabled={isLoading || registrationSucceeded}
+                  disabled={isLoading}
                 />
 
                 <button
                   type="button"
-                  className="register-password-toggle"
+                  className="ethio-register-password-toggle"
                   onClick={() =>
                     setShowPassword((previous) => !previous)
                   }
                   aria-label={
-                    showPassword
-                      ? "Hide password"
-                      : "Show password"
+                    showPassword ? "Hide password" : "Show password"
                   }
                   disabled={isLoading}
                 >
@@ -370,13 +419,12 @@ function RegisterPage({ onClose, onLoginClick }) {
               </div>
             </div>
 
-            {/* Confirm password */}
-            <div className="register-field">
+            <div className="ethio-register-field">
               <label htmlFor="register-confirm-password">
                 Confirm password
               </label>
 
-              <div className="register-input-wrapper">
+              <div className="ethio-register-input-wrapper">
                 <LockKeyhole size={18} />
 
                 <input
@@ -391,12 +439,12 @@ function RegisterPage({ onClose, onLoginClick }) {
                   }
                   autoComplete="new-password"
                   required
-                  disabled={isLoading || registrationSucceeded}
+                  disabled={isLoading}
                 />
 
                 <button
                   type="button"
-                  className="register-password-toggle"
+                  className="ethio-register-password-toggle"
                   onClick={() =>
                     setShowConfirmPassword(
                       (previous) => !previous
@@ -420,17 +468,16 @@ function RegisterPage({ onClose, onLoginClick }) {
 
             {/* Account type */}
             <fieldset
-              className="register-role-fieldset"
-              disabled={isLoading || registrationSucceeded}
+              className="ethio-register-role-fieldset"
+              disabled={isLoading}
             >
               <legend>
                 How do you want to use EthioLance?
               </legend>
 
-              <div className="register-role-options">
-                {/* Freelancer */}
+              <div className="ethio-register-role-options">
                 <label
-                  className={`register-role-card ${
+                  className={`ethio-register-role-card ${
                     role === "FREELANCER" ? "selected" : ""
                   }`}
                 >
@@ -445,20 +492,19 @@ function RegisterPage({ onClose, onLoginClick }) {
                     required
                   />
 
-                  <Code2 size={23} />
+                  <Code2 size={22} />
 
-                  <span className="register-role-title">
+                  <span className="ethio-register-role-title">
                     I'm a freelancer
                   </span>
 
-                  <span className="register-role-description">
+                  <span className="ethio-register-role-description">
                     I want to offer my skills and find work.
                   </span>
                 </label>
 
-                {/* Client */}
                 <label
-                  className={`register-role-card ${
+                  className={`ethio-register-role-card ${
                     role === "CLIENT" ? "selected" : ""
                   }`}
                 >
@@ -472,40 +518,34 @@ function RegisterPage({ onClose, onLoginClick }) {
                     }
                   />
 
-                  <BriefcaseBusiness size={23} />
+                  <BriefcaseBusiness size={22} />
 
-                  <span className="register-role-title">
+                  <span className="ethio-register-role-title">
                     I'm a client
                   </span>
 
-                  <span className="register-role-description">
+                  <span className="ethio-register-role-description">
                     I want to hire skilled professionals.
                   </span>
                 </label>
               </div>
             </fieldset>
 
-            {/* Submit */}
             <button
               type="submit"
-              className="button button-primary register-submit"
-              disabled={isLoading || registrationSucceeded}
+              className="ethio-register-submit"
+              disabled={isLoading}
             >
-              {isLoading
-                ? "Creating account..."
-                : registrationSucceeded
-                  ? "Account created"
-                  : "Create account"}
+              <span>
+                {isLoading ? "Creating account..." : "Create account"}
+              </span>
 
-              {!isLoading && !registrationSucceeded && (
-                <ArrowRight size={18} />
-              )}
+              {!isLoading && <ArrowRight size={19} />}
             </button>
 
-            {/* Feedback */}
             {message && (
               <p
-                className="register-message"
+                className="ethio-register-message"
                 role="status"
                 aria-live="polite"
               >
@@ -514,23 +554,19 @@ function RegisterPage({ onClose, onLoginClick }) {
             )}
           </form>
 
-          {/* Login link */}
-          <p className="register-login">
+          <p className="ethio-register-login">
             Already have an account?{" "}
-            <Link
-              to="/login"
-              onClick={handleLoginLink}
-            >
+            <Link to="/login" onClick={handleLoginLink}>
               Log in
             </Link>
           </p>
         </section>
 
         {/* Branding panel */}
-        <aside className="register-brand-panel">
-          <div className="register-brand-panel-content">
-            <span className="register-panel-eyebrow">
-              Welcome to EthioLance
+        <aside className="ethio-register-brand-panel">
+          <div className="ethio-register-brand-panel-content">
+            <span className="ethio-register-panel-eyebrow">
+              WELCOME TO ETHIOLANCE
             </span>
 
             <h2>
@@ -542,13 +578,13 @@ function RegisterPage({ onClose, onLoginClick }) {
               your professional journey with Ethiopian talent.
             </p>
 
-            <div className="register-panel-decoration">
-              <div className="register-decoration-circle register-circle-one" />
+            <div className="ethio-register-panel-decoration">
+              <div className="ethio-register-decoration-circle ethio-register-circle-one" />
 
-              <div className="register-decoration-circle register-circle-two" />
+              <div className="ethio-register-decoration-circle ethio-register-circle-two" />
 
-              <div className="register-decoration-icon">
-                <BriefcaseBusiness size={42} />
+              <div className="ethio-register-decoration-icon">
+                <BriefcaseBusiness size={38} />
               </div>
             </div>
           </div>

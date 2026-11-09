@@ -1,0 +1,171 @@
+
+/* =================================
+   ETHIOLANCE - POST JOB
+   Ivory, Black & Gold Theme
+================================= */
+
+.ethio-client-page {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  color: #252525;
+}
+
+/* Heading */
+
+.ethio-client-page-heading {
+  margin-bottom: 28px;
+}
+
+.ethio-client-page-heading h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #151515;
+  margin: 0 0 8px;
+}
+
+.ethio-client-page-heading p {
+  color: #77717a;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Form */
+
+.ethio-client-form {
+  background: #fff;
+  border: 1px solid #eee7dc;
+  border-radius: 14px;
+  padding: 30px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.035);
+}
+
+.ethio-client-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-bottom: 23px;
+}
+
+.ethio-client-form-group label {
+  color: #252525;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ethio-client-form-group input,
+.ethio-client-form-group textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px 15px;
+  border: 1px solid #e5dfd5;
+  border-radius: 8px;
+  background: #fffdfa;
+  color: #252525;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.ethio-client-form-group textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+.ethio-client-form-group input:focus,
+.ethio-client-form-group textarea:focus {
+  border-color: #f4ad28;
+  box-shadow: 0 0 0 3px rgba(244, 173, 40, 0.12);
+}
+
+.ethio-client-form-group input::placeholder,
+.ethio-client-form-group textarea::placeholder {
+  color: #aaa39a;
+}
+
+.ethio-client-form-group input:disabled,
+.ethio-client-form-group textarea:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Feedback */
+
+.ethio-client-form-error,
+.ethio-client-form-success {
+  padding: 13px 16px;
+  margin-bottom: 22px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.ethio-client-form-error {
+  background: #fff0f0;
+  color: #c62828;
+  border: 1px solid #ffcaca;
+}
+
+.ethio-client-form-success {
+  background: #eaf8ee;
+  color: #24743b;
+  border: 1px solid #b9e5c5;
+}
+
+/* Submit Button */
+
+.ethio-client-primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 160px;
+  padding: 13px 22px;
+  border: none;
+  border-radius: 8px;
+  background: #f4ad28;
+  color: #151515;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.ethio-client-primary-button:hover {
+  background: #d99a25;
+  transform: translateY(-1px);
+}
+
+.ethio-client-primary-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Loading Animation */
+
+.ethio-client-primary-button .spin {
+  animation: ethio-post-spin 1s linear infinite;
+}
+
+@keyframes ethio-post-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive */
+
+@media (max-width: 640px) {
+  .ethio-client-form {
+    padding: 20px;
+  }
+
+  .ethio-client-page-heading h1 {
+    font-size: 23px;
+  }
+
+  .ethio-client-primary-button {
+    width: 100%;
+  }
+}

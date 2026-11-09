@@ -1,0 +1,354 @@
+
+.ethio-client-profile {
+  width: 100%;
+  min-height: 100%;
+  padding: 28px;
+  color: #252525;
+  background: #fffaf6;
+}
+
+.ethio-client-profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.ethio-client-profile-eyebrow {
+  color: #b77a12;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.ethio-client-profile-header h1 {
+  margin: 8px 0 5px;
+  color: #151515;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.ethio-client-profile-header p {
+  margin: 0;
+  color: #77717a;
+  font-size: 14px;
+}
+
+.ethio-profile-edit-btn,
+.ethio-profile-save-btn,
+.ethio-profile-cancel-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 43px;
+  padding: 0 18px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.ethio-profile-edit-btn,
+.ethio-profile-save-btn {
+  border: 1px solid #d99a25;
+  background: #f4ad28;
+  color: #151515;
+}
+
+.ethio-profile-edit-btn:hover,
+.ethio-profile-save-btn:hover {
+  background: #d99a25;
+  transform: translateY(-1px);
+}
+
+.ethio-profile-message {
+  margin-bottom: 20px;
+  padding: 13px 16px;
+  border: 1px solid #e7c982;
+  border-radius: 9px;
+  background: #fff4d9;
+  color: #805000;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ethio-profile-layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  align-items: start;
+  gap: 22px;
+}
+
+.ethio-profile-card {
+  border: 1px solid #eee6dc;
+  border-radius: 15px;
+  background: #ffffff;
+  box-shadow: 0 5px 20px rgba(30, 20, 10, 0.04);
+}
+
+.ethio-profile-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.ethio-profile-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 94px;
+  height: 94px;
+  margin-bottom: 17px;
+  border: 4px solid #fff0cf;
+  border-radius: 50%;
+  background: #f4ad28;
+  color: #151515;
+  font-size: 29px;
+  font-weight: 800;
+}
+
+.ethio-profile-summary h2 {
+  margin: 0;
+  color: #151515;
+  font-size: 19px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.ethio-profile-role {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 9px 0 0;
+  color: #8a8178;
+  font-size: 13px;
+}
+
+.ethio-profile-role svg {
+  color: #d99a25;
+}
+
+.ethio-profile-summary-divider {
+  width: 100%;
+  height: 1px;
+  margin: 24px 0 19px;
+  background: #eee8df;
+}
+
+.ethio-profile-summary-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  width: 100%;
+  margin-bottom: 17px;
+  color: #625d57;
+  font-size: 12px;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.ethio-profile-summary-item svg {
+  flex-shrink: 0;
+  color: #d99a25;
+}
+
+.ethio-profile-account-type {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 9px 15px;
+  border-radius: 20px;
+  background: #f2f8ef;
+  color: #477b37;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ethio-profile-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #58a744;
+}
+
+.ethio-profile-details {
+  padding: 27px;
+}
+
+.ethio-profile-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 27px;
+  padding-bottom: 19px;
+  border-bottom: 1px solid #eee8df;
+}
+
+.ethio-profile-section-heading h2 {
+  margin: 0 0 6px;
+  color: #151515;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.ethio-profile-section-heading p {
+  margin: 0;
+  color: #8a8178;
+  font-size: 12px;
+}
+
+.ethio-profile-section-heading > svg {
+  color: #d99a25;
+}
+
+.ethio-profile-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 21px 18px;
+}
+
+.ethio-profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+}
+
+.ethio-profile-field label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #39332d;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ethio-profile-field label svg {
+  color: #d99a25;
+}
+
+.ethio-profile-field input,
+.ethio-profile-field textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 13px;
+  border: 1px solid #e7e0d7;
+  border-radius: 8px;
+  outline: none;
+  background: #fffdfa;
+  color: #252525;
+  font-family: inherit;
+  font-size: 13px;
+  transition: 0.2s ease;
+}
+
+.ethio-profile-field input {
+  height: 44px;
+}
+
+.ethio-profile-field textarea {
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.ethio-profile-field input:focus,
+.ethio-profile-field textarea:focus {
+  border-color: #d99a25;
+  box-shadow: 0 0 0 3px rgba(244, 173, 40, 0.12);
+}
+
+.ethio-profile-field input:disabled,
+.ethio-profile-field textarea:disabled {
+  background: #faf8f5;
+  color: #625d57;
+  cursor: default;
+  opacity: 1;
+}
+
+.ethio-profile-full-width {
+  grid-column: 1 / -1;
+}
+
+.ethio-profile-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 27px;
+  padding-top: 21px;
+  border-top: 1px solid #eee8df;
+}
+
+.ethio-profile-cancel-btn {
+  border: 1px solid #ded6cc;
+  background: #ffffff;
+  color: #625d57;
+}
+
+.ethio-profile-cancel-btn:hover {
+  background: #f7f3ee;
+}
+
+.ethio-profile-save-btn {
+  min-width: 145px;
+}
+
+@media (max-width: 900px) {
+  .ethio-profile-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .ethio-profile-summary {
+    padding: 25px;
+  }
+
+  .ethio-profile-summary-divider {
+    max-width: 400px;
+  }
+
+  .ethio-profile-summary-item {
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 600px) {
+  .ethio-client-profile {
+    padding: 17px;
+  }
+
+  .ethio-client-profile-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .ethio-profile-edit-btn {
+    width: 100%;
+  }
+
+  .ethio-profile-details {
+    padding: 19px;
+  }
+
+  .ethio-profile-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ethio-profile-full-width {
+    grid-column: auto;
+  }
+
+  .ethio-profile-form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .ethio-profile-save-btn,
+  .ethio-profile-cancel-btn {
+    width: 100%;
+  }
+}

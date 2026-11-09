@@ -1,15 +1,40 @@
-import { useEffect, useState } from "react";
+
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import {
-  ArrowRight,
+  LayoutDashboard,
+  Compass,
+  ClipboardList,
   BriefcaseBusiness,
-  CheckCircle2,
-  Clock3,
-  FileText,
+  MessageCircle,
+  Bell,
+  WalletCards,
+  ReceiptText,
+  CircleUserRound,
+  Images,
+  SlidersHorizontal,
+  ChevronDown,
   LogOut,
+  Menu,
+  Moon,
   Search,
-  Users,
+  Sun,
+  UserRound,
+  X,
 } from "lucide-react";
+
+import Dashboard from "./sections/Dashboard";
+import BrowseJobs from "./sections/BrowseJobs";
+import MyProposals from "./sections/MyProposals";
+import MyContracts from "./sections/MyContracts";
+import Messages from "./sections/Messages";
+import Notifications from "./sections/Notifications";
+import Earnings from "./sections/Earnings";
+import TransactionHistory from "./sections/TransactionHistory";
+import MyProfile from "./sections/MyProfile";
+import Portfolio from "./sections/Portfolio";
+import SettingsPage from "./sections/Settings";
 
 import "./DashboardPage.css";
 
@@ -20,103 +45,162 @@ function getSavedUser() {
       sessionStorage.getItem("ethioLanceUser");
 
     return savedUser ? JSON.parse(savedUser) : null;
-  } catch {
+  } catch (error) {
+    console.error("Error loading user:", error);
     return null;
   }
 }
 
-function DashboardPage({ role }) {
+function DashboardPage({ role = "FREELANCER" }) {
   const navigate = useNavigate();
+  const profileMenuRef = useRef(null);
 
-  const [user] = useState(() => getSavedUser());
+  const [user, setUser] = useState(null);
 
-  const isClient = role === "CLIENT";
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem("ethioLanceTheme") === "dark";
+  });
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeSection, setActiveSection] = useState("Dashboard");
+
+  const [expandedMenu, setExpandedMenu] = useState({
+    financial: false,
+    profile: false,
+  });
+
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+
+  // AUTHENTICATION
   useEffect(() => {
-    if (!user || user.role !== role) {
+    const savedUser = getSavedUser();
+
+    if (!savedUser || savedUser.role !== role) {
       navigate("/", { replace: true });
+      return;
     }
-  }, [user, role, navigate]);
 
-  // Don't display the dashboard for the wrong user role.
-  if (!user || user.role !== role) {
-    return null;
-  }
+    setUser(savedUser);
+  }, [navigate, role]);
 
-  const displayName = user.firstName || "there";
+  // SAVE THEME
+  useEffect(() => {
+    localStorage.setItem(
+      "ethioLanceTheme",
+      darkMode ? "dark" : "light"
+    );
+  }, [darkMode]);
 
-  const stats = isClient
-    ? [
-        {
-          label: "Open jobs",
-          value: "2",
-          icon: BriefcaseBusiness,
-        },
-        {
-          label: "Proposals received",
-          value: "8",
-          icon: FileText,
-        },
-        {
-          label: "Active contracts",
-          value: "1",
-          icon: CheckCircle2,
-        },
-      ]
-    : [
-        {
-          label: "Available jobs",
-          value: "12",
-          icon: Search,
-        },
-        {
-          label: "Proposals sent",
-          value: "4",
-          icon: FileText,
-        },
-        {
-          label: "Active contracts",
-          value: "1",
-          icon: BriefcaseBusiness,
-        },
-      ];
+  // CLOSE PROFILE DROPDOWN
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target)
+      ) {
+        setProfileMenuOpen(false);
+      }
+    };
 
-  const listings = isClient
-    ? [
-        {
-          title: "Landing Page Redesign",
-          detail: "Design & Creative",
-          info: "4 proposals received",
-          status: "Open",
-        },
-        {
-          title: "E-commerce Website",
-          detail: "Development & IT",
-          info: "4 proposals received",
-          status: "Open",
-        },
-      ]
-    : [
-        {
-          title: "React Developer",
-          detail: "Development & IT · Remote",
-          info: "ETB 15,000–25,000",
-          status: "New",
-        },
-        {
-          title: "UI/UX Designer",
-          detail: "Design & Creative · Remote",
-          info: "ETB 8,000–15,000",
-          status: "New",
-        },
-        {
-          title: "Website Development",
-          detail: "Development & IT",
-          info: "ETB 12,000–20,000",
-          status: "New",
-        },
-      ];
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setProfileMenuOpen(false);
+        setSidebarOpen(false);
+      }
+    };
 
+    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
+
+  // FREELANCER NAVIGATION
+  // All original sidebar items and their order are preserved.
+  const navigationGroups = [
+    {
+      title: "WORKSPACE",
+      items: [
+        { label: "Dashboard", icon: LayoutDashboard },
+        { label: "Browse Jobs", icon: Compass },
+        { label: "My Proposals", icon: ClipboardList },
+        { label: "My Contracts", icon: BriefcaseBusiness },
+        { label: "Messages", icon: MessageCircle, count: 3 },
+        { label: "Notifications", icon: Bell, count: 3 },
+      ],
+    },
+    {
+      title: "FINANCIAL",
+      items: [
+        {
+          label: "Earnings & Payments",
+          icon: WalletCards,
+          id: "financial",
+          children: [
+            {
+              label: "Transaction History",
+              icon: ReceiptText,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: "MY ACCOUNT",
+      items: [
+        {
+          label: "My Profile",
+          icon: CircleUserRound,
+          id: "profile",
+          children: [
+            {
+              label: "Portfolio",
+              icon: Images,
+            },
+          ],
+        },
+        {
+          label: "Settings",
+          icon: SlidersHorizontal,
+        },
+      ],
+    },
+  ];
+
+  // NAVIGATION
+  const handleNavigation = (section) => {
+    setActiveSection(section);
+    setSidebarOpen(false);
+    setProfileMenuOpen(false);
+  };
+
+  const handleProfileNavigation = (section) => {
+    setActiveSection(section);
+    setProfileMenuOpen(false);
+    setSidebarOpen(false);
+  };
+
+  const toggleSubmenu = (menuId) => {
+    setExpandedMenu((previous) => ({
+      ...previous,
+      [menuId]: !previous[menuId],
+    }));
+  };
+
+  const isGroupActive = (item) => {
+    return (
+      activeSection === item.label ||
+      item.children?.some(
+        (child) => child.label === activeSection
+      )
+    );
+  };
+
+  // LOGOUT
   const handleLogout = () => {
     localStorage.removeItem("ethioLanceToken");
     localStorage.removeItem("ethioLanceUser");
@@ -124,243 +208,393 @@ function DashboardPage({ role }) {
     sessionStorage.removeItem("ethioLanceToken");
     sessionStorage.removeItem("ethioLanceUser");
 
+    setProfileMenuOpen(false);
     navigate("/", { replace: true });
   };
 
+  // USER DISPLAY INFORMATION
+  const displayName =
+    user?.firstName ||
+    user?.name?.split(" ")[0] ||
+    "there";
+
+  const userInitial = displayName.charAt(0).toUpperCase();
+
+  // ACTIVE SECTION
+  const renderActiveSection = () => {
+    switch (activeSection) {
+      case "Dashboard":
+        return (
+          <Dashboard
+            displayName={displayName}
+            searchTerm={searchTerm}
+            onNavigate={handleNavigation}
+          />
+        );
+
+      case "Browse Jobs":
+        return <BrowseJobs />;
+
+      case "My Proposals":
+        return <MyProposals />;
+
+      case "My Contracts":
+        return <MyContracts />;
+
+      case "Messages":
+        return <Messages />;
+
+      case "Notifications":
+        return <Notifications />;
+
+      case "Earnings & Payments":
+        return <Earnings />;
+
+      case "Transaction History":
+        return <TransactionHistory />;
+
+      case "My Profile":
+        return <MyProfile />;
+
+      case "Portfolio":
+        return <Portfolio />;
+
+      case "Settings":
+        return <SettingsPage />;
+
+      default:
+        return (
+          <Dashboard
+            displayName={displayName}
+            searchTerm={searchTerm}
+            onNavigate={handleNavigation}
+          />
+        );
+    }
+  };
+
+  if (!user || user.role !== role) {
+    return null;
+  }
+
   return (
-    <div className="demo-dashboard">
-      {/* Top navigation */}
-      <header className="dashboard-topbar">
-        <a
-          className="dashboard-brand"
-          href="/"
-        >
-          <span className="brand-mark">e</span>
+    <div
+      className={`freelancer-dashboard ${
+        darkMode ? "freelancer-dark-mode" : ""
+      }`}
+    >
+      {/* SIDEBAR */}
+      <aside
+        className={`freelancer-sidebar ${
+          sidebarOpen ? "freelancer-sidebar-open" : ""
+        }`}
+      >
+        {/* SIDEBAR BRAND */}
+        <div className="freelancer-sidebar-brand">
+          <div className="freelancer-sidebar-watermark" />
 
-          <span>
-            ethio<span className="brand-accent">lance</span>
+          <img
+            src="/ethiolance-emblem.png"
+            alt="EthioLance logo"
+          />
+
+          <span className="freelancer-sidebar-brand-name">
+            <span className="ethio-text">Ethio</span>
+            <span className="lance-text">Lance</span>
           </span>
-        </a>
-
-        <div className="dashboard-topbar-actions">
-          <span className="dashboard-demo-badge">
-            Demo
-          </span>
-
-          <div className="dashboard-user">
-            <div className="dashboard-avatar">
-              {displayName.charAt(0).toUpperCase()}
-            </div>
-
-            <span>{displayName}</span>
-          </div>
 
           <button
             type="button"
-            className="dashboard-logout"
-            onClick={handleLogout}
+            className="freelancer-sidebar-close"
+            onClick={() => setSidebarOpen(false)}
+            aria-label="Close navigation"
           >
-            <LogOut size={17} />
-            <span>Log out</span>
+            <X size={21} />
           </button>
         </div>
-      </header>
 
-      {/* Dashboard content */}
-      <main className="dashboard-content">
-        <div className="dashboard-welcome">
-          <div>
-            <span className="dashboard-eyebrow">
-              {isClient
-                ? "CLIENT WORKSPACE"
-                : "FREELANCER WORKSPACE"}
-            </span>
-
-            <h1>Welcome back, {displayName}!</h1>
-
-            <p>
-              {isClient
-                ? "Manage your projects and discover talented professionals."
-                : "Explore opportunities and keep your freelance journey moving."}
-            </p>
-          </div>
-
-          <span className="dashboard-role-badge">
-            {isClient ? "Client account" : "Freelancer account"}
-          </span>
-        </div>
-
-        <div className="dashboard-demo-notice">
-          <span className="dashboard-notice-icon">
-            <CheckCircle2 size={19} />
-          </span>
-
-          <div>
-            <strong>Your dashboard is ready</strong>
-            <p>
-              This is a demonstration. Statistics and listings below
-              are sample data, not live marketplace information.
-            </p>
-          </div>
-        </div>
-
-        {/* Overview statistics */}
-        <section className="dashboard-stats">
-          {stats.map((stat) => {
-            const Icon = stat.icon;
-
-            return (
-              <article
-                className="dashboard-stat-card"
-                key={stat.label}
-              >
-                <div className="dashboard-stat-icon">
-                  <Icon size={21} />
-                </div>
-
-                <p>{stat.label}</p>
-
-                <h2>{stat.value}</h2>
-
-                <span>Demo data</span>
-              </article>
-            );
-          })}
-        </section>
-
-        {/* Main dashboard panels */}
-        <div className="dashboard-panels">
-          <section className="dashboard-panel">
-            <div className="dashboard-panel-heading">
-              <div>
-                <h2>
-                  {isClient ? "Your job posts" : "Recommended jobs"}
-                </h2>
-
-                <p>
-                  {isClient
-                    ? "A preview of your current projects."
-                    : "Example opportunities matching your skills."}
-                </p>
-              </div>
-
-              <BriefcaseBusiness
-                size={22}
-                className="dashboard-panel-heading-icon"
-              />
-            </div>
-
-            <div className="dashboard-listings">
-              {listings.map((listing) => (
-                <article
-                  className="dashboard-listing"
-                  key={listing.title}
-                >
-                  <div className="dashboard-listing-icon">
-                    <BriefcaseBusiness size={20} />
-                  </div>
-
-                  <div className="dashboard-listing-content">
-                    <h3>{listing.title}</h3>
-
-                    <p>{listing.detail}</p>
-
-                    <span className="dashboard-listing-info">
-                      {listing.info}
-                    </span>
-                  </div>
-
-                  <span
-                    className={`dashboard-status ${
-                      listing.status === "Open"
-                        ? "status-open"
-                        : "status-new"
-                    }`}
-                  >
-                    {listing.status}
-                  </span>
-                </article>
-              ))}
-            </div>
-
-            <div className="dashboard-panel-footer">
-              <span>
-                {isClient
-                  ? "Manage your projects"
-                  : "Find your next opportunity"}
+        {/* SIDEBAR NAVIGATION */}
+        <nav
+          className="freelancer-sidebar-nav"
+          aria-label="Freelancer navigation"
+        >
+          {navigationGroups.map((group) => (
+            <div
+              className="freelancer-nav-group"
+              key={group.title}
+            >
+              <span className="freelancer-nav-group-title">
+                {group.title}
               </span>
 
-              <ArrowRight size={18} />
+              {group.items.map((item) => {
+                const Icon = item.icon;
+
+                const isExpanded = item.id
+                  ? expandedMenu[item.id]
+                  : false;
+
+                const isActive = isGroupActive(item);
+
+                return (
+                  <div
+                    className="freelancer-nav-parent"
+                    key={item.label}
+                  >
+                    <button
+                      type="button"
+                      title={item.label}
+                      aria-expanded={
+                        item.children ? isExpanded : undefined
+                      }
+                      className={`freelancer-nav-item ${
+                        isActive ? "active" : ""
+                      }`}
+                      onClick={() => {
+                        if (item.children) {
+                          handleNavigation(item.label);
+                          toggleSubmenu(item.id);
+                        } else {
+                          handleNavigation(item.label);
+                        }
+                      }}
+                    >
+                      <Icon size={21} strokeWidth={1.9} />
+
+                      <span>{item.label}</span>
+
+                      {item.count !== undefined && (
+                        <small>{item.count}</small>
+                      )}
+
+                      {item.children && (
+                        <ChevronDown
+                          size={17}
+                          className={`freelancer-nav-chevron ${
+                            isExpanded ? "expanded" : ""
+                          }`}
+                        />
+                      )}
+                    </button>
+
+                    {item.children && isExpanded && (
+                      <div className="freelancer-submenu">
+                        {item.children.map((child) => {
+                          const ChildIcon = child.icon;
+
+                          return (
+                            <button
+                              type="button"
+                              key={child.label}
+                              title={child.label}
+                              className={`freelancer-nav-item freelancer-submenu-item ${
+                                activeSection === child.label
+                                  ? "active"
+                                  : ""
+                              }`}
+                              onClick={() =>
+                                handleNavigation(child.label)
+                              }
+                            >
+                              <ChildIcon
+                                size={19}
+                                strokeWidth={1.9}
+                              />
+
+                              <span>{child.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          </section>
+          ))}
+        </nav>
 
-          <section className="dashboard-panel dashboard-activity-panel">
-            <div className="dashboard-panel-heading">
-              <div>
-                <h2>Workspace overview</h2>
+      </aside>
 
-                <p>Your next steps on EthioLance.</p>
-              </div>
+      {/* MOBILE BACKDROP */}
+      {sidebarOpen && (
+        <button
+          type="button"
+          className="freelancer-sidebar-backdrop"
+          onClick={() => setSidebarOpen(false)}
+          aria-label="Close navigation"
+        />
+      )}
 
-              <Clock3
-                size={22}
-                className="dashboard-panel-heading-icon"
+      {/* MAIN AREA */}
+      <div className="freelancer-main">
+
+        {/* HEADER */}
+        <header className="freelancer-topbar">
+
+          {/* HEADER LEFT */}
+          <div className="freelancer-header-left">
+
+            <button
+              type="button"
+              className="freelancer-mobile-menu"
+              onClick={() => setSidebarOpen(true)}
+              aria-label="Open navigation"
+            >
+              <Menu size={22} />
+            </button>
+
+            <a href="/" className="freelancer-topbar-brand">
+              <span className="ethio-text">Ethio</span>
+              <span className="lance-text">Lance</span>
+            </a>
+
+          </div>
+
+          {/* HEADER RIGHT */}
+          <div className="freelancer-header-right">
+
+            {/* SEARCH */}
+            <div className="freelancer-search">
+              <Search size={18} />
+
+              <input
+                type="search"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(event) =>
+                  setSearchTerm(event.target.value)
+                }
+                aria-label="Search dashboard"
               />
             </div>
 
-            <div className="dashboard-activity">
-              <div className="dashboard-activity-icon">
-                <Users size={19} />
-              </div>
+            {/* THEME TOGGLE */}
+            <button
+              type="button"
+              className="freelancer-header-icon"
+              onClick={() => setDarkMode(!darkMode)}
+              title="Toggle theme"
+              aria-label="Toggle theme"
+            >
+              {darkMode ? (
+                <Sun size={20} />
+              ) : (
+                <Moon size={20} />
+              )}
+            </button>
 
-              <div>
-                <strong>
-                  {isClient
-                    ? "Review freelancer proposals"
-                    : "Complete your freelancer profile"}
-                </strong>
+            {/* NOTIFICATIONS */}
+            <button
+              type="button"
+              className="freelancer-header-icon freelancer-notification"
+              onClick={() => handleNavigation("Notifications")}
+              title="Notifications"
+              aria-label="Notifications"
+            >
+              <Bell size={20} />
+              <span className="freelancer-notification-dot" />
+            </button>
 
-                <p>
-                  {isClient
-                    ? "Review the sample proposals for your posted jobs."
-                    : "Showcase your skills and experience to attract clients."}
-                </p>
-              </div>
+            {/* PROFILE DROPDOWN */}
+            <div
+              className="freelancer-profile-wrapper"
+              ref={profileMenuRef}
+            >
+              <button
+                type="button"
+                className={`freelancer-profile ${
+                  profileMenuOpen ? "active" : ""
+                }`}
+                onClick={() =>
+                  setProfileMenuOpen((previous) => !previous)
+                }
+                aria-expanded={profileMenuOpen}
+                aria-haspopup="true"
+                title="Account menu"
+              >
+                <div className="freelancer-avatar">
+                  {userInitial}
+                </div>
+
+                <div className="freelancer-profile-info">
+                  <strong>{displayName}</strong>
+                  <span>Freelancer</span>
+                </div>
+
+                <ChevronDown
+                  size={16}
+                  className={
+                    profileMenuOpen
+                      ? "profile-chevron-open"
+                      : ""
+                  }
+                />
+              </button>
+
+              {profileMenuOpen && (
+                <div className="freelancer-profile-dropdown">
+
+                  <div className="freelancer-profile-dropdown-header">
+                    <div className="freelancer-avatar">
+                      {userInitial}
+                    </div>
+
+                    <div>
+                      <strong>
+                        {user.name || displayName}
+                      </strong>
+
+                      <span>{user.email}</span>
+                    </div>
+                  </div>
+
+                  <div className="freelancer-profile-dropdown-divider" />
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleProfileNavigation("My Profile")
+                    }
+                  >
+                    <UserRound size={18} />
+                    <span>My Profile</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleProfileNavigation("Settings")
+                    }
+                  >
+                    <SlidersHorizontal size={18} />
+                    <span>Settings</span>
+                  </button>
+
+                  <div className="freelancer-profile-dropdown-divider" />
+
+                  <button
+                    type="button"
+                    className="freelancer-profile-logout"
+                    onClick={handleLogout}
+                  >
+                    <LogOut size={18} />
+                    <span>Logout</span>
+                  </button>
+
+                </div>
+              )}
             </div>
 
-            <div className="dashboard-activity">
-              <div className="dashboard-activity-icon">
-                <FileText size={19} />
-              </div>
+          </div>
+        </header>
 
-              <div>
-                <strong>
-                  {isClient
-                    ? "Keep your job details updated"
-                    : "Track your proposals"}
-                </strong>
+        {/* PAGE CONTENT */}
+        <main className="freelancer-content">
+          {renderActiveSection()}
+        </main>
 
-                <p>
-                  {isClient
-                    ? "Clear project requirements help you find the right talent."
-                    : "Keep track of the projects you've applied for."}
-                </p>
-              </div>
-            </div>
-
-            <div className="dashboard-account-info">
-              <span>Logged in as</span>
-              <strong>{user.email}</strong>
-              <span>{role}</span>
-            </div>
-          </section>
-        </div>
-
-        <footer className="dashboard-footer">
-          <span>EthioLance</span>
-          <span>Demo dashboard · More features coming soon</span>
-        </footer>
-      </main>
+      </div>
     </div>
   );
 }

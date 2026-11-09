@@ -189,10 +189,13 @@ import {
                     className="category-card"
                     key={category.title}
                   >
-                    <div className="category-icon">
-                      <Icon size={25} />
-                    </div>
-  
+        <div className="category-icon !bg-gradient-to-br from-amber-200 via-amber-400 to-yellow-600 !text-amber-950 shadow-lg shadow-amber-500/30">
+  <Icon
+    size={30}
+    strokeWidth={2.5}
+    className="drop-shadow-md"
+  />
+</div>
                     <h3>{category.title}</h3>
   
                     <p>{category.description}</p>

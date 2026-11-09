@@ -1,0 +1,381 @@
+
+.ethio-settings-page {
+  width: 100%;
+  padding: 28px;
+  color: #151515;
+}
+
+.ethio-settings-heading {
+  margin-bottom: 25px;
+}
+
+.ethio-settings-heading h1 {
+  font-size: 27px;
+  font-weight: 750;
+  margin: 0 0 7px;
+}
+
+.ethio-settings-heading p,
+.ethio-settings-card-heading p {
+  color: #77717a;
+  font-size: 14px;
+  margin: 0;
+}
+
+.ethio-settings-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px;
+  margin-bottom: 20px;
+  border: 1px solid #e8d3a9;
+  background: #fff8e9;
+  color: #805000;
+  border-radius: 9px;
+  font-size: 14px;
+}
+
+.ethio-settings-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.ethio-settings-sidebar,
+.ethio-settings-card {
+  background: #fff;
+  border: 1px solid #eee9e2;
+  border-radius: 13px;
+}
+
+.ethio-settings-sidebar {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ethio-settings-tab {
+  border: none;
+  background: transparent;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px;
+  color: #625d56;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  transition: 0.2s;
+}
+
+.ethio-settings-tab:hover {
+  background: #fff8e9;
+  color: #805000;
+}
+
+.ethio-settings-tab.active {
+  background: #fff3d9;
+  color: #805000;
+}
+
+.ethio-settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.ethio-settings-card {
+  padding: 25px;
+}
+
+.ethio-settings-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  padding-bottom: 22px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid #f0ece6;
+}
+
+.ethio-settings-card-heading h2 {
+  font-size: 19px;
+  font-weight: 750;
+  margin: 0 0 7px;
+}
+
+.ethio-settings-card-heading > svg {
+  color: #d99a25;
+  flex-shrink: 0;
+}
+
+.ethio-settings-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.ethio-settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ethio-settings-field label {
+  font-size: 13px;
+  font-weight: 650;
+  color: #39342e;
+}
+
+.ethio-settings-field input,
+.ethio-settings-field select {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid #e5e0d9;
+  border-radius: 8px;
+  outline: none;
+  background: #fff;
+  color: #24211e;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.ethio-settings-field input:focus,
+.ethio-settings-field select:focus {
+  border-color: #d99a25;
+  box-shadow: 0 0 0 3px rgba(244, 173, 40, 0.12);
+}
+
+.ethio-settings-input-icon {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 44px;
+  padding: 0 11px;
+  border: 1px solid #e5e0d9;
+  border-radius: 8px;
+  color: #a17a35;
+}
+
+.ethio-settings-input-icon:focus-within {
+  border-color: #d99a25;
+  box-shadow: 0 0 0 3px rgba(244, 173, 40, 0.12);
+}
+
+.ethio-settings-input-icon input,
+.ethio-settings-input-icon select {
+  border: none;
+  box-shadow: none;
+  outline: none;
+  padding: 0;
+  height: 40px;
+  background: transparent;
+}
+
+.ethio-settings-input-icon input:focus,
+.ethio-settings-input-icon select:focus {
+  box-shadow: none;
+}
+
+.ethio-settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 25px;
+}
+
+.ethio-settings-save {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 11px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #f4ad28;
+  color: #151515;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: 0.2s;
+  margin-top: 20px;
+}
+
+.ethio-settings-save:hover {
+  background: #d99a25;
+  transform: translateY(-1px);
+}
+
+.ethio-settings-group {
+  margin-bottom: 25px;
+}
+
+.ethio-settings-group h3 {
+  font-size: 15px;
+  font-weight: 750;
+  margin: 0 0 12px;
+}
+
+.ethio-settings-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 17px 0;
+  border-bottom: 1px solid #f0ece6;
+}
+
+.ethio-settings-option h4 {
+  font-size: 14px;
+  font-weight: 650;
+  margin: 0 0 5px;
+}
+
+.ethio-settings-option p {
+  font-size: 12px;
+  color: #827c75;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.ethio-settings-toggle {
+  width: 43px;
+  height: 24px;
+  padding: 3px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 20px;
+  background: #d6d2cc;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.ethio-settings-toggle span {
+  display: block;
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: 0.2s;
+}
+
+.ethio-settings-toggle.active {
+  background: #f4ad28;
+}
+
+.ethio-settings-toggle.active span {
+  transform: translateX(19px);
+}
+
+.ethio-settings-password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 19px;
+  max-width: 520px;
+}
+
+.ethio-settings-password-input {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e5e0d9;
+  border-radius: 8px;
+  padding-right: 12px;
+}
+
+.ethio-settings-password-input:focus-within {
+  border-color: #d99a25;
+  box-shadow: 0 0 0 3px rgba(244, 173, 40, 0.12);
+}
+
+.ethio-settings-password-input input {
+  border: none;
+  box-shadow: none;
+}
+
+.ethio-settings-password-input input:focus {
+  box-shadow: none;
+}
+
+.ethio-settings-password-input button {
+  border: none;
+  background: transparent;
+  color: #77717a;
+  cursor: pointer;
+  display: flex;
+}
+
+.ethio-settings-password-form .ethio-settings-save {
+  align-self: flex-start;
+}
+
+.ethio-settings-danger-card {
+  border-color: #f0d6d2;
+}
+
+.ethio-settings-danger-card .ethio-settings-card-heading > svg {
+  color: #c94c43;
+}
+
+.ethio-settings-danger-text {
+  color: #77717a;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.ethio-settings-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 17px;
+  border: 1px solid #d95b52;
+  border-radius: 8px;
+  background: #fff;
+  color: #c43e36;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ethio-settings-delete:hover {
+  background: #fff0ef;
+}
+
+@media (max-width: 850px) {
+  .ethio-settings-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .ethio-settings-sidebar {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .ethio-settings-tab {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 600px) {
+  .ethio-settings-page {
+    padding: 16px;
+  }
+
+  .ethio-settings-card {
+    padding: 17px;
+  }
+
+  .ethio-settings-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ethio-settings-heading h1 {
+    font-size: 23px;
+  }
+}

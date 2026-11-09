@@ -1,0 +1,557 @@
+
+.ethio-payments {
+  width: 100%;
+  min-height: 100%;
+  padding: 28px;
+  background: #fffaf6;
+  color: #252525;
+}
+
+/* Header */
+.ethio-payments-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 27px;
+}
+
+.ethio-payments-eyebrow {
+  color: #b77a12;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.ethio-payments-header h1 {
+  margin: 8px 0 5px;
+  color: #151515;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.ethio-payments-header p {
+  margin: 0;
+  color: #77717a;
+  font-size: 14px;
+}
+
+.ethio-payments-export-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 43px;
+  padding: 0 17px;
+  border: 1px solid #d99a25;
+  border-radius: 9px;
+  background: #f4ad28;
+  color: #151515;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.ethio-payments-export-btn:hover {
+  background: #d99a25;
+  transform: translateY(-1px);
+}
+
+/* Statistics */
+.ethio-payments-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 17px;
+  margin-bottom: 24px;
+}
+
+.ethio-payment-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+  padding: 20px 16px;
+  border: 1px solid #eee6dc;
+  border-radius: 13px;
+  background: #ffffff;
+  box-shadow: 0 4px 15px rgba(30, 20, 10, 0.025);
+}
+
+.ethio-payment-stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: #fff1d3;
+  color: #b77a12;
+}
+
+.ethio-payment-stat-icon.completed {
+  background: #eaf6ed;
+  color: #4b9560;
+}
+
+.ethio-payment-stat-icon.pending {
+  background: #edf2ff;
+  color: #5475c7;
+}
+
+.ethio-payment-stat-icon.refunds {
+  background: #f1eefe;
+  color: #8263c5;
+}
+
+.ethio-payment-stat-card span {
+  display: block;
+  margin-bottom: 6px;
+  color: #77717a;
+  font-size: 11px;
+}
+
+.ethio-payment-stat-card h2 {
+  margin: 0 0 5px;
+  color: #151515;
+  font-size: 19px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.ethio-payment-stat-card small {
+  color: #a39a90;
+  font-size: 10px;
+}
+
+/* Main Panel */
+.ethio-payments-panel {
+  overflow: hidden;
+  border: 1px solid #eee6dc;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 4px 15px rgba(30, 20, 10, 0.025);
+}
+
+.ethio-payments-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 22px 23px;
+  border-bottom: 1px solid #eee8df;
+}
+
+.ethio-payments-panel-header h2 {
+  margin: 0 0 6px;
+  color: #151515;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.ethio-payments-panel-header p {
+  margin: 0;
+  color: #8a8178;
+  font-size: 12px;
+}
+
+.ethio-payments-record-count {
+  padding: 7px 11px;
+  border-radius: 20px;
+  background: #fff3d9;
+  color: #805000;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* Search and Filters */
+.ethio-payments-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 17px 23px;
+  border-bottom: 1px solid #f0ebe4;
+}
+
+.ethio-payments-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: min(360px, 100%);
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid #e7e0d7;
+  border-radius: 8px;
+  background: #fffdfa;
+  color: #a39a90;
+}
+
+.ethio-payments-search:focus-within {
+  border-color: #d99a25;
+  box-shadow: 0 0 0 3px rgba(244, 173, 40, 0.1);
+}
+
+.ethio-payments-search input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #252525;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.ethio-payments-search input::placeholder {
+  color: #a39a90;
+}
+
+.ethio-payments-filter {
+  min-width: 165px;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid #e7e0d7;
+  border-radius: 8px;
+  outline: none;
+  background: #fffdfa;
+  color: #625d57;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.ethio-payments-filter:focus {
+  border-color: #d99a25;
+}
+
+/* Table */
+.ethio-payments-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.ethio-payments-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.ethio-payments-table thead {
+  background: #fffdf9;
+}
+
+.ethio-payments-table th {
+  padding: 15px 16px;
+  color: #8a8178;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.ethio-payments-table td {
+  padding: 15px 16px;
+  border-top: 1px solid #f0ebe4;
+  color: #625d57;
+  font-size: 11px;
+}
+
+.ethio-payments-table tbody tr:hover {
+  background: #fffdf9;
+}
+
+.ethio-payment-transaction {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 220px;
+}
+
+.ethio-payment-type-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 37px;
+  height: 37px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  background: #fff1d3;
+  color: #b77a12;
+}
+
+.ethio-payment-type-icon.refund {
+  background: #edf2ff;
+  color: #5475c7;
+}
+
+.ethio-payment-transaction > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.ethio-payment-transaction strong {
+  color: #252525;
+  font-size: 11px;
+}
+
+.ethio-payment-transaction span {
+  color: #a39a90;
+  font-size: 10px;
+}
+
+.ethio-payment-amount {
+  color: #805000;
+  font-size: 11px;
+}
+
+.ethio-payment-method {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #625d57;
+}
+
+.ethio-payment-method svg {
+  color: #d99a25;
+}
+
+.ethio-payment-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 9px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.ethio-payment-status.completed {
+  background: #eaf6ed;
+  color: #4b9560;
+}
+
+.ethio-payment-status.pending {
+  background: #fff3d9;
+  color: #a16b0d;
+}
+
+.ethio-payment-status.failed {
+  background: #fff0ed;
+  color: #c15b4e;
+}
+
+.ethio-payment-view-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 33px;
+  height: 33px;
+  border: 1px solid #eee6dc;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #9a6814;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.ethio-payment-view-btn:hover {
+  border-color: #d99a25;
+  background: #fff3d9;
+}
+
+.ethio-payments-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 45px 20px;
+  color: #a39a90;
+  text-align: center;
+}
+
+.ethio-payments-empty svg {
+  margin-bottom: 12px;
+  color: #d99a25;
+}
+
+.ethio-payments-empty h3 {
+  margin: 0 0 7px;
+  color: #252525;
+  font-size: 15px;
+}
+
+.ethio-payments-empty p {
+  margin: 0;
+  font-size: 12px;
+}
+
+/* Details Modal */
+.ethio-payment-modal-overlay {
+  position: fixed;
+  z-index: 2000;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 15, 15, 0.55);
+  backdrop-filter: blur(3px);
+}
+
+.ethio-payment-modal {
+  width: 100%;
+  max-width: 510px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+  border: 1px solid #eee6dc;
+  border-radius: 15px;
+  background: #ffffff;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.ethio-payment-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  padding-bottom: 17px;
+  border-bottom: 1px solid #eee8df;
+}
+
+.ethio-payment-modal-header h2 {
+  margin: 0 0 5px;
+  color: #151515;
+  font-size: 18px;
+}
+
+.ethio-payment-modal-header p {
+  margin: 0;
+  color: #8a8178;
+  font-size: 12px;
+}
+
+.ethio-payment-modal-header button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 8px;
+  background: #f7f3ee;
+  color: #625d57;
+  cursor: pointer;
+}
+
+.ethio-payment-modal-amount {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 11px;
+  padding: 25px 10px;
+  border-bottom: 1px solid #eee8df;
+}
+
+.ethio-payment-modal-amount > span:first-child {
+  color: #8a8178;
+  font-size: 12px;
+}
+
+.ethio-payment-modal-amount h2 {
+  margin: 0;
+  color: #805000;
+  font-size: 27px;
+  font-weight: 800;
+}
+
+.ethio-payment-detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 12px 0;
+}
+
+.ethio-payment-detail-list > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f3eee8;
+}
+
+.ethio-payment-detail-list span {
+  color: #8a8178;
+  font-size: 11px;
+}
+
+.ethio-payment-detail-list strong {
+  max-width: 60%;
+  color: #252525;
+  font-size: 11px;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.ethio-payment-modal-close-btn {
+  width: 100%;
+  height: 43px;
+  margin-top: 10px;
+  border: 1px solid #d99a25;
+  border-radius: 8px;
+  background: #f4ad28;
+  color: #151515;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ethio-payment-modal-close-btn:hover {
+  background: #d99a25;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .ethio-payments-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .ethio-payments {
+    padding: 17px;
+  }
+
+  .ethio-payments-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .ethio-payments-export-btn {
+    width: 100%;
+  }
+
+  .ethio-payments-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .ethio-payments-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 15px;
+  }
+
+  .ethio-payments-search,
+  .ethio-payments-filter {
+    width: 100%;
+  }
+
+  .ethio-payments-panel-header {
+    padding: 17px;
+  }
+
+  .ethio-payment-modal {
+    padding: 18px;
+  }
+}
