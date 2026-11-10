@@ -21,6 +21,9 @@ model User {
   jobs      Job[]
   proposals Proposal[]
 
+  freelancerProfile FreelancerProfile?
+  clientProfile     ClientProfile?
+
   contractAsClient     Contract[] @relation("ClientContracts")
   contractAsFreelancer Contract[] @relation("FreelancerContracts")
 }
@@ -119,7 +122,7 @@ model Milestone {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  payment   Payment?
+  payment Payment?
 }
 
 enum MilestoneStatus {
@@ -131,17 +134,17 @@ enum MilestoneStatus {
 }
 
 model Payment {
-  id           Int            @id @default(autoincrement())
-  milestoneId  Int            @unique
-  amount       Float     
-  method       PaymentMethod  @default(CHAPA)
-  txRef        String?        @unique
-  status       PaymentStatus  @default(INITIATED)
+  id          Int           @id @default(autoincrement())
+  milestoneId Int           @unique
+  amount      Float
+  method      PaymentMethod @default(CHAPA)
+  txRef       String?       @unique
+  status      PaymentStatus @default(INITIATED)
 
-  milestone    Milestone      @relation(fields: [milestoneId], references: [id])
+  milestone Milestone @relation(fields: [milestoneId], references: [id])
 
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum PaymentMethod {
@@ -153,4 +156,128 @@ enum PaymentStatus {
   INITIATED
   COMPLETED
   FAILED
+}
+
+// ========================================
+// FREELANCER PROFILE
+// ========================================
+
+model FreelancerProfile {
+  id              Int      @id @default(autoincrement())
+  userId          Int      @unique
+  headline        String?
+  bio             String?  @db.Text
+  location        String?
+  hourlyRate      Decimal? @db.Decimal(10, 2)
+  profileImageUrl String?
+  skills          String[] @default([])
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  experiences    FreelancerExperience[]
+  educations     FreelancerEducation[]
+  certifications FreelancerCertification[]
+  portfolioItems PortfolioItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ========================================
+// FREELANCER EXPERIENCE
+// ========================================
+
+model FreelancerExperience {
+  id                  Int       @id @default(autoincrement())
+  freelancerProfileId Int
+  jobTitle            String
+  company             String
+  location            String?
+  description         String?   @db.Text
+  startDate           DateTime?
+  endDate             DateTime?
+  isCurrent           Boolean   @default(false)
+
+  freelancerProfile FreelancerProfile @relation(fields: [freelancerProfileId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([freelancerProfileId])
+}
+
+// ========================================
+// FREELANCER EDUCATION
+// ========================================
+
+model FreelancerEducation {
+  id                  Int       @id @default(autoincrement())
+  freelancerProfileId Int
+  institution         String
+  degree              String?
+  fieldOfStudy        String?
+  startDate           DateTime?
+  endDate             DateTime?
+  description         String?   @db.Text
+
+  freelancerProfile FreelancerProfile @relation(fields: [freelancerProfileId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([freelancerProfileId])
+}
+
+// ========================================
+// FREELANCER CERTIFICATION
+// ========================================
+
+model FreelancerCertification {
+  id                  Int       @id @default(autoincrement())
+  freelancerProfileId Int
+  name                String
+  issuingOrganization String
+  issueDate           DateTime?
+  expiryDate          DateTime?
+  credentialId        String?
+  credentialUrl       String?
+
+  freelancerProfile FreelancerProfile @relation(fields: [freelancerProfileId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([freelancerProfileId])
+}
+
+model PortfolioItem {
+  id                  Int      @id @default(autoincrement())
+  freelancerProfileId Int
+  title               String
+  description         String?  @db.Text
+  projectUrl          String?
+  imageUrl            String?
+  technologies        String[] @default([])
+
+  freelancerProfile FreelancerProfile @relation(fields: [freelancerProfileId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([freelancerProfileId])
+}
+
+model ClientProfile {
+  id              Int     @id @default(autoincrement())
+  userId          Int     @unique
+  companyName     String?
+  location        String?
+  website         String?
+  bio             String? @db.Text
+  profileImageUrl String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

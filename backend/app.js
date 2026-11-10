@@ -7,6 +7,7 @@ const proposalRoutes = require("./src/proposals/proposal.routes");
 const contractRoutes = require("./src/contracts/contract.routes");
 const milestoneRoutes = require("./src/milestones/milestone.routes");
 const paymentRoutes = require("./src/payments/payment.routes");
+const profileRoutes = require("./src/profiles/profile.routes");
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use("/api/proposals", proposalRoutes);
 app.use("/api/contracts", contractRoutes);
 app.use("/api/milestones", milestoneRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/profiles", profileRoutes);
   
 app.get("/", (req, res) => {
     res.json({
