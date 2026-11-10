@@ -1,108 +1,235 @@
-import { useRef, useState } from "react";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   MapPin,
   BriefcaseBusiness,
-  Clock3,
   Edit3,
-  Camera,
   Plus,
   X,
   Check,
   Mail,
-  Globe,
   GraduationCap,
   Award,
   Code2,
-  CalendarDays,
-  DollarSign,
   UserRound,
-  Languages,
   Trash2,
   ExternalLink,
   ShieldCheck,
   FolderOpen,
   Save,
+  LoaderCircle,
+  AlertCircle,
+  CalendarDays,
+  DollarSign,
+  Clock3,
 } from "lucide-react";
 
 import "./MyProfile.css";
 
-const defaultProfile = {
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+const PROFILE_ENDPOINT = `${API_BASE_URL}/api/profiles/freelancer/me`;
+
+const EMPTY_PROFILE = {
+  id: null,
   name: "Your Name",
-  title: "Full Stack Developer",
-  location: "",
-  bio: "",
   email: "",
-  hourlyRate: "500",
-  experience: "2",
-  availability: "Available",
-  languages: "Amharic, English",
-  website: "",
-  education: "",
-  university: "",
-  avatar: "",
-  skills: [
-    "React",
-    "JavaScript",
-    "Node.js",
-    "Express.js",
-    "PostgreSQL",
-    "HTML & CSS",
-  ],
+  title: "",
+  bio: "",
+  location: "",
+  hourlyRate: "",
+  profileImageUrl: "",
+  skills: [],
   experienceHistory: [],
+  educations: [],
   certifications: [],
   portfolio: [],
 };
 
-const loadProfile = () => {
+const createTemporaryId = () =>
+  `new-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+const getStoredUser = () => {
   try {
-    const saved = JSON.parse(
-      localStorage.getItem("ethioLanceProfile") || "{}"
-    );
-
-    const user = JSON.parse(
+    return JSON.parse(
       localStorage.getItem("ethioLanceUser") ||
-      sessionStorage.getItem("ethioLanceUser") ||
-      "{}"
+        sessionStorage.getItem("ethioLanceUser") ||
+        "{}"
     );
-
-    return {
-      ...defaultProfile,
-      ...saved,
-      name: saved.name || user.name || defaultProfile.name,
-      email: saved.email || user.email || defaultProfile.email,
-      skills: Array.isArray(saved.skills)
-        ? saved.skills
-        : defaultProfile.skills,
-      experienceHistory: Array.isArray(saved.experienceHistory)
-        ? saved.experienceHistory
-        : [],
-      certifications: Array.isArray(saved.certifications)
-        ? saved.certifications
-        : [],
-      portfolio: Array.isArray(saved.portfolio)
-        ? saved.portfolio
-        : [],
-    };
-  } catch (error) {
-    console.error("Could not load profile:", error);
-    return { ...defaultProfile };
+  } catch {
+    return {};
   }
 };
 
-const getCompletion = (profile) => {
+const getToken = () =>
+  localStorage.getItem("ethioLanceToken") ||
+  sessionStorage.getItem("ethioLanceToken") ||
+  "";
+
+const getUserName = (user) => {
+  if (user.name) return user.name;
+
+  return [user.firstName, user.lastName]
+    .filter(Boolean)
+    .join(" ") || "Your Name";
+};
+
+const getDateInput = (value) => {
+  if (!value) return "";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) return "";
+
+  return date.toISOString().slice(0, 10);
+};
+
+const formatDate = (value) => {
+  if (!value) return "";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) return "";
+
+  return date.toLocaleDateString("en", {
+    month: "short",
+    year: "numeric",
+  });
+};
+
+const safeUrl = (value) => {
+  if (!value) return "";
+
+  try {
+    const url = new URL(value);
+
+    return ["http:", "https:"].includes(url.protocol)
+      ? url.href
+      : "";
+  } catch {
+    return "";
+  }
+};
+
+const isDatabaseId = (id) =>
+  id !== null &&
+  id !== undefined &&
+  /^\d+$/.test(String(id));
+
+const getErrorMessage = (data, fallback) =>
+  data?.message || data?.error || fallback;
+
+const request = async (url, token, options = {}) => {
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      ...options.headers,
+    },
+  });
+
+  const contentType = response.headers.get("content-type") || "";
+
+  let data = {};
+
+  if (contentType.includes("application/json")) {
+    data = await response.json();
+  } else {
+    const text = await response.text();
+
+    if (!response.ok) {
+      throw new Error(
+        `Server returned ${response.status}. Check that the API URL and route are correct.`
+      );
+    }
+
+    throw new Error("The server returned an unexpected response.");
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      getErrorMessage(data, `Request failed (${response.status})`)
+    );
+  }
+
+  return data;
+};
+
+/* -------------------------------------------------------
+   BACKEND DATA MAPPING
+------------------------------------------------------- */
+
+const mapBackendProfile = (data, user) => ({
+  id: data.id ?? null,
+
+  name: getUserName(user),
+  email: user.email || "",
+
+  title: data.headline || "",
+  bio: data.bio || "",
+  location: data.location || "",
+  hourlyRate: data.hourlyRate ?? "",
+
+  profileImageUrl: data.profileImageUrl || "",
+
+  skills: Array.isArray(data.skills) ? data.skills : [],
+
+  experienceHistory: (data.experiences || []).map((item) => ({
+    id: item.id,
+    jobTitle: item.jobTitle || "",
+    company: item.company || "",
+    location: item.location || "",
+    description: item.description || "",
+    startDate: getDateInput(item.startDate),
+    endDate: getDateInput(item.endDate),
+    isCurrent: Boolean(item.isCurrent),
+  })),
+
+  educations: (data.educations || []).map((item) => ({
+    id: item.id,
+    institution: item.institution || "",
+    degree: item.degree || "",
+    fieldOfStudy: item.fieldOfStudy || "",
+    startDate: getDateInput(item.startDate),
+    endDate: getDateInput(item.endDate),
+    description: item.description || "",
+  })),
+
+  certifications: (data.certifications || []).map((item) => ({
+    id: item.id,
+    name: item.name || "",
+    issuingOrganization: item.issuingOrganization || "",
+    issueDate: getDateInput(item.issueDate),
+    expiryDate: getDateInput(item.expiryDate),
+    credentialId: item.credentialId || "",
+    credentialUrl: item.credentialUrl || "",
+  })),
+
+  portfolio: (data.portfolioItems || []).map((item) => ({
+    id: item.id,
+    title: item.title || "",
+    description: item.description || "",
+    projectUrl: item.projectUrl || "",
+    imageUrl: item.imageUrl || "",
+    technologies: Array.isArray(item.technologies)
+      ? item.technologies.join(", ")
+      : item.technologies || "",
+  })),
+});
+
+const getProfileCompletion = (profile) => {
   const checks = [
-    Boolean(profile.name),
     Boolean(profile.title),
-    Boolean(profile.location),
     Boolean(profile.bio),
-    Boolean(profile.avatar),
+    Boolean(profile.location),
     Boolean(profile.hourlyRate),
-    Boolean(profile.education),
-    Boolean(profile.university),
     profile.skills.length > 0,
     profile.experienceHistory.length > 0,
+    profile.educations.length > 0,
+    profile.certifications.length > 0,
     profile.portfolio.length > 0,
-    Boolean(profile.languages),
   ];
 
   return Math.round(
@@ -110,30 +237,91 @@ const getCompletion = (profile) => {
   );
 };
 
-const safeUrl = (url) => {
-  if (!url) return "";
-
-  const trimmed = url.trim();
-
-  if (/^https?:\/\//i.test(trimmed)) {
-    return trimmed;
-  }
-
-  return "";
-};
+/* -------------------------------------------------------
+   MAIN COMPONENT
+------------------------------------------------------- */
 
 function MyProfile() {
-  const [profile, setProfile] = useState(loadProfile);
-  const [draft, setDraft] = useState(loadProfile);
+  const user = useMemo(() => getStoredUser(), []);
+
+  const [profile, setProfile] = useState({
+    ...EMPTY_PROFILE,
+    name: getUserName(user),
+    email: user.email || "",
+  });
+
+  const [draft, setDraft] = useState(profile);
+
   const [editing, setEditing] = useState(false);
-  const [activeTab, setActiveTab] = useState("overview");
   const [skillInput, setSkillInput] = useState("");
+
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [profileExists, setProfileExists] = useState(false);
+
   const [statusMessage, setStatusMessage] = useState("");
-  const [avatarError, setAvatarError] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const avatarInputRef = useRef(null);
+  const completion = getProfileCompletion(profile);
 
-  const completion = getCompletion(profile);
+  /* -----------------------------------------------------
+     LOAD PROFILE
+  ----------------------------------------------------- */
+
+  const loadBackendProfile = useCallback(async (showLoading = true) => {
+    const token = getToken();
+
+    if (!token) {
+      setErrorMessage(
+        "Your login session was not found. Please log in again to load your profile."
+      );
+      setLoading(false);
+      return;
+    }
+
+    if (showLoading) setLoading(true);
+
+    try {
+      const data = await request(PROFILE_ENDPOINT, token);
+
+      if (!data.profile) {
+        throw new Error("The server did not return a freelancer profile.");
+      }
+
+      const mapped = mapBackendProfile(data.profile, user);
+
+      setProfile(mapped);
+      setDraft(mapped);
+      setProfileExists(true);
+      setErrorMessage("");
+    } catch (error) {
+      // A 404 means the freelancer has not created a profile yet.
+      if (error.message?.toLowerCase().includes("not found")) {
+        const empty = {
+          ...EMPTY_PROFILE,
+          name: getUserName(user),
+          email: user.email || "",
+        };
+
+        setProfile(empty);
+        setDraft(empty);
+        setProfileExists(false);
+        setErrorMessage("");
+      } else {
+        setErrorMessage(error.message || "Unable to load your profile.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    loadBackendProfile();
+  }, [loadBackendProfile]);
+
+  /* -----------------------------------------------------
+     EDITING HELPERS
+  ----------------------------------------------------- */
 
   const updateDraft = (field, value) => {
     setDraft((previous) => ({
@@ -143,108 +331,78 @@ function MyProfile() {
   };
 
   const openEditor = () => {
-    setDraft({ ...profile });
+    setDraft({
+      ...profile,
+      skills: [...profile.skills],
+      experienceHistory: profile.experienceHistory.map((item) => ({
+        ...item,
+      })),
+      educations: profile.educations.map((item) => ({
+        ...item,
+      })),
+      certifications: profile.certifications.map((item) => ({
+        ...item,
+      })),
+      portfolio: profile.portfolio.map((item) => ({
+        ...item,
+      })),
+    });
+
     setEditing(true);
+    setErrorMessage("");
     setStatusMessage("");
-    setAvatarError("");
   };
 
   const closeEditor = () => {
-    setDraft({ ...profile });
+    setDraft(profile);
     setEditing(false);
     setSkillInput("");
-    setAvatarError("");
   };
 
-  const saveProfile = (event) => {
-    event.preventDefault();
-
-    try {
-      localStorage.setItem(
-        "ethioLanceProfile",
-        JSON.stringify(draft)
-      );
-
-      setProfile({ ...draft });
-      setEditing(false);
-      setStatusMessage("Your profile has been saved successfully.");
-
-      setTimeout(() => setStatusMessage(""), 4000);
-    } catch (error) {
-      console.error("Profile save error:", error);
-      setStatusMessage(
-        "Unable to save. Your profile image may be too large."
-      );
-    }
-  };
-
-  const handleAvatar = (event) => {
-    const file = event.target.files?.[0];
-
-    if (!file) return;
-
-    const allowedTypes = [
-      "image/jpeg",
-      "image/png",
-      "image/webp",
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
-      setAvatarError("Please select a JPG, PNG, or WEBP image.");
-      return;
-    }
-
-    if (file.size > 1024 * 1024) {
-      setAvatarError("Image size must be less than 1 MB.");
-      return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      updateDraft("avatar", reader.result);
-      setAvatarError("");
-    };
-
-    reader.onerror = () => {
-      setAvatarError("Unable to read this image.");
-    };
-
-    reader.readAsDataURL(file);
-  };
+  /* -----------------------------------------------------
+     SKILLS
+  ----------------------------------------------------- */
 
   const addSkill = () => {
-    const skill = skillInput.trim();
+    const value = skillInput.trim();
+
+    if (!value) return;
 
     if (
-      !skill ||
       draft.skills.some(
-        (item) => item.toLowerCase() === skill.toLowerCase()
+        (skill) => skill.toLowerCase() === value.toLowerCase()
       )
     ) {
       return;
     }
 
-    updateDraft("skills", [...draft.skills, skill]);
+    updateDraft("skills", [...draft.skills, value]);
     setSkillInput("");
   };
 
-  const removeSkill = (index) => {
+  const removeSkill = (skill) => {
     updateDraft(
       "skills",
-      draft.skills.filter((_, i) => i !== index)
+      draft.skills.filter((item) => item !== skill)
     );
   };
+
+  /* -----------------------------------------------------
+     EXPERIENCE
+  ----------------------------------------------------- */
 
   const addExperience = () => {
     updateDraft("experienceHistory", [
       ...draft.experienceHistory,
       {
-        id: Date.now(),
-        position: "",
+        id: createTemporaryId(),
+        jobTitle: "",
         company: "",
-        duration: "",
+        location: "",
         description: "",
+        startDate: "",
+        endDate: "",
+        isCurrent: false,
       },
     ]);
   };
@@ -265,14 +423,55 @@ function MyProfile() {
     );
   };
 
+  /* -----------------------------------------------------
+     EDUCATION
+  ----------------------------------------------------- */
+
+  const addEducation = () => {
+    updateDraft("educations", [
+      ...draft.educations,
+      {
+        id: createTemporaryId(),
+        institution: "",
+        degree: "",
+        fieldOfStudy: "",
+        startDate: "",
+        endDate: "",
+        description: "",
+      },
+    ]);
+  };
+
+  const updateEducation = (id, field, value) => {
+    updateDraft(
+      "educations",
+      draft.educations.map((item) =>
+        item.id === id ? { ...item, [field]: value } : item
+      )
+    );
+  };
+
+  const removeEducation = (id) => {
+    updateDraft(
+      "educations",
+      draft.educations.filter((item) => item.id !== id)
+    );
+  };
+
+  /* -----------------------------------------------------
+     CERTIFICATIONS
+  ----------------------------------------------------- */
+
   const addCertification = () => {
     updateDraft("certifications", [
       ...draft.certifications,
       {
-        id: Date.now(),
+        id: createTemporaryId(),
         name: "",
-        issuer: "",
-        year: "",
+        issuingOrganization: "",
+        issueDate: "",
+        expiryDate: "",
+        credentialId: "",
         credentialUrl: "",
       },
     ]);
@@ -294,15 +493,20 @@ function MyProfile() {
     );
   };
 
+  /* -----------------------------------------------------
+     PORTFOLIO
+  ----------------------------------------------------- */
+
   const addProject = () => {
     updateDraft("portfolio", [
       ...draft.portfolio,
       {
-        id: Date.now(),
+        id: createTemporaryId(),
         title: "",
         description: "",
+        projectUrl: "",
+        imageUrl: "",
         technologies: "",
-        url: "",
       },
     ]);
   };
@@ -322,6 +526,212 @@ function MyProfile() {
       draft.portfolio.filter((item) => item.id !== id)
     );
   };
+
+  /* -----------------------------------------------------
+     SAVE REPEATED RECORDS
+  ----------------------------------------------------- */
+
+  const saveCollection = async ({
+    endpoint,
+    originalItems,
+    draftItems,
+    mapPayload,
+  }) => {
+    const token = getToken();
+
+    const originalIds = new Set(
+      originalItems
+        .filter((item) => isDatabaseId(item.id))
+        .map((item) => String(item.id))
+    );
+
+    const draftIds = new Set(
+      draftItems
+        .filter((item) => isDatabaseId(item.id))
+        .map((item) => String(item.id))
+    );
+
+    // Update existing records and create new records.
+    for (const item of draftItems) {
+      const payload = mapPayload(item);
+
+      if (isDatabaseId(item.id)) {
+        await request(
+          `${API_BASE_URL}/api/profiles/freelancer/${endpoint}/${item.id}`,
+          token,
+          {
+            method: "PUT",
+            body: JSON.stringify(payload),
+          }
+        );
+      } else {
+        await request(
+          `${API_BASE_URL}/api/profiles/freelancer/${endpoint}`,
+          token,
+          {
+            method: "POST",
+            body: JSON.stringify(payload),
+          }
+        );
+      }
+    }
+
+    // Delete records removed by the user.
+    for (const id of originalIds) {
+      if (!draftIds.has(id)) {
+        await request(
+          `${API_BASE_URL}/api/profiles/freelancer/${endpoint}/${id}`,
+          token,
+          {
+            method: "DELETE",
+          }
+        );
+      }
+    }
+  };
+
+  /* -----------------------------------------------------
+     SAVE EVERYTHING
+  ----------------------------------------------------- */
+
+  const saveProfile = async (event) => {
+    event.preventDefault();
+
+    const token = getToken();
+
+    if (!token) {
+      setErrorMessage("Your login session has expired. Please log in again.");
+      return;
+    }
+
+    if (!draft.title.trim()) {
+      setErrorMessage("Please enter your professional title.");
+      return;
+    }
+
+    setSaving(true);
+    setErrorMessage("");
+    setStatusMessage("");
+
+    try {
+      const profilePayload = {
+        headline: draft.title.trim(),
+        bio: draft.bio.trim(),
+        location: draft.location.trim(),
+        skills: draft.skills,
+      };
+
+      if (draft.hourlyRate !== "") {
+        profilePayload.hourlyRate = Number(draft.hourlyRate);
+      }
+
+      // Create or update the main freelancer profile.
+      await request(PROFILE_ENDPOINT, token, {
+        method: profileExists ? "PUT" : "POST",
+        body: JSON.stringify(profilePayload),
+      });
+
+      // Save work experience.
+      await saveCollection({
+        endpoint: "experiences",
+        originalItems: profile.experienceHistory,
+        draftItems: draft.experienceHistory,
+        mapPayload: (item) => ({
+          jobTitle: item.jobTitle,
+          company: item.company,
+          location: item.location,
+          description: item.description,
+          startDate: item.startDate || null,
+          endDate: item.isCurrent ? null : item.endDate || null,
+          isCurrent: item.isCurrent,
+        }),
+      });
+
+      // Save education.
+      await saveCollection({
+        endpoint: "educations",
+        originalItems: profile.educations,
+        draftItems: draft.educations,
+        mapPayload: (item) => ({
+          institution: item.institution,
+          degree: item.degree,
+          fieldOfStudy: item.fieldOfStudy,
+          startDate: item.startDate || null,
+          endDate: item.endDate || null,
+          description: item.description,
+        }),
+      });
+
+      // Save certifications.
+      await saveCollection({
+        endpoint: "certifications",
+        originalItems: profile.certifications,
+        draftItems: draft.certifications,
+        mapPayload: (item) => ({
+          name: item.name,
+          issuingOrganization: item.issuingOrganization,
+          issueDate: item.issueDate || null,
+          expiryDate: item.expiryDate || null,
+          credentialId: item.credentialId,
+          credentialUrl: item.credentialUrl,
+        }),
+      });
+
+      // Save portfolio projects.
+      await saveCollection({
+        endpoint: "portfolio",
+        originalItems: profile.portfolio,
+        draftItems: draft.portfolio,
+        mapPayload: (item) => ({
+          title: item.title,
+          description: item.description,
+          projectUrl: item.projectUrl,
+          imageUrl: item.imageUrl,
+          technologies: item.technologies
+            .split(",")
+            .map((technology) => technology.trim())
+            .filter(Boolean),
+        }),
+      });
+
+      setProfileExists(true);
+      setEditing(false);
+      setSkillInput("");
+
+      // Reload from the database to get real IDs and saved values.
+      await loadBackendProfile(false);
+
+      setStatusMessage("Your freelancer profile has been saved successfully.");
+    } catch (error) {
+      console.error("SAVE PROFILE ERROR:", error);
+
+      setErrorMessage(
+        error.message ||
+          "Something went wrong while saving your profile."
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  /* -----------------------------------------------------
+     LOADING STATE
+  ----------------------------------------------------- */
+
+  if (loading) {
+    return (
+      <div className="ethio-profile-page">
+        <div className="ethio-profile-loading">
+          <LoaderCircle className="ethio-profile-spinner" size={32} />
+          <p>Loading your freelancer profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  /* -----------------------------------------------------
+     MAIN PAGE
+  ----------------------------------------------------- */
 
   return (
     <div className="ethio-profile-page">
@@ -345,10 +755,11 @@ function MyProfile() {
           onClick={openEditor}
         >
           <Edit3 size={17} />
-          Edit Profile
+          {profileExists ? "Edit Profile" : "Create Profile"}
         </button>
       </div>
 
+      {/* FEEDBACK */}
       {statusMessage && (
         <div className="ethio-profile-status-message">
           <Check size={17} />
@@ -356,12 +767,26 @@ function MyProfile() {
         </div>
       )}
 
+      {errorMessage && (
+        <div className="ethio-profile-error-message">
+          <AlertCircle size={17} />
+          <span>{errorMessage}</span>
+          <button
+            type="button"
+            onClick={() => setErrorMessage("")}
+            aria-label="Dismiss error"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
+
       {/* PROFILE HERO */}
-      <div className="ethio-profile-hero">
+      <section className="ethio-profile-hero">
         <div className="ethio-profile-avatar-wrapper">
-          {profile.avatar ? (
+          {safeUrl(profile.profileImageUrl) ? (
             <img
-              src={profile.avatar}
+              src={safeUrl(profile.profileImageUrl)}
               alt="Profile"
               className="ethio-profile-avatar"
             />
@@ -375,6 +800,7 @@ function MyProfile() {
         <div className="ethio-profile-hero-info">
           <div className="ethio-profile-name-row">
             <h2>{profile.name}</h2>
+
             <span className="ethio-profile-account-badge">
               <ShieldCheck size={15} />
               Freelancer
@@ -395,12 +821,7 @@ function MyProfile() {
 
             <span>
               <BriefcaseBusiness size={15} />
-              {profile.experience || "0"} years experience
-            </span>
-
-            <span>
-              <Clock3 size={15} />
-              {profile.availability}
+              {profile.experienceHistory.length} work experience record(s)
             </span>
           </div>
         </div>
@@ -408,14 +829,16 @@ function MyProfile() {
         <div className="ethio-profile-hero-rate">
           <span>Hourly Rate</span>
           <strong>
-            ETB {Number(profile.hourlyRate || 0).toLocaleString()}
+            {profile.hourlyRate !== ""
+              ? `ETB ${Number(profile.hourlyRate).toLocaleString()}`
+              : "Not set"}
           </strong>
           <small>per hour</small>
         </div>
-      </div>
+      </section>
 
       {/* PROFILE COMPLETION */}
-      <div className="ethio-profile-completion-card">
+      <section className="ethio-profile-completion-card">
         <div className="ethio-profile-completion-top">
           <div>
             <h3>Profile Completion</h3>
@@ -441,9 +864,9 @@ function MyProfile() {
         >
           Complete your profile <span>→</span>
         </button>
-      </div>
+      </section>
 
-      {/* PROFILE CONTENT */}
+      {/* CONTENT GRID */}
       <div className="ethio-profile-content-grid">
         <main className="ethio-profile-main-column">
           {/* ABOUT */}
@@ -502,10 +925,20 @@ function MyProfile() {
                     </div>
 
                     <div>
-                      <h4>{item.position}</h4>
+                      <h4>{item.jobTitle}</h4>
                       <strong>{item.company}</strong>
-                      <span>{item.duration}</span>
-                      <p>{item.description}</p>
+
+                      <span>
+                        {formatDate(item.startDate)}
+                        {item.startDate ? " – " : ""}
+                        {item.isCurrent
+                          ? "Present"
+                          : formatDate(item.endDate)}
+                      </span>
+
+                      {item.location && <span>{item.location}</span>}
+
+                      {item.description && <p>{item.description}</p>}
                     </div>
                   </div>
                 ))}
@@ -513,6 +946,50 @@ function MyProfile() {
             ) : (
               <p className="ethio-profile-empty-text">
                 No work experience added yet.
+              </p>
+            )}
+          </section>
+
+          {/* EDUCATION */}
+          <section className="ethio-profile-card">
+            <div className="ethio-profile-section-heading">
+              <h3>Education</h3>
+              <GraduationCap size={19} />
+            </div>
+
+            {profile.educations.length > 0 ? (
+              <div className="ethio-profile-timeline">
+                {profile.educations.map((item) => (
+                  <div
+                    className="ethio-profile-timeline-item"
+                    key={item.id}
+                  >
+                    <div className="ethio-profile-timeline-icon">
+                      <GraduationCap size={17} />
+                    </div>
+
+                    <div>
+                      <h4>{item.degree}</h4>
+                      <strong>{item.institution}</strong>
+
+                      {item.fieldOfStudy && (
+                        <span>{item.fieldOfStudy}</span>
+                      )}
+
+                      <span>
+                        {formatDate(item.startDate)}
+                        {item.startDate ? " – " : ""}
+                        {formatDate(item.endDate)}
+                      </span>
+
+                      {item.description && <p>{item.description}</p>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="ethio-profile-empty-text">
+                No education records added yet.
               </p>
             )}
           </section>
@@ -531,6 +1008,14 @@ function MyProfile() {
                     className="ethio-profile-project-card"
                     key={project.id}
                   >
+                    {safeUrl(project.imageUrl) && (
+                      <img
+                        src={safeUrl(project.imageUrl)}
+                        alt={project.title}
+                        className="ethio-profile-project-image"
+                      />
+                    )}
+
                     <h4>{project.title}</h4>
                     <p>{project.description}</p>
 
@@ -540,9 +1025,9 @@ function MyProfile() {
                       </span>
                     )}
 
-                    {safeUrl(project.url) && (
+                    {safeUrl(project.projectUrl) && (
                       <a
-                        href={safeUrl(project.url)}
+                        href={safeUrl(project.projectUrl)}
                         target="_blank"
                         rel="noreferrer"
                       >
@@ -570,33 +1055,19 @@ function MyProfile() {
                 <DollarSign size={18} />
                 <span>
                   <small>Hourly Rate</small>
-                  <strong>ETB {profile.hourlyRate || "Not set"}</strong>
+                  <strong>
+                    {profile.hourlyRate !== ""
+                      ? `ETB ${profile.hourlyRate}`
+                      : "Not set"}
+                  </strong>
                 </span>
               </div>
 
               <div>
                 <BriefcaseBusiness size={18} />
                 <span>
-                  <small>Experience</small>
-                  <strong>
-                    {profile.experience || "Not set"} years
-                  </strong>
-                </span>
-              </div>
-
-              <div>
-                <Clock3 size={18} />
-                <span>
-                  <small>Availability</small>
-                  <strong>{profile.availability}</strong>
-                </span>
-              </div>
-
-              <div>
-                <Languages size={18} />
-                <span>
-                  <small>Languages</small>
-                  <strong>{profile.languages || "Not set"}</strong>
+                  <small>Experience Records</small>
+                  <strong>{profile.experienceHistory.length}</strong>
                 </span>
               </div>
 
@@ -604,43 +1075,23 @@ function MyProfile() {
                 <Mail size={18} />
                 <span>
                   <small>Email</small>
-                  <strong>{profile.email || "Not set"}</strong>
+                  <strong>{profile.email || "Not available"}</strong>
                 </span>
               </div>
 
-              {safeUrl(profile.website) && (
+              {profile.location && (
                 <div>
-                  <Globe size={18} />
+                  <MapPin size={18} />
                   <span>
-                    <small>Website</small>
-                    <a
-                      href={safeUrl(profile.website)}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Visit Website
-                    </a>
+                    <small>Location</small>
+                    <strong>{profile.location}</strong>
                   </span>
                 </div>
               )}
             </div>
           </section>
 
-          <section className="ethio-profile-card">
-            <div className="ethio-profile-section-heading">
-              <h3>Education</h3>
-              <GraduationCap size={19} />
-            </div>
-
-            <strong className="ethio-profile-education-title">
-              {profile.education || "Education not added"}
-            </strong>
-
-            <p className="ethio-profile-education-school">
-              {profile.university || "Add your institution"}
-            </p>
-          </section>
-
+          {/* CERTIFICATIONS */}
           <section className="ethio-profile-card">
             <div className="ethio-profile-section-heading">
               <h3>Certifications</h3>
@@ -655,11 +1106,27 @@ function MyProfile() {
                     key={cert.id}
                   >
                     <Award size={17} />
+
                     <div>
                       <strong>{cert.name}</strong>
-                      <span>
-                        {cert.issuer} {cert.year && `• ${cert.year}`}
-                      </span>
+                      <span>{cert.issuingOrganization}</span>
+
+                      {cert.issueDate && (
+                        <span>
+                          Issued {formatDate(cert.issueDate)}
+                        </span>
+                      )}
+
+                      {safeUrl(cert.credentialUrl) && (
+                        <a
+                          href={safeUrl(cert.credentialUrl)}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          View Credential
+                          <ExternalLink size={13} />
+                        </a>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -674,17 +1141,19 @@ function MyProfile() {
           <section className="ethio-profile-card ethio-profile-rating-card">
             <h3>Client Rating</h3>
             <strong>Not rated yet</strong>
-            <p>Your rating will appear after completed client projects.</p>
+            <p>
+              Your rating will appear after completed client projects.
+            </p>
           </section>
         </aside>
       </div>
 
-      {/* LARGE EDIT POPUP */}
+      {/* EDIT PROFILE MODAL */}
       {editing && (
         <div
           className="ethio-profile-modal-overlay"
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) {
+            if (event.target === event.currentTarget && !saving) {
               closeEditor();
             }
           }}
@@ -700,11 +1169,13 @@ function MyProfile() {
                 <span className="ethio-profile-eyebrow">
                   PROFILE SETTINGS
                 </span>
+
                 <h2 id="ethio-profile-editor-title">
-                  Edit Your Profile
+                  {profileExists ? "Edit Your Profile" : "Create Your Profile"}
                 </h2>
+
                 <p>
-                  Update your information and make your profile stand out.
+                  Update your professional information and experience.
                 </p>
               </div>
 
@@ -712,6 +1183,7 @@ function MyProfile() {
                 type="button"
                 className="ethio-profile-close-button"
                 onClick={closeEditor}
+                disabled={saving}
                 aria-label="Close editor"
               >
                 <X size={22} />
@@ -723,66 +1195,12 @@ function MyProfile() {
               onSubmit={saveProfile}
             >
               <div className="ethio-profile-editor-body">
-                {/* PROFILE PHOTO */}
-                <section className="ethio-profile-editor-section">
-                  <div className="ethio-profile-editor-section-title">
-                    <Camera size={19} />
-                    <div>
-                      <h3>Profile Photo</h3>
-                      <p>Use a professional photo of yourself.</p>
-                    </div>
-                  </div>
-
-                  <div className="ethio-profile-photo-editor">
-                    <div className="ethio-profile-avatar-wrapper ethio-profile-avatar-large">
-                      {draft.avatar ? (
-                        <img
-                          src={draft.avatar}
-                          alt="Profile"
-                          className="ethio-profile-avatar"
-                        />
-                      ) : (
-                        <div className="ethio-profile-avatar-placeholder">
-                          <UserRound size={38} />
-                        </div>
-                      )}
-                    </div>
-
-                    <div>
-                      <button
-                        type="button"
-                        className="ethio-profile-upload-button"
-                        onClick={() => avatarInputRef.current?.click()}
-                      >
-                        <Camera size={16} />
-                        Upload Photo
-                      </button>
-
-                      <input
-                        ref={avatarInputRef}
-                        type="file"
-                        accept="image/png,image/jpeg,image/webp"
-                        hidden
-                        onChange={handleAvatar}
-                      />
-
-                      <p>JPG, PNG or WEBP. Maximum 1 MB.</p>
-
-                      {avatarError && (
-                        <span className="ethio-profile-error">
-                          {avatarError}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </section>
-
-                {/* PERSONAL INFORMATION */}
+                {/* BASIC INFORMATION */}
                 <section className="ethio-profile-editor-section">
                   <div className="ethio-profile-editor-section-title">
                     <UserRound size={19} />
                     <div>
-                      <h3>Personal Information</h3>
+                      <h3>Professional Information</h3>
                       <p>Your basic professional identity.</p>
                     </div>
                   </div>
@@ -792,21 +1210,8 @@ function MyProfile() {
                       Full Name
                       <input
                         value={draft.name}
-                        onChange={(e) =>
-                          updateDraft("name", e.target.value)
-                        }
-                        placeholder="Enter your full name"
-                      />
-                    </label>
-
-                    <label className="ethio-profile-field">
-                      Professional Title
-                      <input
-                        value={draft.title}
-                        onChange={(e) =>
-                          updateDraft("title", e.target.value)
-                        }
-                        placeholder="e.g. Full Stack Developer"
+                        disabled
+                        readOnly
                       />
                     </label>
 
@@ -815,21 +1220,45 @@ function MyProfile() {
                       <input
                         type="email"
                         value={draft.email}
-                        onChange={(e) =>
-                          updateDraft("email", e.target.value)
+                        disabled
+                        readOnly
+                      />
+                    </label>
+
+                    <label className="ethio-profile-field ethio-profile-field-full">
+                      Professional Title *
+                      <input
+                        value={draft.title}
+                        onChange={(event) =>
+                          updateDraft("title", event.target.value)
                         }
-                        placeholder="your@email.com"
+                        placeholder="e.g. Full Stack Developer"
+                        required
+                      />
+                    </label>
+
+                    <label className="ethio-profile-field ethio-profile-field-full">
+                      Location
+                      <input
+                        value={draft.location}
+                        onChange={(event) =>
+                          updateDraft("location", event.target.value)
+                        }
+                        placeholder="e.g. Addis Ababa, Ethiopia"
                       />
                     </label>
 
                     <label className="ethio-profile-field">
-                      Location
+                      Hourly Rate (ETB)
                       <input
-                        value={draft.location}
-                        onChange={(e) =>
-                          updateDraft("location", e.target.value)
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={draft.hourlyRate}
+                        onChange={(event) =>
+                          updateDraft("hourlyRate", event.target.value)
                         }
-                        placeholder="e.g. Addis Ababa, Ethiopia"
+                        placeholder="500"
                       />
                     </label>
 
@@ -838,86 +1267,10 @@ function MyProfile() {
                       <textarea
                         rows={5}
                         value={draft.bio}
-                        onChange={(e) =>
-                          updateDraft("bio", e.target.value)
+                        onChange={(event) =>
+                          updateDraft("bio", event.target.value)
                         }
                         placeholder="Describe your experience, strengths, and what you can offer clients..."
-                      />
-                    </label>
-                  </div>
-                </section>
-
-                {/* PROFESSIONAL DETAILS */}
-                <section className="ethio-profile-editor-section">
-                  <div className="ethio-profile-editor-section-title">
-                    <BriefcaseBusiness size={19} />
-                    <div>
-                      <h3>Professional Details</h3>
-                      <p>Set your rates and working preferences.</p>
-                    </div>
-                  </div>
-
-                  <div className="ethio-profile-form-grid">
-                    <label className="ethio-profile-field">
-                      Hourly Rate (ETB)
-                      <input
-                        type="number"
-                        min="0"
-                        value={draft.hourlyRate}
-                        onChange={(e) =>
-                          updateDraft("hourlyRate", e.target.value)
-                        }
-                        placeholder="500"
-                      />
-                    </label>
-
-                    <label className="ethio-profile-field">
-                      Years of Experience
-                      <input
-                        type="number"
-                        min="0"
-                        value={draft.experience}
-                        onChange={(e) =>
-                          updateDraft("experience", e.target.value)
-                        }
-                        placeholder="2"
-                      />
-                    </label>
-
-                    <label className="ethio-profile-field">
-                      Availability
-                      <select
-                        value={draft.availability}
-                        onChange={(e) =>
-                          updateDraft("availability", e.target.value)
-                        }
-                      >
-                        <option value="Available">Available</option>
-                        <option value="Busy">Busy</option>
-                        <option value="Not Available">Not Available</option>
-                      </select>
-                    </label>
-
-                    <label className="ethio-profile-field">
-                      Languages
-                      <input
-                        value={draft.languages}
-                        onChange={(e) =>
-                          updateDraft("languages", e.target.value)
-                        }
-                        placeholder="Amharic, English"
-                      />
-                    </label>
-
-                    <label className="ethio-profile-field ethio-profile-field-full">
-                      Personal Website
-                      <input
-                        type="url"
-                        value={draft.website}
-                        onChange={(e) =>
-                          updateDraft("website", e.target.value)
-                        }
-                        placeholder="https://yourwebsite.com"
                       />
                     </label>
                   </div>
@@ -933,91 +1286,54 @@ function MyProfile() {
                     </div>
                   </div>
 
-                  <div className="ethio-profile-skill-editor">
-                    <div className="ethio-profile-skill-input-row">
-                      <input
-                        value={skillInput}
-                        onChange={(e) =>
-                          setSkillInput(e.target.value)
+                  <div className="ethio-profile-skill-input-row">
+                    <input
+                      value={skillInput}
+                      onChange={(event) =>
+                        setSkillInput(event.target.value)
+                      }
+                      placeholder="Enter a skill, e.g. React"
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          event.preventDefault();
+                          addSkill();
                         }
-                        placeholder="Enter a skill, e.g. React"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            addSkill();
-                          }
-                        }}
-                      />
+                      }}
+                    />
 
-                      <button
-                        type="button"
-                        onClick={addSkill}
-                        className="ethio-profile-add-button"
+                    <button
+                      type="button"
+                      onClick={addSkill}
+                      className="ethio-profile-add-button"
+                    >
+                      <Plus size={17} />
+                      Add Skill
+                    </button>
+                  </div>
+
+                  <div className="ethio-profile-skills-list">
+                    {draft.skills.map((skill, index) => (
+                      <span
+                        className="ethio-profile-skill ethio-profile-editable-skill"
+                        key={`${skill}-${index}`}
                       >
-                        <Plus size={17} />
-                        Add Skill
-                      </button>
-                    </div>
+                        {skill}
 
-                    <div className="ethio-profile-skills-list">
-                      {draft.skills.map((skill, index) => (
-                        <span
-                          className="ethio-profile-skill ethio-profile-editable-skill"
-                          key={`${skill}-${index}`}
+                        <button
+                          type="button"
+                          onClick={() => removeSkill(skill)}
+                          aria-label={`Remove ${skill}`}
                         >
-                          {skill}
-
-                          <button
-                            type="button"
-                            onClick={() => removeSkill(index)}
-                            aria-label={`Remove ${skill}`}
-                          >
-                            <X size={14} />
-                          </button>
-                        </span>
-                      ))}
-                    </div>
+                          <X size={14} />
+                        </button>
+                      </span>
+                    ))}
                   </div>
                 </section>
 
-                {/* EDUCATION */}
+                {/* EXPERIENCE */}
                 <section className="ethio-profile-editor-section">
-                  <div className="ethio-profile-editor-section-title">
-                    <GraduationCap size={19} />
-                    <div>
-                      <h3>Education</h3>
-                      <p>Your academic background.</p>
-                    </div>
-                  </div>
-
-                  <div className="ethio-profile-form-grid">
-                    <label className="ethio-profile-field">
-                      Degree / Qualification
-                      <input
-                        value={draft.education}
-                        onChange={(e) =>
-                          updateDraft("education", e.target.value)
-                        }
-                        placeholder="Bachelor's Degree in Software Engineering"
-                      />
-                    </label>
-
-                    <label className="ethio-profile-field">
-                      University / Institution
-                      <input
-                        value={draft.university}
-                        onChange={(e) =>
-                          updateDraft("university", e.target.value)
-                        }
-                        placeholder="University name"
-                      />
-                    </label>
-                  </div>
-                </section>
-
-                {/* WORK EXPERIENCE */}
-                <section className="ethio-profile-editor-section">
-                  <div className="ethio-profile-editor-section-title ethio-profile-editor-title-with-action">
+                  <div className="ethio-profile-editor-title-with-action">
                     <div className="ethio-profile-editor-section-title">
                       <BriefcaseBusiness size={19} />
                       <div>
@@ -1031,7 +1347,8 @@ function MyProfile() {
                       className="ethio-profile-add-button"
                       onClick={addExperience}
                     >
-                      <Plus size={16} /> Add Experience
+                      <Plus size={16} />
+                      Add Experience
                     </button>
                   </div>
 
@@ -1051,14 +1368,14 @@ function MyProfile() {
 
                       <div className="ethio-profile-form-grid">
                         <label className="ethio-profile-field">
-                          Position
+                          Job Title
                           <input
-                            value={item.position}
-                            onChange={(e) =>
+                            value={item.jobTitle}
+                            onChange={(event) =>
                               updateExperience(
                                 item.id,
-                                "position",
-                                e.target.value
+                                "jobTitle",
+                                event.target.value
                               )
                             }
                             placeholder="e.g. Frontend Developer"
@@ -1069,11 +1386,11 @@ function MyProfile() {
                           Company
                           <input
                             value={item.company}
-                            onChange={(e) =>
+                            onChange={(event) =>
                               updateExperience(
                                 item.id,
                                 "company",
-                                e.target.value
+                                event.target.value
                               )
                             }
                             placeholder="Company name"
@@ -1081,17 +1398,194 @@ function MyProfile() {
                         </label>
 
                         <label className="ethio-profile-field ethio-profile-field-full">
-                          Duration
+                          Location
                           <input
-                            value={item.duration}
-                            onChange={(e) =>
+                            value={item.location}
+                            onChange={(event) =>
                               updateExperience(
                                 item.id,
-                                "duration",
-                                e.target.value
+                                "location",
+                                event.target.value
                               )
                             }
-                            placeholder="e.g. Jan 2024 - Present"
+                            placeholder="City or remote"
+                          />
+                        </label>
+
+                        <label className="ethio-profile-field">
+                          Start Date
+                          <input
+                            type="date"
+                            value={item.startDate}
+                            onChange={(event) =>
+                              updateExperience(
+                                item.id,
+                                "startDate",
+                                event.target.value
+                              )
+                            }
+                          />
+                        </label>
+
+                        <label className="ethio-profile-field">
+                          End Date
+                          <input
+                            type="date"
+                            value={item.endDate}
+                            disabled={item.isCurrent}
+                            onChange={(event) =>
+                              updateExperience(
+                                item.id,
+                                "endDate",
+                                event.target.value
+                              )
+                            }
+                          />
+                        </label>
+
+                        <label className="ethio-profile-checkbox-field ethio-profile-field-full">
+                          <input
+                            type="checkbox"
+                            checked={item.isCurrent}
+                            onChange={(event) =>
+                              updateExperience(
+                                item.id,
+                                "isCurrent",
+                                event.target.checked
+                              )
+                            }
+                          />
+                          I currently work here
+                        </label>
+
+                        <label className="ethio-profile-field ethio-profile-field-full">
+                          Description
+                          <textarea
+                            rows={3}
+                            value={item.description}
+                            onChange={(event) =>
+                              updateExperience(
+                                item.id,
+                                "description",
+                                event.target.value
+                              )
+                            }
+                            placeholder="Describe your responsibilities and achievements..."
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </section>
+
+                {/* EDUCATION */}
+                <section className="ethio-profile-editor-section">
+                  <div className="ethio-profile-editor-title-with-action">
+                    <div className="ethio-profile-editor-section-title">
+                      <GraduationCap size={19} />
+                      <div>
+                        <h3>Education</h3>
+                        <p>Your academic background.</p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="ethio-profile-add-button"
+                      onClick={addEducation}
+                    >
+                      <Plus size={16} />
+                      Add Education
+                    </button>
+                  </div>
+
+                  {draft.educations.map((item) => (
+                    <div
+                      className="ethio-profile-repeat-card"
+                      key={item.id}
+                    >
+                      <button
+                        type="button"
+                        className="ethio-profile-remove-button"
+                        onClick={() => removeEducation(item.id)}
+                        aria-label="Remove education"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+
+                      <div className="ethio-profile-form-grid">
+                        <label className="ethio-profile-field">
+                          Degree / Qualification
+                          <input
+                            value={item.degree}
+                            onChange={(event) =>
+                              updateEducation(
+                                item.id,
+                                "degree",
+                                event.target.value
+                              )
+                            }
+                            placeholder="Bachelor's Degree"
+                          />
+                        </label>
+
+                        <label className="ethio-profile-field">
+                          Institution
+                          <input
+                            value={item.institution}
+                            onChange={(event) =>
+                              updateEducation(
+                                item.id,
+                                "institution",
+                                event.target.value
+                              )
+                            }
+                            placeholder="University or institution"
+                          />
+                        </label>
+
+                        <label className="ethio-profile-field ethio-profile-field-full">
+                          Field of Study
+                          <input
+                            value={item.fieldOfStudy}
+                            onChange={(event) =>
+                              updateEducation(
+                                item.id,
+                                "fieldOfStudy",
+                                event.target.value
+                              )
+                            }
+                            placeholder="Software Engineering"
+                          />
+                        </label>
+
+                        <label className="ethio-profile-field">
+                          Start Date
+                          <input
+                            type="date"
+                            value={item.startDate}
+                            onChange={(event) =>
+                              updateEducation(
+                                item.id,
+                                "startDate",
+                                event.target.value
+                              )
+                            }
+                          />
+                        </label>
+
+                        <label className="ethio-profile-field">
+                          End Date
+                          <input
+                            type="date"
+                            value={item.endDate}
+                            onChange={(event) =>
+                              updateEducation(
+                                item.id,
+                                "endDate",
+                                event.target.value
+                              )
+                            }
                           />
                         </label>
 
@@ -1100,14 +1594,14 @@ function MyProfile() {
                           <textarea
                             rows={3}
                             value={item.description}
-                            onChange={(e) =>
-                              updateExperience(
+                            onChange={(event) =>
+                              updateEducation(
                                 item.id,
                                 "description",
-                                e.target.value
+                                event.target.value
                               )
                             }
-                            placeholder="Describe your responsibilities and achievements..."
+                            placeholder="Additional details about your education..."
                           />
                         </label>
                       </div>
@@ -1131,7 +1625,8 @@ function MyProfile() {
                       className="ethio-profile-add-button"
                       onClick={addCertification}
                     >
-                      <Plus size={16} /> Add Certificate
+                      <Plus size={16} />
+                      Add Certificate
                     </button>
                   </div>
 
@@ -1154,11 +1649,11 @@ function MyProfile() {
                           Certificate Name
                           <input
                             value={cert.name}
-                            onChange={(e) =>
+                            onChange={(event) =>
                               updateCertification(
                                 cert.id,
                                 "name",
-                                e.target.value
+                                event.target.value
                               )
                             }
                             placeholder="Certificate name"
@@ -1168,12 +1663,12 @@ function MyProfile() {
                         <label className="ethio-profile-field">
                           Issuing Organization
                           <input
-                            value={cert.issuer}
-                            onChange={(e) =>
+                            value={cert.issuingOrganization}
+                            onChange={(event) =>
                               updateCertification(
                                 cert.id,
-                                "issuer",
-                                e.target.value
+                                "issuingOrganization",
+                                event.target.value
                               )
                             }
                             placeholder="Organization"
@@ -1181,17 +1676,47 @@ function MyProfile() {
                         </label>
 
                         <label className="ethio-profile-field">
-                          Year
+                          Issue Date
                           <input
-                            value={cert.year}
-                            onChange={(e) =>
+                            type="date"
+                            value={cert.issueDate}
+                            onChange={(event) =>
                               updateCertification(
                                 cert.id,
-                                "year",
-                                e.target.value
+                                "issueDate",
+                                event.target.value
                               )
                             }
-                            placeholder="2026"
+                          />
+                        </label>
+
+                        <label className="ethio-profile-field">
+                          Expiry Date
+                          <input
+                            type="date"
+                            value={cert.expiryDate}
+                            onChange={(event) =>
+                              updateCertification(
+                                cert.id,
+                                "expiryDate",
+                                event.target.value
+                              )
+                            }
+                          />
+                        </label>
+
+                        <label className="ethio-profile-field">
+                          Credential ID
+                          <input
+                            value={cert.credentialId}
+                            onChange={(event) =>
+                              updateCertification(
+                                cert.id,
+                                "credentialId",
+                                event.target.value
+                              )
+                            }
+                            placeholder="Certificate ID"
                           />
                         </label>
 
@@ -1200,11 +1725,11 @@ function MyProfile() {
                           <input
                             type="url"
                             value={cert.credentialUrl}
-                            onChange={(e) =>
+                            onChange={(event) =>
                               updateCertification(
                                 cert.id,
                                 "credentialUrl",
-                                e.target.value
+                                event.target.value
                               )
                             }
                             placeholder="https://..."
@@ -1231,7 +1756,8 @@ function MyProfile() {
                       className="ethio-profile-add-button"
                       onClick={addProject}
                     >
-                      <Plus size={16} /> Add Project
+                      <Plus size={16} />
+                      Add Project
                     </button>
                   </div>
 
@@ -1254,11 +1780,11 @@ function MyProfile() {
                           Project Title
                           <input
                             value={project.title}
-                            onChange={(e) =>
+                            onChange={(event) =>
                               updateProject(
                                 project.id,
                                 "title",
-                                e.target.value
+                                event.target.value
                               )
                             }
                             placeholder="Project name"
@@ -1270,11 +1796,11 @@ function MyProfile() {
                           <textarea
                             rows={3}
                             value={project.description}
-                            onChange={(e) =>
+                            onChange={(event) =>
                               updateProject(
                                 project.id,
                                 "description",
-                                e.target.value
+                                event.target.value
                               )
                             }
                             placeholder="Describe what you built..."
@@ -1285,11 +1811,11 @@ function MyProfile() {
                           Technologies
                           <input
                             value={project.technologies}
-                            onChange={(e) =>
+                            onChange={(event) =>
                               updateProject(
                                 project.id,
                                 "technologies",
-                                e.target.value
+                                event.target.value
                               )
                             }
                             placeholder="React, Node.js, PostgreSQL"
@@ -1300,12 +1826,28 @@ function MyProfile() {
                           Project URL
                           <input
                             type="url"
-                            value={project.url}
-                            onChange={(e) =>
+                            value={project.projectUrl}
+                            onChange={(event) =>
                               updateProject(
                                 project.id,
-                                "url",
-                                e.target.value
+                                "projectUrl",
+                                event.target.value
+                              )
+                            }
+                            placeholder="https://..."
+                          />
+                        </label>
+
+                        <label className="ethio-profile-field ethio-profile-field-full">
+                          Project Image URL
+                          <input
+                            type="url"
+                            value={project.imageUrl}
+                            onChange={(event) =>
+                              updateProject(
+                                project.id,
+                                "imageUrl",
+                                event.target.value
                               )
                             }
                             placeholder="https://..."
@@ -1323,6 +1865,7 @@ function MyProfile() {
                   type="button"
                   className="ethio-profile-cancel-button"
                   onClick={closeEditor}
+                  disabled={saving}
                 >
                   Cancel
                 </button>
@@ -1330,9 +1873,22 @@ function MyProfile() {
                 <button
                   type="submit"
                   className="ethio-profile-save-button"
+                  disabled={saving}
                 >
-                  <Save size={17} />
-                  Save Changes
+                  {saving ? (
+                    <>
+                      <LoaderCircle
+                        size={17}
+                        className="ethio-profile-spinner"
+                      />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save size={17} />
+                      Save Changes
+                    </>
+                  )}
                 </button>
               </div>
             </form>

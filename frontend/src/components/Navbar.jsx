@@ -14,7 +14,9 @@ import "./Navbar.css";
 function Navbar({ onLoginClick, onRegisterClick }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const closeMenu = () => setMenuOpen(false);
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
 
   const handleLoginClick = (event) => {
     event.preventDefault();
@@ -33,75 +35,117 @@ function Navbar({ onLoginClick, onRegisterClick }) {
       <div className="nav-container">
 
         {/* Logo */}
-        <a className="brand" href="#home" onClick={closeMenu}>
-  <img
-    src="/ethiolance-emblem.png"
-    alt="EthioLance emblem"
-    className="brand-emblem"
-  />
+        <a
+          className="brand"
+          href="#home"
+          onClick={closeMenu}
+        >
+          <img
+            src="/ethiolance-emblem.png"
+            alt="EthioLance emblem"
+            className="brand-emblem"
+          />
 
-  <img
-    src="/ethiolance-wordmark.png"
-    alt="EthioLance"
-    className="brand-wordmark"
-  />
-</a>
+          <img
+            src="/ethiolance-wordmark.png"
+            alt="EthioLance"
+            className="brand-wordmark"
+          />
+        </a>
 
-        {/* Desktop Navigation */}
+        {/* Navigation Links */}
         <nav className={`nav-links ${menuOpen ? "nav-open" : ""}`}>
 
-          <a href="#home" className="nav-link active" onClick={closeMenu}>
+          <a
+            href="#home"
+            className="nav-link active"
+            onClick={closeMenu}
+          >
             <Home size={17} />
             Home
           </a>
 
-          <a href="#find-jobs" className="nav-link" onClick={closeMenu}>
+          <a
+            href="#find-work"
+            className="nav-link"
+            onClick={closeMenu}
+          >
             Find Jobs
           </a>
 
-          <a href="#find-freelancers" className="nav-link" onClick={closeMenu}>
+          <a
+            href="#hire-talent"
+            className="nav-link"
+            onClick={closeMenu}
+          >
             Find Freelancers
           </a>
 
-          <a href="#categories" className="nav-link" onClick={closeMenu}>
+          <a
+            href="#categories"
+            className="nav-link"
+            onClick={closeMenu}
+          >
             Categories
             <ChevronDown size={15} />
           </a>
 
-          <a href="#about" className="nav-link" onClick={closeMenu}>
+          <a
+            href="#how-it-works"
+            className="nav-link"
+            onClick={closeMenu}
+          >
             About
           </a>
 
-          <a href="#contact" className="nav-link" onClick={closeMenu}>
+          <a
+            href="#contact"
+            className="nav-link"
+            onClick={closeMenu}
+          >
             Contact
           </a>
 
-          {/* Mobile buttons */}
+          {/* Mobile Authentication Buttons */}
           <div className="mobile-nav-actions">
-            <a href="/login" onClick={handleLoginClick}>
+
+            <a
+              href="/login"
+              onClick={handleLoginClick}
+            >
               Sign In
             </a>
 
-            <a href="/register" onClick={handleRegisterClick}>
+            <a
+              href="/register"
+              onClick={handleRegisterClick}
+            >
               Sign Up
             </a>
+
           </div>
         </nav>
 
-        {/* Right side */}
+        {/* Right Side Actions */}
         <div className="nav-actions">
 
           {/* Search */}
           <div className="nav-search">
             <Search size={20} />
+
             <input
               type="text"
               placeholder="Search jobs or freelancers..."
+              aria-label="Search jobs or freelancers"
             />
           </div>
 
           {/* Notifications */}
-          <button className="nav-notification" aria-label="Notifications">
+          <button
+            type="button"
+            className="nav-notification"
+            aria-label="Notifications"
+          >
             <Bell size={21} />
             <span className="notification-count">3</span>
           </button>
@@ -122,9 +166,10 @@ function Navbar({ onLoginClick, onRegisterClick }) {
           >
             Sign Up
           </a>
+
         </div>
 
-        {/* Mobile menu button */}
+        {/* Mobile Menu Toggle */}
         <button
           className="nav-menu-toggle"
           type="button"

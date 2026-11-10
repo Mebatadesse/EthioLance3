@@ -1,0 +1,435 @@
+
+/* =========================================
+   ETHIOLANCE - CREATE CLIENT PROFILE
+   Premium Ivory, Black & Gold Theme
+========================================= */
+
+.ethio-client-profile {
+  --client-gold: #f4ad28;
+  --client-gold-dark: #d99a25;
+  --client-gold-deep: #805000;
+  --client-ivory: #fffaf6;
+  --client-white: #ffffff;
+  --client-black: #191919;
+  --client-text: #292929;
+  --client-muted: #77716a;
+  --client-border: #eee5da;
+  --client-input: #fffdfb;
+
+  min-height: 100vh;
+  width: 100%;
+  padding: 45px 35px;
+  background: var(--client-ivory);
+  color: var(--client-text);
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.ethio-client-profile *,
+.ethio-client-profile *::before,
+.ethio-client-profile *::after {
+  box-sizing: border-box;
+}
+
+/* PAGE HEADER */
+
+.ethio-client-profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.ethio-client-profile-eyebrow {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: var(--client-gold-deep);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.ethio-client-profile-header h1 {
+  margin: 0 0 9px;
+  color: var(--client-black);
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.ethio-client-profile-header p {
+  margin: 0;
+  color: var(--client-muted);
+  font-size: 14px;
+  line-height: 1.7;
+  max-width: 650px;
+}
+
+/* MAIN LAYOUT */
+
+.ethio-profile-layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 25px;
+  align-items: start;
+}
+
+/* CARDS */
+
+.ethio-profile-card {
+  background: var(--client-white);
+  border: 1px solid var(--client-border);
+  border-radius: 15px;
+  box-shadow: 0 5px 25px rgba(40, 30, 15, 0.045);
+}
+
+.ethio-profile-summary {
+  padding: 30px 22px;
+  text-align: center;
+  position: sticky;
+  top: 25px;
+}
+
+.ethio-profile-avatar {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fbd98f, var(--client-gold));
+  color: var(--client-black);
+  font-size: 28px;
+  font-weight: 800;
+  border: 4px solid #fff3d9;
+}
+
+.ethio-profile-summary h2 {
+  margin: 0 0 9px;
+  color: var(--client-black);
+  font-size: 20px;
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+
+.ethio-profile-role {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  color: var(--client-gold-deep);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.ethio-profile-summary-divider {
+  height: 1px;
+  background: var(--client-border);
+  margin: 24px 0;
+}
+
+.ethio-profile-summary-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  margin-bottom: 17px;
+  color: var(--client-muted);
+  text-align: left;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.ethio-profile-summary-item svg {
+  flex-shrink: 0;
+  color: var(--client-gold-dark);
+  margin-top: 1px;
+}
+
+.ethio-profile-account-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 9px 15px;
+  border-radius: 30px;
+  background: #fff8e9;
+  color: var(--client-gold-deep);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ethio-profile-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #28a36a;
+}
+
+/* PROFILE DETAILS */
+
+.ethio-profile-details {
+  padding: 30px;
+  min-width: 0;
+}
+
+.ethio-profile-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding-bottom: 22px;
+  margin-bottom: 25px;
+  border-bottom: 1px solid var(--client-border);
+}
+
+.ethio-profile-section-heading h2 {
+  margin: 0 0 7px;
+  color: var(--client-black);
+  font-size: 20px;
+  font-weight: 750;
+}
+
+.ethio-profile-section-heading p {
+  margin: 0;
+  color: var(--client-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.ethio-profile-section-heading > svg {
+  flex-shrink: 0;
+  color: var(--client-gold-dark);
+}
+
+/* FORM GRID */
+
+.ethio-profile-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 20px;
+}
+
+.ethio-profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+}
+
+.ethio-profile-field label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--client-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ethio-profile-field label svg {
+  color: var(--client-gold-dark);
+}
+
+.ethio-profile-field input,
+.ethio-profile-field textarea {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid var(--client-border);
+  border-radius: 8px;
+  outline: none;
+  background: var(--client-input);
+  color: var(--client-text);
+  font-family: inherit;
+  font-size: 13px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ethio-profile-field input {
+  height: 46px;
+}
+
+.ethio-profile-field textarea {
+  min-height: 130px;
+  resize: vertical;
+  line-height: 1.7;
+}
+
+.ethio-profile-field input::placeholder,
+.ethio-profile-field textarea::placeholder {
+  color: #aaa29a;
+}
+
+.ethio-profile-field input:focus,
+.ethio-profile-field textarea:focus {
+  border-color: var(--client-gold);
+  box-shadow: 0 0 0 3px rgba(244, 173, 40, 0.13);
+}
+
+.ethio-profile-field input:disabled {
+  background: #f5f2ee;
+  color: #827c74;
+  cursor: not-allowed;
+}
+
+.ethio-profile-field textarea:disabled {
+  background: #f5f2ee;
+  color: #827c74;
+  cursor: not-allowed;
+}
+
+.ethio-profile-full-width {
+  grid-column: 1 / -1;
+}
+
+/* FORM BUTTONS */
+
+.ethio-profile-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 13px;
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1px solid var(--client-border);
+}
+
+.ethio-profile-form-actions button {
+  min-height: 45px;
+  padding: 11px 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ethio-profile-cancel-btn {
+  background: var(--client-white);
+  border: 1px solid var(--client-border);
+  color: var(--client-text);
+}
+
+.ethio-profile-cancel-btn:hover:not(:disabled) {
+  background: #f7f3ed;
+  border-color: #d8c9b7;
+}
+
+.ethio-profile-save-btn {
+  background: var(--client-gold);
+  border: 1px solid var(--client-gold);
+  color: var(--client-black);
+  box-shadow: 0 4px 12px rgba(244, 173, 40, 0.2);
+}
+
+.ethio-profile-save-btn:hover:not(:disabled) {
+  background: var(--client-gold-dark);
+  border-color: var(--client-gold-dark);
+  transform: translateY(-1px);
+}
+
+.ethio-profile-form-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* MESSAGE */
+
+.ethio-profile-message {
+  padding: 14px 17px;
+  margin-bottom: 22px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.ethio-profile-message.success {
+  background: #eaf8ef;
+  border: 1px solid #bce5c9;
+  color: #237342;
+}
+
+.ethio-profile-message.error {
+  background: #fff0ed;
+  border: 1px solid #f2c5bb;
+  color: #b33a2b;
+}
+
+/* RESPONSIVE DESIGN */
+
+@media (max-width: 1000px) {
+  .ethio-profile-layout {
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .ethio-profile-details {
+    padding: 24px;
+  }
+
+  .ethio-client-profile {
+    padding: 35px 22px;
+  }
+}
+
+@media (max-width: 760px) {
+  .ethio-profile-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .ethio-profile-summary {
+    position: static;
+  }
+
+  .ethio-profile-summary-item {
+    justify-content: center;
+  }
+
+  .ethio-profile-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ethio-profile-full-width {
+    grid-column: auto;
+  }
+
+  .ethio-client-profile-header h1 {
+    font-size: 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ethio-client-profile {
+    padding: 25px 14px;
+  }
+
+  .ethio-profile-details {
+    padding: 20px 15px;
+  }
+
+  .ethio-profile-section-heading h2 {
+    font-size: 17px;
+  }
+
+  .ethio-profile-form-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .ethio-profile-form-actions button {
+    width: 100%;
+  }
+
+  .ethio-client-profile-header h1 {
+    font-size: 22px;
+  }
+}

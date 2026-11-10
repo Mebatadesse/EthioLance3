@@ -7,7 +7,10 @@ import HomePage from "./pages/HomePage.jsx";
 import LoginPage from "./pages/Login.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
-import CreateProfile from "./pages/freelancer/CreateProfile";
+
+import CreateProfile from "./pages/freelancer/CreateProfile.jsx";
+import CreateClientProfile from "./pages/Client/CreateClientProfile.jsx";
+
 import SettingsPage from "./pages/sections/Settings.jsx";
 import ClientDashboard from "./pages/Client/ClientDashboard.jsx";
 
@@ -73,6 +76,7 @@ function App() {
 
   return (
     <Routes>
+      {/* Homepage */}
       <Route
         path="/"
         element={
@@ -87,16 +91,19 @@ function App() {
         }
       />
 
-      <Route
-        path="/settings"
-        element={<SettingsPage />}
-      />
-
+      {/* Freelancer profile creation */}
       <Route
         path="/freelancer/create-profile"
         element={<CreateProfile />}
       />
 
+      {/* Client profile creation */}
+      <Route
+        path="/client/create-profile"
+        element={<CreateClientProfile />}
+      />
+
+      {/* Authentication */}
       <Route
         path="/login"
         element={<LoginPage />}
@@ -107,14 +114,22 @@ function App() {
         element={<RegisterPage />}
       />
 
+      {/* Freelancer dashboard */}
       <Route
         path="/freelancer-dashboard"
         element={<DashboardPage role="FREELANCER" />}
       />
 
+      {/* Client dashboard */}
       <Route
         path="/client-dashboard"
         element={<ClientDashboard />}
+      />
+
+      {/* Settings */}
+      <Route
+        path="/settings"
+        element={<SettingsPage />}
       />
     </Routes>
   );

@@ -394,7 +394,7 @@ import {
         </section>
   
         {/* Footer */}
-        <footer className="footer">
+        <footer className="footer" id="contact">
           <div className="container footer-container">
             <a className="brand footer-brand" href="#home">
               <span className="brand-mark">e</span>

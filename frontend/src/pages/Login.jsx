@@ -7,8 +7,6 @@ import {
   LockKeyhole,
   Eye,
   EyeOff,
-  Sun,
-  Moon,
   Check,
   X,
 } from "lucide-react";
@@ -25,7 +23,6 @@ function Login({ onClose }) {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -88,7 +85,9 @@ function Login({ onClose }) {
       }
 
       if (!data.token || !data.user) {
-        setMessage("The server response is missing login information.");
+        setMessage(
+          "The server response is missing login information."
+        );
         return;
       }
 
@@ -148,7 +147,7 @@ function Login({ onClose }) {
       onClick={closeModal}
     >
       <section
-        className={`login-modal-window ${darkMode ? "dark-mode" : ""}`}
+        className="login-modal-window"
         role="dialog"
         aria-modal="true"
         aria-labelledby="login-title"
@@ -166,26 +165,6 @@ function Login({ onClose }) {
 
         {/* Top controls */}
         <div className="login-top-controls">
-          <div className="theme-toggle">
-            <button
-              type="button"
-              className={!darkMode ? "active" : ""}
-              onClick={() => setDarkMode(false)}
-              aria-label="Light mode"
-            >
-              <Sun size={21} />
-            </button>
-
-            <button
-              type="button"
-              className={darkMode ? "active" : ""}
-              onClick={() => setDarkMode(true)}
-              aria-label="Dark mode"
-            >
-              <Moon size={21} />
-            </button>
-          </div>
-
           <button
             type="button"
             className="login-modal-close"
@@ -204,8 +183,8 @@ function Login({ onClose }) {
             <Link to="/" onClick={closeModal}>
               <img
                 src="/ethiolance-emblem.png"
-    alt="EthioLance emblem"
-    className="login-logo"
+                alt="EthioLance emblem"
+                className="login-logo"
               />
             </Link>
 

@@ -18,6 +18,23 @@ import {
   X,
 } from "lucide-react";
 
+const API_BASE_URL = (
+  import.meta.env.VITE_API_URL || "http://localhost:5000"
+).replace(/\/api\/?$/, "").replace(/\/$/, "");
+const PROFILE_ENDPOINT = `${API_BASE_URL}/api/profiles/freelancer/me`;
+
+const getToken = () =>
+  localStorage.getItem("ethioLanceToken") ||
+  sessionStorage.getItem("ethioLanceToken");
+
+const readResponse = async (response) => {
+  try {
+    return await response.json();
+  } catch {
+    return {};
+  }
+};
+
 function CreateProfile() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
@@ -26,6 +43,7 @@ function CreateProfile() {
     try {
       return JSON.parse(
         localStorage.getItem("ethioLanceUser") ||
+        sessionStorage.getItem("ethioLanceUser") ||
         localStorage.getItem("user") ||
         "{}"
       );
@@ -47,6 +65,7 @@ function CreateProfile() {
   const [profileImage, setProfileImage] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   const updateField = (field, value) => {
     setFormData((prev) => ({
@@ -122,23 +141,59 @@ function CreateProfile() {
   };
 
   // Save profile
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
     setSuccess("");
 
-    const profile = {
-      ...formData,
-      profileImage,
-      completed: true,
-      createdAt: new Date().toISOString(),
+    const token = getToken();
+    if (!token) {
+      setError("Please log in again before saving your profile.");
+      return;
+    }
+
+    if (storedUser.role && storedUser.role !== "FREELANCER") {
+      setError("This profile is only available to freelancer accounts.");
+      return;
+    }
+
+    const payload = {
+      headline: formData.title.trim(),
+      bio: formData.bio.trim(),
+      location: formData.location.trim(),
+      hourlyRate: formData.hourlyRate ? Number(formData.hourlyRate) : null,
+      skills: formData.skills,
     };
 
     try {
-      localStorage.setItem(
-        "ethioLanceProfile",
-        JSON.stringify(profile)
-      );
+      setIsSaving(true);
+      let response = await fetch(PROFILE_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      let data = await readResponse(response);
+
+      // The profile may already exist if the user returned to this page.
+      if (response.status === 409) {
+        response = await fetch(PROFILE_ENDPOINT, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+        data = await readResponse(response);
+      }
+
+      if (!response.ok) {
+        throw new Error(data.message || "Unable to save your freelancer profile.");
+      }
 
       localStorage.setItem("ethioLanceProfileSkipped", "false");
 
@@ -147,10 +202,10 @@ function CreateProfile() {
       setTimeout(() => {
         continueToDashboard();
       }, 1000);
-    } catch {
-      setError(
-        "Unable to save your profile. Your image may be too large. Try a smaller image."
-      );
+    } catch (saveError) {
+      setError(saveError.message || "Unable to save your profile.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -583,9 +638,10 @@ function CreateProfile() {
 
               <button
                 type="submit"
+                disabled={isSaving}
                 className="inline-flex items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-[#ffe8a3] via-[#f4ad28] to-[#d99516] px-8 py-3.5 text-sm font-bold text-[#151515] shadow-[0_8px_20px_rgba(217,149,22,0.22)] transition hover:-translate-y-0.5 hover:shadow-lg"
               >
-                Save Profile
+                {isSaving ? "Saving..." : "Save Profile"}
                 <ArrowRight size={18} />
               </button>
 

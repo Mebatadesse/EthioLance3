@@ -11,8 +11,6 @@ import {
   Code2,
   BriefcaseBusiness,
   X,
-  Sun,
-  Moon,
 } from "lucide-react";
 
 import "./RegisterPage.css";
@@ -32,7 +30,6 @@ function RegisterPage({ onClose, onLoginClick }) {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
 
   const [message, setMessage] = useState("");
   const [googleMessage, setGoogleMessage] = useState("");
@@ -124,9 +121,6 @@ function RegisterPage({ onClose, onLoginClick }) {
         return;
       }
 
-      // Get the registered user from the backend response.
-      // If the backend returns only success/message, create
-      // a local user object using the submitted information.
       const backendUser = data.user || data.data?.user || {};
 
       const registeredUser = {
@@ -137,7 +131,22 @@ function RegisterPage({ onClose, onLoginClick }) {
         role: backendUser.role || role,
       };
 
-      // Save the newly registered account locally.
+      if (
+        typeof data.token !== "string" ||
+        data.token.split(".").length !== 3
+      ) {
+        console.error("Registration response has no valid JWT:", {
+          success: data.success,
+          hasToken: !!data.token,
+          tokenType: typeof data.token,
+        });
+
+        setMessage(
+          "Account created, but authentication token was not received. Please log in."
+        );
+        return;
+      }
+
       localStorage.setItem(
         "ethioLanceUser",
         JSON.stringify(registeredUser)
@@ -148,21 +157,21 @@ function RegisterPage({ onClose, onLoginClick }) {
         JSON.stringify(registeredUser)
       );
 
-      // Clear old profile information and skip status.
+      localStorage.setItem("ethioLanceToken", data.token);
+
+      sessionStorage.removeItem("ethioLanceToken");
+      sessionStorage.removeItem("ethioLanceUser");
+
       localStorage.removeItem("ethioLanceProfile");
       localStorage.removeItem("ethioLanceProfileSkipped");
-
-      // Remove any stale frontend token.
-      // This does not create a backend authentication token.
       localStorage.removeItem("token");
 
-      // Redirect according to account type.
       if (registeredUser.role === "FREELANCER") {
         navigate("/freelancer/create-profile", {
           replace: true,
         });
       } else if (registeredUser.role === "CLIENT") {
-        navigate("/client/dashboard", {
+        navigate("/client/create-profile", {
           replace: true,
         });
       } else {
@@ -183,40 +192,13 @@ function RegisterPage({ onClose, onLoginClick }) {
 
   return (
     <div
-      className={`ethio-register-overlay ${
-        darkMode ? "ethio-register-dark-mode" : ""
-      }`}
+      className="ethio-register-overlay"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
           handleClose();
         }
       }}
     >
-      {/* Theme toggle */}
-      <div className="ethio-register-theme-toggle">
-        <button
-          type="button"
-          className={!darkMode ? "active" : ""}
-          onClick={() => setDarkMode(false)}
-          aria-label="Light mode"
-          title="Light mode"
-        >
-          <Sun size={20} />
-        </button>
-
-        <span />
-
-        <button
-          type="button"
-          className={darkMode ? "active" : ""}
-          onClick={() => setDarkMode(true)}
-          aria-label="Dark mode"
-          title="Dark mode"
-        >
-          <Moon size={20} />
-        </button>
-      </div>
-
       <main
         className="ethio-register-page"
         role="dialog"
@@ -253,7 +235,10 @@ function RegisterPage({ onClose, onLoginClick }) {
 
           {/* Heading */}
           <div className="ethio-register-heading">
-            <h1 id="ethio-register-title">Create your account</h1>
+            <h1 id="ethio-register-title">
+              Create your account
+            </h1>
+
             <p>
               Join EthioLance and connect skills with opportunity.
             </p>
@@ -360,7 +345,9 @@ function RegisterPage({ onClose, onLoginClick }) {
             </div>
 
             <div className="ethio-register-field">
-              <label htmlFor="register-email">Email address</label>
+              <label htmlFor="register-email">
+                Email address
+              </label>
 
               <div className="ethio-register-input-wrapper">
                 <Mail size={18} />
@@ -381,7 +368,9 @@ function RegisterPage({ onClose, onLoginClick }) {
             </div>
 
             <div className="ethio-register-field">
-              <label htmlFor="register-password">Password</label>
+              <label htmlFor="register-password">
+                Password
+              </label>
 
               <div className="ethio-register-input-wrapper">
                 <LockKeyhole size={18} />
