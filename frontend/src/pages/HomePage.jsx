@@ -16,7 +16,7 @@ import {
   } from "lucide-react";
   
   import "./HomePage.css";
-  
+  import AnimatedNetworkBackground from "../components/AnimatedNetworkBackground";
   const categories = [
     {
       icon: Code2,
@@ -62,7 +62,8 @@ import {
     };
   
     return (
-      <>
+    <div className="homepage">
+    <AnimatedNetworkBackground />
         {/* Hero section */}
         <section className="hero" id="home">
           <div className="container hero-container">
@@ -426,7 +427,7 @@ import {
             </p>
           </div>
         </footer>
-      </>
+  </div>
     );
   }
   
