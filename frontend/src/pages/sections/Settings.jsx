@@ -68,15 +68,26 @@ export default function SettingsPage() {
       const profile = JSON.parse(
         localStorage.getItem("ethioLanceProfile") || "{}"
       );
+      const user = JSON.parse(
+        localStorage.getItem("ethioLanceUser") ||
+          sessionStorage.getItem("ethioLanceUser") ||
+          "{}"
+      );
 
       setSettings((previous) => ({
         ...previous,
         ...stored,
-        fullName: stored.fullName || profile.fullName || "",
-        email: stored.email || profile.email || "",
-        phone: stored.phone || profile.phone || "",
-        location: stored.location || profile.location || "",
-        bio: stored.bio || profile.bio || "",
+        fullName:
+          stored.fullName ??
+          profile.fullName ??
+          profile.name ??
+          user.name ??
+          user.firstName ??
+          "",
+        email: stored.email ?? profile.email ?? user.email ?? "",
+        phone: stored.phone ?? profile.phone ?? user.phone ?? "",
+        location: stored.location ?? profile.location ?? user.location ?? "",
+        bio: stored.bio ?? profile.bio ?? "",
       }));
     } catch {
       console.error("Could not load saved settings.");
@@ -92,9 +103,45 @@ export default function SettingsPage() {
   };
 
   const saveSettings = () => {
-    localStorage.setItem("ethioLanceSettings", JSON.stringify(settings));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    try {
+      localStorage.setItem("ethioLanceSettings", JSON.stringify(settings));
+      window.dispatchEvent(new Event("ethio-theme-change"));
+
+      // Keep the settings form and freelancer profile in sync locally.
+      const profile = JSON.parse(
+        localStorage.getItem("ethioLanceProfile") || "{}"
+      );
+      localStorage.setItem(
+        "ethioLanceProfile",
+        JSON.stringify({
+          ...profile,
+          name: settings.fullName,
+          email: settings.email,
+          phone: settings.phone,
+          location: settings.location,
+          bio: settings.bio,
+        })
+      );
+
+      const userStorage = localStorage.getItem("ethioLanceUser")
+        ? localStorage
+        : sessionStorage;
+      const user = JSON.parse(userStorage.getItem("ethioLanceUser") || "{}");
+      if (Object.keys(user).length) {
+        const nameParts = settings.fullName.trim().split(/\s+/);
+        user.name = settings.fullName.trim();
+        user.firstName = nameParts[0] || "";
+        user.email = settings.email.trim();
+        user.phone = settings.phone.trim();
+        userStorage.setItem("ethioLanceUser", JSON.stringify(user));
+      }
+
+      setSaved(true);
+      window.setTimeout(() => setSaved(false), 3000);
+    } catch {
+      setSaved(false);
+      window.alert("Could not save settings in this browser.");
+    }
   };
 
   const handlePasswordChange = (event) => {
@@ -125,9 +172,11 @@ export default function SettingsPage() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/login");
+    localStorage.removeItem("ethioLanceToken");
+    localStorage.removeItem("ethioLanceUser");
+    sessionStorage.removeItem("ethioLanceToken");
+    sessionStorage.removeItem("ethioLanceUser");
+    navigate("/", { replace: true });
   };
 
   const handleDeleteAccount = () => {
@@ -161,7 +210,11 @@ export default function SettingsPage() {
   );
 
   return (
-    <div className="ethio-settings-page">
+    <div
+      className={`ethio-settings-page ${
+        settings.theme === "dark" ? "settings-dark-mode" : ""
+      }`}
+    >
       <div className="settings-header">
         <div>
           <span className="settings-eyebrow">ACCOUNT MANAGEMENT</span>
@@ -181,10 +234,12 @@ export default function SettingsPage() {
 
           {sections.map(({ id, label, icon: Icon }) => (
             <button
+              type="button"
               key={id}
               className={`settings-nav-item ${
                 activeSection === id ? "active" : ""
               }`}
+              aria-current={activeSection === id ? "page" : undefined}
               onClick={() => setActiveSection(id)}
             >
               <Icon size={19} />
@@ -223,6 +278,7 @@ export default function SettingsPage() {
                   Full name
                   <input
                     value={settings.fullName}
+                    autoComplete="name"
                     onChange={(e) =>
                       updateSetting("fullName", e.target.value)
                     }
@@ -234,6 +290,7 @@ export default function SettingsPage() {
                   Email address
                   <input
                     type="email"
+                    autoComplete="email"
                     value={settings.email}
                     onChange={(e) => updateSetting("email", e.target.value)}
                     placeholder="example@email.com"
@@ -244,6 +301,7 @@ export default function SettingsPage() {
                   Phone number
                   <input
                     value={settings.phone}
+                    autoComplete="tel"
                     onChange={(e) => updateSetting("phone", e.target.value)}
                     placeholder="+251 9..."
                   />
@@ -322,6 +380,11 @@ export default function SettingsPage() {
               </div>
 
               <div className="settings-save-area">
+                {saved && activeSection !== "profile" && (
+                  <span className="settings-success">
+                    <CheckCircle2 size={17} /> Settings saved
+                  </span>
+                )}
                 <button className="settings-save-button" onClick={saveSettings}>
                   <Save size={17} /> Save preferences
                 </button>
@@ -446,6 +509,11 @@ export default function SettingsPage() {
               </div>
 
               <div className="settings-save-area">
+                {saved && activeSection !== "profile" && (
+                  <span className="settings-success">
+                    <CheckCircle2 size={17} /> Settings saved
+                  </span>
+                )}
                 <button className="settings-save-button" onClick={saveSettings}>
                   <Save size={17} /> Save privacy settings
                 </button>
@@ -465,6 +533,7 @@ export default function SettingsPage() {
 
               <div className="settings-theme-options">
                 <button
+                  type="button"
                   className={`settings-theme-card ${
                     settings.theme === "light" ? "selected" : ""
                   }`}
@@ -476,6 +545,7 @@ export default function SettingsPage() {
                 </button>
 
                 <button
+                  type="button"
                   className={`settings-theme-card ${
                     settings.theme === "dark" ? "selected" : ""
                   }`}
@@ -488,12 +558,16 @@ export default function SettingsPage() {
               </div>
 
               <p className="settings-message">
-                Theme preference is saved here. Applying dark mode across the
-                entire application requires connecting it to your app's theme
-                system.
+                Your theme is applied to this settings screen and saved in this
+                browser.
               </p>
 
               <div className="settings-save-area">
+                {saved && activeSection !== "profile" && (
+                  <span className="settings-success">
+                    <CheckCircle2 size={17} /> Settings saved
+                  </span>
+                )}
                 <button className="settings-save-button" onClick={saveSettings}>
                   <Save size={17} /> Save appearance
                 </button>

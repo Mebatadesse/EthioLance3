@@ -412,3 +412,92 @@
     min-width: 100%;
   }
 }
+
+/* Clearer proposal tracking layout */
+.ethio-myproposals-page {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 28px;
+  background: #fffaf6;
+}
+
+.ethio-myproposals-header {
+  min-height: 0;
+  padding: 0 0 22px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee8df;
+  border-radius: 0;
+  background: transparent;
+  color: #202020;
+}
+
+.ethio-myproposals-eyebrow { color: #b17a13; }
+.ethio-myproposals-header h1 { margin: 7px 0 5px; color: #151515; font-size: 29px; letter-spacing: -0.5px; }
+.ethio-myproposals-header p { color: #77717a; font-size: 13px; }
+.ethio-myproposals-header-icon { width: 46px; height: 46px; color: #956812; background: #fff2d4; border-radius: 12px; }
+
+.ethio-myproposals-stats { gap: 13px; margin-bottom: 22px; }
+.ethio-myproposals-stat-card { min-height: 98px; padding: 17px; border-color: #eee8df; border-radius: 12px; box-shadow: 0 3px 12px rgba(20, 20, 20, 0.025); }
+.ethio-myproposals-stat-icon { width: 40px; height: 40px; border-radius: 11px; }
+.ethio-myproposals-stat-card span { font-size: 11px; }
+.ethio-myproposals-stat-card h2 { font-size: 23px; }
+
+.ethio-myproposals-content { padding: 22px; border-color: #eee8df; border-radius: 13px; box-shadow: 0 4px 16px rgba(20, 20, 20, 0.025); }
+.ethio-myproposals-toolbar h2 { color: #202020; font-size: 17px; }
+.ethio-myproposals-toolbar p { font-size: 11px; }
+.ethio-myproposals-search { min-height: 42px; padding: 9px 12px; border-radius: 8px; background: #fff; }
+.ethio-myproposals-search input { font-size: 12px; }
+
+.ethio-myproposals-filters { gap: 8px; margin: 18px 0; padding-bottom: 13px; }
+.ethio-myproposals-filters button { display: inline-flex; align-items: center; gap: 8px; padding: 8px 11px; border-radius: 7px; color: #5d5d5d; font-size: 11px; }
+.ethio-myproposals-filter-count { display: inline-grid; min-width: 19px; height: 19px; place-items: center; padding: 0 5px; border-radius: 20px; background: #f2f1ef; color: #686868; font-size: 10px; }
+.ethio-myproposals-filters button.active { background: #202020; border-color: #202020; color: #fff; }
+.ethio-myproposals-filters button.active .ethio-myproposals-filter-count { background: rgba(255, 255, 255, 0.16); color: #fff; }
+
+.ethio-myproposals-list { grid-template-columns: 1fr; gap: 11px; }
+.ethio-myproposals-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 15px 22px; padding: 18px 20px; border-color: #eee8df; border-radius: 11px; }
+.ethio-myproposals-card:hover { border-color: #dfc98f; transform: translateY(-1px); box-shadow: 0 6px 17px rgba(20, 20, 20, 0.045); }
+.ethio-myproposals-card-top { grid-column: 1 / -1; justify-content: flex-start; gap: 12px; }
+.ethio-myproposals-job-icon { width: 40px; height: 40px; flex: 0 0 auto; border-radius: 10px; }
+.ethio-myproposals-card-title { min-width: 0; flex: 1; }
+.ethio-myproposals-card-title h3 { overflow-wrap: anywhere; margin: 0 0 4px; color: #202020; font-size: 14px; }
+.ethio-myproposals-client { margin: 0; font-size: 10px; }
+.ethio-myproposals-status { padding: 5px 9px; font-size: 9px; letter-spacing: 0.2px; }
+.ethio-myproposals-details { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0; }
+.ethio-myproposals-details > div { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 6px; padding: 10px 12px; border-radius: 8px; background: #faf9f7; }
+.ethio-myproposals-details small { color: #858585; font-size: 9px; }
+.ethio-myproposals-details strong { display: inline-flex; align-items: center; gap: 6px; min-width: 0; color: #333; font-size: 10px; font-weight: 700; overflow-wrap: anywhere; }
+.ethio-myproposals-details svg { flex: 0 0 auto; color: #a47a2c; }
+.ethio-myproposals-card-footer { justify-content: flex-end; min-width: 132px; padding: 0; border: 0; }
+.ethio-myproposals-view-btn { padding: 8px 10px; border: 1px solid #e9e5dd; border-radius: 7px; background: #fff; font-size: 10px; }
+.ethio-myproposals-view-btn:hover { border-color: #dfc98f; background: #fff8e9; color: #805500; }
+.ethio-myproposals-card-footer > svg { display: none; }
+.ethio-myproposals-empty { padding: 55px 20px; }
+
+.ethio-myproposals-modal-header { background: #fffaf1; color: #202020; border-bottom: 1px solid #eee8df; }
+.ethio-myproposals-modal-header span { color: #a27318; }
+.ethio-myproposals-modal-header h2 { color: #202020; font-size: 20px; }
+.ethio-myproposals-modal-header button { color: #555; }
+
+.ethio-myproposals-page button:focus-visible,
+.ethio-myproposals-page input:focus-visible,
+.ethio-myproposals-modal button:focus-visible { outline: 3px solid rgba(217, 154, 37, 0.3); outline-offset: 2px; }
+
+@media (max-width: 760px) {
+  .ethio-myproposals-page { padding: 20px; }
+  .ethio-myproposals-card { grid-template-columns: 1fr; }
+  .ethio-myproposals-card-top { grid-column: 1; }
+  .ethio-myproposals-details { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ethio-myproposals-card-footer { justify-content: flex-start; }
+}
+
+@media (max-width: 520px) {
+  .ethio-myproposals-page { padding: 15px; }
+  .ethio-myproposals-header { padding-bottom: 17px; }
+  .ethio-myproposals-header h1 { font-size: 24px; }
+  .ethio-myproposals-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ethio-myproposals-content { padding: 16px; }
+  .ethio-myproposals-details { grid-template-columns: 1fr; }
+  .ethio-myproposals-toolbar { align-items: stretch; }
+  .ethio-myproposals-search { min-width: 100%; }
+}

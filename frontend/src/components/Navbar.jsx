@@ -3,7 +3,6 @@ import { useState } from "react";
 import {
   Home,
   Search,
-  Bell,
   ChevronDown,
   Menu,
   X,
@@ -28,6 +27,15 @@ function Navbar({ onLoginClick, onRegisterClick }) {
     event.preventDefault();
     closeMenu();
     onRegisterClick?.();
+  };
+
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+    const query = String(new FormData(event.currentTarget).get("query") || "").trim();
+    if (!query) return;
+    window.dispatchEvent(new CustomEvent("ethio-search", { detail: query }));
+    closeMenu();
+    document.getElementById("categories")?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -66,7 +74,7 @@ function Navbar({ onLoginClick, onRegisterClick }) {
           </a>
 
           <a
-            href="#find-work"
+            href="#latest-jobs"
             className="nav-link"
             onClick={closeMenu}
           >
@@ -106,6 +114,12 @@ function Navbar({ onLoginClick, onRegisterClick }) {
             Contact
           </a>
 
+          <form className="nav-search mobile-nav-search" role="search" onSubmit={handleSearchSubmit}>
+            <Search size={20} />
+            <input name="query" type="text" placeholder="Search skills..." aria-label="Search skills and categories" />
+            <button className="nav-search-submit" type="submit" aria-label="Search"><Search size={16} /></button>
+          </form>
+
           {/* Mobile Authentication Buttons */}
           <div className="mobile-nav-actions">
 
@@ -130,25 +144,19 @@ function Navbar({ onLoginClick, onRegisterClick }) {
         <div className="nav-actions">
 
           {/* Search */}
-          <div className="nav-search">
+          <form className="nav-search" role="search" onSubmit={handleSearchSubmit}>
             <Search size={20} />
 
             <input
+              name="query"
               type="text"
-              placeholder="Search jobs or freelancers..."
-              aria-label="Search jobs or freelancers"
+              placeholder="Search skills..."
+              aria-label="Search skills and categories"
             />
-          </div>
-
-          {/* Notifications */}
-          <button
-            type="button"
-            className="nav-notification"
-            aria-label="Notifications"
-          >
-            <Bell size={21} />
-            <span className="notification-count">3</span>
-          </button>
+            <button className="nav-search-submit" type="submit" aria-label="Search">
+              <Search size={16} />
+            </button>
+          </form>
 
           {/* Authentication */}
           <a

@@ -1,152 +1,154 @@
-
 import {
   ArrowRight,
-  Search,
-  Wallet,
+  Award,
   BriefcaseBusiness,
   ChartNoAxesColumnIncreasing,
+  CircleCheckBig,
+  ClipboardList,
+  Eye,
+  Search,
+  Star,
+  UserRound,
+  Wallet,
 } from "lucide-react";
 
 import "./Dashboard.css";
 
-function Dashboard({
-  displayName = "there",
-  searchTerm = "",
-  onNavigate = () => {},
-}) {
+function Dashboard({ displayName = "there", onNavigate = () => {} }) {
+  const metrics = [
+    { label: "Active projects", value: "—", icon: BriefcaseBusiness, tone: "gold" },
+    { label: "Completed jobs", value: "—", icon: CircleCheckBig, tone: "green" },
+    { label: "Client rating", value: "—", icon: Star, tone: "purple" },
+    { label: "Profile views", value: "—", icon: Eye, tone: "blue" },
+  ];
+
+  const shortcuts = [
+    { label: "Browse jobs", description: "Find your next project", icon: Search, section: "Browse Jobs" },
+    { label: "My proposals", description: "Track submitted proposals", icon: ClipboardList, section: "My Proposals" },
+    { label: "Complete your profile", description: "Show clients what you do", icon: UserRound, section: "My Profile" },
+    { label: "View portfolio", description: "Showcase your work", icon: Award, section: "Portfolio" },
+  ];
+
   return (
-    <>
-      {/* WELCOME AND BALANCE */}
-      <section className="freelancer-hero-grid">
-        <div className="freelancer-welcome-card">
-          <div className="freelancer-welcome-content">
-            <span className="freelancer-welcome-label">
-              FREELANCER WORKSPACE
-            </span>
-
-            <h1>
-              Welcome back, <span>{displayName}!</span>
-            </h1>
-
-            <p>Let's make more progress today.</p>
-
-            <button
-              type="button"
-              className="freelancer-primary-button"
-              onClick={() => onNavigate("Browse Jobs")}
-            >
-              <Search size={19} />
-              Find a Job
-            </button>
-          </div>
-
-          <div className="freelancer-hero-decoration">
-            <div className="freelancer-hero-orb" />
-            <div className="freelancer-hero-sparkle">✦</div>
-            <div className="freelancer-hero-wave" />
-          </div>
+    <div className="freelancer-dashboard-home">
+      <header className="freelancer-dashboard-welcome">
+        <div>
+          <span className="freelancer-dashboard-eyebrow">FREELANCER WORKSPACE</span>
+          <h1>Welcome back, {displayName}</h1>
+          <p>Here’s what’s happening with your freelance work.</p>
         </div>
-
-        {/* BALANCE */}
-        <div className="freelancer-balance-card">
-          <div className="freelancer-balance-heading">
-            <Wallet size={31} />
-            <h2>Your Balance</h2>
-          </div>
-
-          <h3>ETB 0.00</h3>
-
-          <button
-            type="button"
-            className="freelancer-withdraw-button"
-            onClick={() => onNavigate("Earnings & Payments")}
-          >
-            Withdraw <ArrowRight size={19} />
-          </button>
-
-          <div className="freelancer-wallet-decoration">
-            <Wallet size={82} strokeWidth={1.2} />
-            <span>✦</span>
-          </div>
-        </div>
-      </section>
-
-      {/* STATISTICS */}
-      <section className="freelancer-stats">
-        {[
-          "Active Projects",
-          "Completed Jobs",
-          "Top Rated",
-          "Profile Views",
-        ].map((label) => (
-          <article
-            key={label}
-            className="freelancer-stat-card"
-          >
-            <div className="freelancer-stat-information">
-              <h2>--</h2>
-              <p>{label}</p>
-            </div>
-          </article>
-        ))}
-      </section>
-
-      {/* EARNINGS AND RECENT JOBS */}
-      <section className="freelancer-dashboard-panels">
-
-        {/* EARNINGS */}
-        <article className="freelancer-panel freelancer-earnings-panel">
-          <div className="freelancer-panel-heading">
-            <div className="freelancer-panel-title">
-              <ChartNoAxesColumnIncreasing size={29} />
-              <h2>Your Earnings</h2>
-            </div>
-          </div>
-
-          <h3 className="freelancer-earnings-amount">
-            ETB 0.00
-          </h3>
-
-          <div className="freelancer-empty-state">
-            <p>No earnings data available yet.</p>
-          </div>
-        </article>
-
-        {/* RECENT JOBS */}
-        <article
-          className="freelancer-panel freelancer-jobs-panel"
-          id="freelancer-recent-jobs"
+        <button
+          type="button"
+          className="freelancer-dashboard-primary-action"
+          onClick={() => onNavigate("Browse Jobs")}
         >
-          <div className="freelancer-panel-heading">
-            <div className="freelancer-panel-title">
-              <BriefcaseBusiness size={29} />
-              <h2>Recent Jobs</h2>
-            </div>
+          <Search size={18} /> Find work
+        </button>
+      </header>
 
-            <button
-              type="button"
-              className="freelancer-view-all"
-              onClick={() => onNavigate("Browse Jobs")}
-            >
-              View All <ArrowRight size={19} />
-            </button>
+      <section className="freelancer-dashboard-overview" aria-label="Account overview">
+        <article className="freelancer-dashboard-balance">
+          <div className="freelancer-dashboard-balance-heading">
+            <span className="freelancer-dashboard-icon gold"><Wallet size={20} /></span>
+            <span>Available balance</span>
           </div>
-
-          <div className="freelancer-no-jobs">
-            <Search size={26} />
-            <p>No recent jobs available yet.</p>
-          </div>
+          <strong>ETB 0.00</strong>
+          <button type="button" onClick={() => onNavigate("Earnings & Payments")}>
+            View payments <ArrowRight size={15} />
+          </button>
         </article>
+
+        <div className="freelancer-dashboard-metrics">
+          {metrics.map(({ label, value, icon: Icon, tone }) => (
+            <article className="freelancer-dashboard-metric" key={label}>
+              <span className={`freelancer-dashboard-icon ${tone}`}><Icon size={19} /></span>
+              <div>
+                <strong>{value}</strong>
+                <span>{label}</span>
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="freelancer-footer">
+      <div className="freelancer-dashboard-section-heading">
+        <div>
+          <span className="freelancer-dashboard-eyebrow">YOUR WORKSPACE</span>
+          <h2>Work and earnings</h2>
+        </div>
+        <button type="button" onClick={() => onNavigate("My Contracts")}>
+          View contracts <ArrowRight size={16} />
+        </button>
+      </div>
+
+      <div className="freelancer-dashboard-work-grid">
+        <section className="freelancer-dashboard-card freelancer-dashboard-opportunities">
+          <div className="freelancer-dashboard-card-heading">
+            <div>
+              <span className="freelancer-dashboard-icon blue"><BriefcaseBusiness size={19} /></span>
+              <div>
+                <h2>Recent opportunities</h2>
+                <p>Explore projects that fit your skills.</p>
+              </div>
+            </div>
+            <button type="button" onClick={() => onNavigate("Browse Jobs")} aria-label="Browse all jobs">
+              <ArrowRight size={18} />
+            </button>
+          </div>
+          <div className="freelancer-dashboard-empty-state">
+            <span className="freelancer-dashboard-empty-icon"><Search size={22} /></span>
+            <h3>Find your next opportunity</h3>
+            <p>Browse open jobs and send a proposal to get started.</p>
+            <button type="button" onClick={() => onNavigate("Browse Jobs")}>
+              Browse jobs <ArrowRight size={16} />
+            </button>
+          </div>
+        </section>
+
+        <div className="freelancer-dashboard-side-stack">
+          <section className="freelancer-dashboard-card freelancer-dashboard-earnings">
+            <div className="freelancer-dashboard-card-heading">
+              <div>
+                <span className="freelancer-dashboard-icon green"><ChartNoAxesColumnIncreasing size={19} /></span>
+                <div>
+                  <h2>Earnings</h2>
+                  <p>Your project income summary.</p>
+                </div>
+              </div>
+              <button type="button" onClick={() => onNavigate("Earnings & Payments")} aria-label="View earnings">
+                <ArrowRight size={18} />
+              </button>
+            </div>
+            <strong className="freelancer-dashboard-earnings-amount">ETB 0.00</strong>
+            <p className="freelancer-dashboard-earnings-note">Your earnings activity will appear here.</p>
+          </section>
+
+          <section className="freelancer-dashboard-card freelancer-dashboard-shortcuts">
+            <div className="freelancer-dashboard-card-title">
+              <h2>Quick actions</h2>
+              <p>Pick up where you left off.</p>
+            </div>
+            <div className="freelancer-dashboard-shortcut-list">
+              {shortcuts.map(({ label, description, icon: Icon, section }) => (
+                <button type="button" key={section} onClick={() => onNavigate(section)}>
+                  <span className="freelancer-dashboard-shortcut-icon"><Icon size={17} /></span>
+                  <span className="freelancer-dashboard-shortcut-copy">
+                    <strong>{label}</strong>
+                    <small>{description}</small>
+                  </span>
+                  <ArrowRight size={15} />
+                </button>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <footer className="freelancer-dashboard-footer">
         <span>© {new Date().getFullYear()} EthioLance</span>
-        <span>
-          Connecting Ethiopian talent with opportunities.
-        </span>
+        <span>Connecting Ethiopian talent with opportunities.</span>
       </footer>
-    </>
+    </div>
   );
 }
 

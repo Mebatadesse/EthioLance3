@@ -1409,6 +1409,47 @@ body::after {
   }
 }
 
+/* Opportunity entry point */
+.featured-jobs-section {
+  padding: 76px 0;
+  background: rgba(255, 250, 246, 0.82);
+}
+
+.opportunity-callout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 930px;
+  margin: 0 auto;
+  padding: 26px 30px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow);
+}
+
+.opportunity-callout-icon {
+  display: grid;
+  flex: 0 0 54px;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  border-radius: 16px;
+  background: #fff1d4;
+}
+
+.opportunity-callout > div:nth-child(2) { flex: 1; }
+.opportunity-callout h3 { margin: 0 0 5px; color: var(--black); font-size: 18px; }
+.opportunity-callout p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+.clear-category-search { margin-top: 12px; padding: 0; border: 0; background: transparent; color: #805000; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.category-no-results { padding: 28px 16px; border: 1px dashed var(--border); border-radius: 16px; color: var(--muted); text-align: center; }
+
+@media (max-width: 800px) {
+  .opportunity-callout { align-items: flex-start; flex-wrap: wrap; padding: 22px; }
+  .opportunity-callout .button { width: 100%; }
+}
+
 /* =====================================================
    ETHIOLANCE — CONNECTED NETWORK BACKGROUND
 ===================================================== */

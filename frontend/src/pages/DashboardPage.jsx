@@ -17,11 +17,11 @@ import {
   ChevronDown,
   LogOut,
   Menu,
-  Moon,
   Search,
-  Sun,
   UserRound,
   X,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 import Dashboard from "./sections/Dashboard";
@@ -57,13 +57,10 @@ function DashboardPage({ role = "FREELANCER" }) {
 
   const [user, setUser] = useState(null);
 
-  const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem("ethioLanceTheme") === "dark";
-  });
-
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeSection, setActiveSection] = useState("Dashboard");
+  const [darkMode, setDarkMode] = useState(false);
 
   const [expandedMenu, setExpandedMenu] = useState({
     financial: false,
@@ -83,14 +80,6 @@ function DashboardPage({ role = "FREELANCER" }) {
 
     setUser(savedUser);
   }, [navigate, role]);
-
-  // SAVE THEME
-  useEffect(() => {
-    localStorage.setItem(
-      "ethioLanceTheme",
-      darkMode ? "dark" : "light"
-    );
-  }, [darkMode]);
 
   // CLOSE PROFILE DROPDOWN
   useEffect(() => {
@@ -176,6 +165,11 @@ function DashboardPage({ role = "FREELANCER" }) {
     setActiveSection(section);
     setSidebarOpen(false);
     setProfileMenuOpen(false);
+
+    // Keep the Dashboard sidebar action tied to its direct entry route too.
+    if (section === "Dashboard") {
+      navigate("/freelancer-dashboard");
+    }
   };
 
   const handleProfileNavigation = (section) => {
@@ -278,11 +272,7 @@ function DashboardPage({ role = "FREELANCER" }) {
   }
 
   return (
-    <div
-      className={`freelancer-dashboard ${
-        darkMode ? "freelancer-dark-mode" : ""
-      }`}
-    >
+    <div className={`freelancer-dashboard${darkMode ? " freelancer-dashboard-dark" : ""}`}>
       {/* SIDEBAR */}
       <aside
         className={`freelancer-sidebar ${
@@ -350,6 +340,9 @@ function DashboardPage({ role = "FREELANCER" }) {
                       className={`freelancer-nav-item ${
                         isActive ? "active" : ""
                       }`}
+                      aria-current={
+                        activeSection === item.label ? "page" : undefined
+                      }
                       onClick={() => {
                         if (item.children) {
                           handleNavigation(item.label);
@@ -469,19 +462,14 @@ function DashboardPage({ role = "FREELANCER" }) {
               />
             </div>
 
-            {/* THEME TOGGLE */}
             <button
               type="button"
               className="freelancer-header-icon"
-              onClick={() => setDarkMode(!darkMode)}
+              onClick={() => setDarkMode((current) => !current)}
               title="Toggle theme"
-              aria-label="Toggle theme"
+              aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
             >
-              {darkMode ? (
-                <Sun size={20} />
-              ) : (
-                <Moon size={20} />
-              )}
+              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
 
             {/* NOTIFICATIONS */}
@@ -519,7 +507,6 @@ function DashboardPage({ role = "FREELANCER" }) {
 
                 <div className="freelancer-profile-info">
                   <strong>{displayName}</strong>
-                  <span>Freelancer</span>
                 </div>
 
                 <ChevronDown

@@ -21,6 +21,77 @@
   font-family: "Inter", "Segoe UI", sans-serif;
 }
 
+.ethio-settings-page.settings-dark-mode {
+  --settings-black: #f3eee7;
+  --settings-text: #eee9e1;
+  --settings-muted: #b6ada2;
+  --settings-ivory: #171717;
+  --settings-border: #38332d;
+  background: var(--settings-ivory);
+  color: var(--settings-text);
+}
+
+.settings-dark-mode .settings-sidebar,
+.settings-dark-mode .settings-content {
+  background: #211f1c;
+}
+
+.settings-dark-mode .settings-logout-button,
+.settings-dark-mode .settings-avatar-area,
+.settings-dark-mode .settings-security-card,
+.settings-dark-mode .settings-info-note,
+.settings-dark-mode .settings-danger-card {
+  background: #292622;
+  color: var(--settings-text);
+}
+
+.settings-dark-mode .settings-nav-item {
+  color: #c5bdb3;
+}
+
+.settings-dark-mode .settings-nav-item:hover {
+  background: #342d22;
+  color: #fff;
+}
+
+.settings-dark-mode .settings-nav-item.active {
+  background: #42351f;
+  color: #ffd17a;
+}
+
+.settings-dark-mode .settings-sidebar,
+.settings-dark-mode .settings-sidebar h1,
+.settings-dark-mode .settings-sidebar h2,
+.settings-dark-mode .settings-sidebar h3,
+.settings-dark-mode .settings-sidebar p,
+.settings-dark-mode .settings-sidebar span,
+.settings-dark-mode .settings-sidebar small,
+.settings-dark-mode .settings-sidebar label,
+.settings-dark-mode .settings-sidebar svg {
+  color: var(--settings-text);
+}
+
+.settings-dark-mode .settings-sidebar .settings-nav-item.active,
+.settings-dark-mode .settings-sidebar .settings-nav-item.active svg {
+  color: #ffd17a;
+}
+
+.settings-dark-mode .settings-form-grid input,
+.settings-dark-mode .settings-form-grid textarea,
+.settings-dark-mode .settings-form-grid select,
+.settings-dark-mode .settings-password-form input,
+.settings-dark-mode .settings-delete-modal input {
+  border-color: var(--settings-border);
+  background: #191817;
+  color: var(--settings-text);
+}
+
+.settings-dark-mode .settings-theme-card {
+  border-color: var(--settings-border);
+  background: #292622;
+  color: var(--settings-text);
+}
+
 .ethio-settings-page *,
 .ethio-settings-page *::before,
 .ethio-settings-page *::after {

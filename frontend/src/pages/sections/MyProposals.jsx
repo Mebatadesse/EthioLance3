@@ -373,10 +373,10 @@ function MyProposals() {
                 }
                 onClick={() => setActiveFilter(filter)}
               >
-                {filter === "ALL"
-                  ? "All Proposals"
-                  : filter.charAt(0) +
-                    filter.slice(1).toLowerCase()}
+                <span>{filter === "ALL" ? "All Proposals" : filter.charAt(0) + filter.slice(1).toLowerCase()}</span>
+                <small className="ethio-myproposals-filter-count">
+                  {filter === "ALL" ? stats.total : stats[filter.toLowerCase()]}
+                </small>
               </button>
             )
           )}
@@ -406,6 +406,11 @@ function MyProposals() {
                     <BriefcaseBusiness size={23} />
                   </div>
 
+                  <div className="ethio-myproposals-card-title">
+                    <h3>{proposal.jobTitle}</h3>
+                    <p className="ethio-myproposals-client">Client: {proposal.clientName}</p>
+                  </div>
+
                   <span
                     className={`ethio-myproposals-status ${getStatusClass(
                       proposal.status
@@ -415,35 +420,20 @@ function MyProposals() {
                   </span>
                 </div>
 
-                <h3>{proposal.jobTitle}</h3>
-
-                <p className="ethio-myproposals-client">
-                  Client: {proposal.clientName}
-                </p>
-
                 <div className="ethio-myproposals-details">
                   <div>
-                    <Wallet size={17} />
-
-                    <span>
-                      ETB {proposal.bidAmount.toLocaleString()}
-                    </span>
+                    <small>Your bid</small>
+                    <strong><Wallet size={16} /> ETB {proposal.bidAmount.toLocaleString()}</strong>
                   </div>
 
                   <div>
-                    <Clock3 size={17} />
-
-                    <span>
-                      {formatDeliveryTime(proposal.deliveryTime)}
-                    </span>
+                    <small>Delivery estimate</small>
+                    <strong><Clock3 size={16} /> {formatDeliveryTime(proposal.deliveryTime)}</strong>
                   </div>
 
                   <div>
-                    <CalendarDays size={17} />
-
-                    <span>
-                      {formatDate(proposal.createdAt)}
-                    </span>
+                    <small>Submitted</small>
+                    <strong><CalendarDays size={16} /> {formatDate(proposal.createdAt)}</strong>
                   </div>
                 </div>
 
@@ -455,7 +445,7 @@ function MyProposals() {
                     }
                   >
                     <Eye size={17} />
-                    View Proposal
+                    View details
                   </button>
 
                   <ArrowUpRight size={19} />

@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   AlertCircle,
   ArrowUpRight,
+  SlidersHorizontal,
 } from "lucide-react";
 
 import "./BrowseJobs.css";
@@ -27,6 +28,7 @@ const PROPOSALS_STORAGE_KEY = "ethioLanceMyProposals";
 export default function BrowseJobs() {
   const [jobs, setJobs] = useState([]);
   const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
   const [selectedJob, setSelectedJob] = useState(null);
   const [proposalJob, setProposalJob] = useState(null);
 
@@ -154,14 +156,20 @@ export default function BrowseJobs() {
   }, []);
 
   // Search jobs
-  const filteredJobs = jobs.filter((job) => {
-    const searchText = search.trim().toLowerCase();
+  const filteredJobs = jobs
+    .filter((job) => {
+      const searchText = search.trim().toLowerCase();
 
-    return (
-      job.title?.toLowerCase().includes(searchText) ||
-      job.description?.toLowerCase().includes(searchText)
-    );
-  });
+      return (
+        job.title?.toLowerCase().includes(searchText) ||
+        job.description?.toLowerCase().includes(searchText)
+      );
+    })
+    .sort((first, second) => {
+      if (sortBy === "budget-high") return Number(second.budget || 0) - Number(first.budget || 0);
+      if (sortBy === "budget-low") return Number(first.budget || 0) - Number(second.budget || 0);
+      return new Date(second.createdAt || 0) - new Date(first.createdAt || 0);
+    });
 
   const formatDate = (date) => {
     if (!date) return "Date unavailable";
@@ -428,10 +436,10 @@ export default function BrowseJobs() {
             FIND YOUR NEXT OPPORTUNITY
           </span>
 
-          <h2>Browse Jobs</h2>
+          <h2>Find your next project</h2>
 
           <p>
-            Discover projects, showcase your skills, and grow your freelance career.
+            Explore open projects and find work that fits your skills and goals.
           </p>
         </div>
 
@@ -448,14 +456,14 @@ export default function BrowseJobs() {
         </button>
       </div>
 
-      {/* SEARCH */}
+      {/* SEARCH AND SORT */}
       <div className="browse-jobs-toolbar">
         <div className="browse-jobs-search">
           <Search size={19} />
 
           <input
             type="text"
-            placeholder="Search by job title or description..."
+            placeholder="Search projects by title or description"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -473,10 +481,20 @@ export default function BrowseJobs() {
         </div>
 
         {!loading && !error && (
-          <span className="browse-jobs-count">
-            {filteredJobs.length}{" "}
-            {filteredJobs.length === 1 ? "job" : "jobs"} found
-          </span>
+          <div className="browse-jobs-toolbar-meta">
+            <span className="browse-jobs-count">
+              {filteredJobs.length} {filteredJobs.length === 1 ? "project" : "projects"} found
+            </span>
+            <label className="browse-jobs-sort">
+              <SlidersHorizontal size={15} />
+              <span>Sort</span>
+              <select value={sortBy} onChange={(event) => setSortBy(event.target.value)} aria-label="Sort projects">
+                <option value="newest">Newest</option>
+                <option value="budget-high">Highest budget</option>
+                <option value="budget-low">Lowest budget</option>
+              </select>
+            </label>
+          </div>
         )}
       </div>
 
@@ -511,54 +529,35 @@ export default function BrowseJobs() {
                 className="browse-job-card"
                 key={job.id}
               >
-                <div className="browse-job-top">
-                  <div className="browse-job-icon">
-                    <BriefcaseBusiness size={22} />
+                  <div className="browse-job-main">
+                    <div className="browse-job-top">
+                      <div className="browse-job-icon"><BriefcaseBusiness size={21} /></div>
+                      <div className="browse-job-heading">
+                        <div className="browse-job-title-row">
+                          <h3>{job.title}</h3>
+                          <span className="browse-job-status"><span className="browse-status-dot" />Open</span>
+                        </div>
+                        <span className="browse-job-id">Project #{job.id}</span>
+                      </div>
+                    </div>
+
+                    <p className="browse-job-description">
+                      {job.description?.length > 220 ? `${job.description.slice(0, 220)}...` : job.description}
+                    </p>
+
+                    <div className="browse-job-meta">
+                      <span><CalendarDays size={15} />Posted {formatDate(job.createdAt)}</span>
+                      {job.clientName && <span>Posted by <strong>{job.clientName}</strong></span>}
+                    </div>
                   </div>
 
-                  <div className="browse-job-heading">
-                    <h3>{job.title}</h3>
-
-                    <span className="browse-job-status">
-                      <span className="browse-status-dot" />
-                      Open
-                    </span>
-                  </div>
-
-                  <span className="browse-job-id">
-                    #{job.id}
-                  </span>
-                </div>
-
-                <p className="browse-job-description">
-                  {job.description?.length > 190
-                    ? `${job.description.slice(0, 190)}...`
-                    : job.description}
-                </p>
-
-                <div className="browse-job-meta">
-                  <span>
-                    <Wallet size={16} />
-                    <strong>
-                      {formatBudget(job.budget)} ETB
-                    </strong>
-                  </span>
-
-                  <span>
-                    <CalendarDays size={16} />
-                    {formatDate(job.createdAt)}
-                  </span>
-                </div>
-
-                <div className="browse-job-actions">
-                  <button
-                    className="browse-job-view"
-                    onClick={() => setSelectedJob(job)}
-                  >
-                    View Details
-                    <ArrowUpRight size={16} />
-                  </button>
-                </div>
+                  <aside className="browse-job-side">
+                    <span className="browse-job-budget-label">Project budget</span>
+                    <strong className="browse-job-budget">ETB {formatBudget(job.budget)}</strong>
+                    <button className="browse-job-view" onClick={() => setSelectedJob(job)}>
+                      View project <ArrowUpRight size={16} />
+                    </button>
+                  </aside>
               </article>
             ))
           ) : (

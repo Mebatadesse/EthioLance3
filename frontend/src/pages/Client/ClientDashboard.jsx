@@ -315,7 +315,6 @@ export default function ClientDashboard() {
 
                 <div className="ethio-client-profile-info">
                   <strong>{firstName}</strong>
-                  <span>Client</span>
                 </div>
 
                 <ChevronDown size={16} />

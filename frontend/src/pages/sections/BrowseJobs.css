@@ -708,3 +708,78 @@
     gap: 0;
   }
 }
+
+/* Marketplace listing layout */
+.browse-jobs-page {
+  max-width: 1240px;
+  margin: 0 auto;
+  color: #252525;
+}
+
+.browse-jobs-header { align-items: flex-end; margin-bottom: 23px; }
+.browse-jobs-header h2 { font-size: clamp(25px, 3vw, 31px); letter-spacing: -0.7px; }
+.browse-jobs-refresh { min-height: 42px; padding: 0 15px; }
+
+.browse-jobs-toolbar {
+  align-items: stretch;
+  margin-bottom: 18px;
+  padding: 13px;
+  border: 1px solid #eee8df;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.browse-jobs-search { max-width: none; border: 0; background: #faf9f7; }
+.browse-jobs-search:focus-within { background: #fff; }
+.browse-jobs-toolbar-meta { display: flex; align-items: center; gap: 16px; }
+.browse-jobs-count { color: #6f6f6f; font-size: 11px; }
+.browse-jobs-sort { display: flex; align-items: center; gap: 7px; color: #777; font-size: 11px; white-space: nowrap; }
+.browse-jobs-sort svg { color: #8a6a2a; }
+.browse-jobs-sort select { max-width: 145px; padding: 8px 25px 8px 9px; border: 1px solid #e9e5dd; border-radius: 7px; outline: none; background: #fff; color: #333; font: inherit; }
+.browse-jobs-sort select:focus-visible { border-color: #d99a25; box-shadow: 0 0 0 3px rgba(217, 154, 37, 0.12); }
+
+.browse-jobs-list { grid-template-columns: 1fr; gap: 12px; }
+.browse-job-card { display: flex; align-items: stretch; gap: 22px; padding: 20px 22px; border-color: #ebe8e2; border-radius: 12px; box-shadow: 0 3px 12px rgba(20, 20, 20, 0.025); }
+.browse-job-card:hover { border-color: #e2c98e; box-shadow: 0 8px 20px rgba(20, 20, 20, 0.055); transform: translateY(-1px); }
+.browse-job-main { min-width: 0; flex: 1; }
+.browse-job-top { align-items: flex-start; }
+.browse-job-icon { width: 42px; height: 42px; border-radius: 10px; }
+.browse-job-heading { padding-top: 1px; }
+.browse-job-title-row { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; }
+.browse-job-heading h3 { margin: 0; font-size: 15px; line-height: 1.4; }
+.browse-job-status { padding: 4px 8px; font-size: 9px; }
+.browse-job-id { display: inline-block; margin-top: 5px; color: #999; font-size: 10px; }
+.browse-job-description { display: -webkit-box; min-height: 0; margin: 13px 0; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; color: #696969; font-size: 12px; line-height: 1.65; }
+.browse-job-meta { gap: 16px; padding: 11px 0 0; border-top: 0; color: #858585; font-size: 10px; }
+.browse-job-meta span { gap: 6px; }
+.browse-job-meta svg { color: #999; }
+.browse-job-meta strong { color: #555; }
+.browse-job-side { display: flex; width: 190px; flex: 0 0 auto; flex-direction: column; align-items: flex-end; justify-content: center; gap: 7px; padding-left: 20px; border-left: 1px solid #efede8; }
+.browse-job-budget-label { color: #888; font-size: 10px; }
+.browse-job-budget { color: #222; font-size: 17px; letter-spacing: -0.2px; }
+.browse-job-actions { margin-top: 0; }
+.browse-job-view { margin-top: 5px; padding: 9px 12px; background: #202020; font-size: 10px; }
+.browse-job-view:hover { background: #f4ad28; }
+.browse-jobs-state { border-color: #ebe8e2; border-radius: 12px; color: #9a7a3e; }
+.browse-empty-state { min-height: 330px; }
+
+.browse-jobs-page button:focus-visible,
+.browse-jobs-page input:focus-visible,
+.browse-jobs-page select:focus-visible,
+.browse-job-modal button:focus-visible,
+.browse-job-modal input:focus-visible,
+.browse-job-modal textarea:focus-visible { outline: 3px solid rgba(217, 154, 37, 0.3); outline-offset: 2px; }
+
+@media (max-width: 760px) {
+  .browse-jobs-toolbar { flex-direction: column; }
+  .browse-jobs-toolbar-meta { justify-content: space-between; }
+  .browse-job-card { gap: 14px; }
+  .browse-job-side { width: 155px; padding-left: 14px; }
+}
+
+@media (max-width: 560px) {
+  .browse-jobs-header { align-items: flex-start; }
+  .browse-job-card { flex-direction: column; }
+  .browse-job-side { width: 100%; align-items: flex-start; padding: 13px 0 0; border-top: 1px solid #efede8; border-left: 0; }
+  .browse-job-view { width: 100%; min-height: 39px; justify-content: center; }
+}

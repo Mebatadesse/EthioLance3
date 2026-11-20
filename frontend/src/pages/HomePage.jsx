@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
     ArrowRight,
     Search,
@@ -16,7 +17,6 @@ import {
   } from "lucide-react";
   
   import "./HomePage.css";
-  import AnimatedNetworkBackground from "../components/AnimatedNetworkBackground";
   const categories = [
     {
       icon: Code2,
@@ -51,6 +51,17 @@ import {
   ];
   
   function HomePage({ onRegisterClick, onLoginClick }) {
+    const [categoryQuery, setCategoryQuery] = useState("");
+
+    useEffect(() => {
+      const handleSearch = (event) => setCategoryQuery(String(event.detail || "").trim());
+      window.addEventListener("ethio-search", handleSearch);
+      return () => window.removeEventListener("ethio-search", handleSearch);
+    }, []);
+
+    const visibleCategories = categories.filter((category) =>
+      `${category.title} ${category.description}`.toLowerCase().includes(categoryQuery.toLowerCase())
+    );
     const handleRegisterClick = (event) => {
       event.preventDefault();
       onRegisterClick?.();
@@ -63,7 +74,6 @@ import {
   
     return (
     <div className="homepage">
-    <AnimatedNetworkBackground />
         {/* Hero section */}
         <section className="hero" id="home">
           <div className="container hero-container">
@@ -91,7 +101,7 @@ import {
   
               <div className="hero-actions">
                 <a
-                  href="#find-work"
+                  href="#latest-jobs"
                   className="button button-primary"
                 >
                   Find work <ArrowRight size={18} />
@@ -161,6 +171,27 @@ import {
           </div>
         </section>
   
+        {/* Opportunity entry point */}
+        <section className="section featured-jobs-section" id="latest-jobs">
+          <div className="container">
+            <div className="section-heading">
+              <span className="section-eyebrow">Your next opportunity</span>
+              <h2>Ready to find work that fits?</h2>
+              <p>Create your freelancer profile to explore open projects, share your experience, and connect with clients.</p>
+            </div>
+            <div className="opportunity-callout">
+              <div className="opportunity-callout-icon"><BriefcaseBusiness size={26} /></div>
+              <div>
+                <h3>Work starts with a strong profile</h3>
+                <p>Join EthioLance to browse projects and make your skills easier for clients to find.</p>
+              </div>
+              <button type="button" className="button button-primary" onClick={onRegisterClick}>
+                Create your account <ArrowRight size={18} />
+              </button>
+            </div>
+          </div>
+        </section>
+
         {/* Categories section */}
         <section
           className="section categories-section"
@@ -178,10 +209,15 @@ import {
                 Explore different fields and discover where your
                 talents can take you.
               </p>
+              {categoryQuery && (
+                <button className="clear-category-search" type="button" onClick={() => setCategoryQuery("")}>
+                  Showing matches for “{categoryQuery}” · Clear search
+                </button>
+              )}
             </div>
   
             <div className="categories-grid">
-              {categories.map((category) => {
+              {visibleCategories.map((category) => {
                 const Icon = category.icon;
   
                 return (
@@ -209,6 +245,9 @@ import {
                 );
               })}
             </div>
+            {visibleCategories.length === 0 && (
+              <p className="category-no-results">No categories match “{categoryQuery}”. Try a different skill or search term.</p>
+            )}
           </div>
         </section>
   
