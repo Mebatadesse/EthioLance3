@@ -1,5 +1,8 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+
+const errorMiddleware = require("./src/middleware/errorMiddleware");
 const authRoutes = require("./src/modules/auth/auth.routes");
 const userRoutes = require("./src/modules/users/user.routes");
 const jobRoutes = require("./src/jobs/job.routes");
@@ -11,9 +14,13 @@ const profileRoutes = require("./src/profiles/profile.routes");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+}));
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -29,5 +36,7 @@ app.get("/", (req, res) => {
         message: "Welcome to EthioLance API",
     });
 });
+
+app.use(errorMiddleware);
 
 module.exports = app;

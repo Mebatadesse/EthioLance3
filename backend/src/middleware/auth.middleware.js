@@ -1,9 +1,11 @@
-const jwt = require("jsonwebtoken");
 
-const authenticate = (req, res, next) => {
+const jwt = require("jsonwebtoken");
+const prisma = require("../config/prisma");
+
+const authenticate = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
-    if (!authHeader) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return res.status(401).json({
             success: false,
             message: "Authentication Token is required",
@@ -15,8 +17,25 @@ const authenticate = (req, res, next) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+        const user = await prisma.user.findUnique({
+            where: {
+                id: decoded.userId,
+            },
+            select: {
+                id: true,
+                role: true,
+                tokenVersion: true,
+            },
+        });
+
+        if (!user || decoded.tokenVersion !== user.tokenVersion) {
+            return res.status(401).json({
+                success: false,
+                message: "Session expired. Please log in again.",
+            });
+        }
+
         req.user = decoded;
-        console.log("Authenticated user:", req.user.userId, req.user.role);
 
         next();
     } catch (error) {

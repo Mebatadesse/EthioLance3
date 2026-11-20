@@ -7,16 +7,21 @@ datasource db {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  email      String   @unique
-  password   String
-  firstName  String
-  lastName   String
-  phone      String?  @unique
-  role       UserRole @default(FREELANCER)
-  isVerified Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  password     String
+  googleId     String?  @unique
+  firstName    String
+  lastName     String
+  phone        String?  @unique
+  role         UserRole @default(FREELANCER)
+  isVerified   Boolean  @default(false)
+  tokenVersion Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  loginOtps      LoginOtp[]
+  trustedDevices TrustedDevice[]
 
   jobs      Job[]
   proposals Proposal[]
@@ -158,10 +163,6 @@ enum PaymentStatus {
   FAILED
 }
 
-// ========================================
-// FREELANCER PROFILE
-// ========================================
-
 model FreelancerProfile {
   id              Int      @id @default(autoincrement())
   userId          Int      @unique
@@ -183,10 +184,6 @@ model FreelancerProfile {
   updatedAt DateTime @updatedAt
 }
 
-// ========================================
-// FREELANCER EXPERIENCE
-// ========================================
-
 model FreelancerExperience {
   id                  Int       @id @default(autoincrement())
   freelancerProfileId Int
@@ -206,10 +203,6 @@ model FreelancerExperience {
   @@index([freelancerProfileId])
 }
 
-// ========================================
-// FREELANCER EDUCATION
-// ========================================
-
 model FreelancerEducation {
   id                  Int       @id @default(autoincrement())
   freelancerProfileId Int
@@ -227,10 +220,6 @@ model FreelancerEducation {
 
   @@index([freelancerProfileId])
 }
-
-// ========================================
-// FREELANCER CERTIFICATION
-// ========================================
 
 model FreelancerCertification {
   id                  Int       @id @default(autoincrement())
@@ -280,4 +269,33 @@ model ClientProfile {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model LoginOtp {
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  deviceId   String
+  otpHash    String
+  expiresAt  DateTime
+  attempts   Int       @default(0)
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, deviceId])
+}
+
+model TrustedDevice {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  deviceId   String
+  deviceName String?
+  trustedAt  DateTime @default(now())
+  lastUsedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, deviceId])
+  @@index([userId])
 }
