@@ -1,7 +1,7 @@
 const { getContractById, createMilestone, getMilestoneById, updateMilestone } = require("./milestone.service");
 
 const createMilestoneController = async (req, res) => {
-    const contractId = parseInt(req.params.contractId, 10);
+    const contractId = Number(req.params.contractId);
     const { title, amount, dueDate } = req.body;
 
     if (!Number.isInteger(contractId) || contractId <= 0) {
@@ -96,7 +96,7 @@ const createMilestoneController = async (req, res) => {
 };
 
 const startMilestoneController = async (req, res) => {
-    const milestoneId = parseInt(req.params.milestoneId, 10);
+    const milestoneId = Number(req.params.milestoneId);
 
     if (!Number.isInteger(milestoneId) || milestoneId <= 0) {
         return res.status(400).json({
@@ -147,7 +147,7 @@ const startMilestoneController = async (req, res) => {
 };
 
 const deliverMilestoneController = async (req, res) => {
-    const milestoneId = parseInt(req.params.milestoneId, 10);
+    const milestoneId = Number(req.params.milestoneId);
 
     if (!Number.isInteger(milestoneId) || milestoneId <= 0) {
         return res.status(400).json({
@@ -172,6 +172,13 @@ const deliverMilestoneController = async (req, res) => {
         });
     }
 
+    if (milestone.contract.status !== "ACTIVE") {
+        return res.status(400).json({
+            success: false,
+            message: "The contract must be active",
+        });
+    }
+
     if (milestone.status !== "IN_PROGRESS") {
         return res.status(400).json({
             success: false,
@@ -191,7 +198,7 @@ const deliverMilestoneController = async (req, res) => {
 };
 
 const approveMilestoneController = async (req, res) => {
-    const milestoneId = parseInt(req.params.milestoneId, 10);
+    const milestoneId = Number(req.params.milestoneId);
 
     if (!Number.isInteger(milestoneId) || milestoneId <= 0) {
         return res.status(400).json({
@@ -232,7 +239,7 @@ const approveMilestoneController = async (req, res) => {
         message: "Milestone approved successfully",
         milestone: updatedMilestone,
     });  
-}
+};
 
 module.exports = {
     createMilestoneController,

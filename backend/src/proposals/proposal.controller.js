@@ -3,7 +3,15 @@ const { createProposal, getJobById, getExistingProposal, getProposalsByJobId, ge
 const createProposalController = async (req, res) => {
     const { coverLetter, bidAmount, deliveryTime } = req.body;
 
-    const jobId = parseInt(req.params.jobId);
+    const jobId = Number(req.params.jobId);
+
+    if (!Number.isInteger(jobId) || jobId <= 0) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid job ID",
+        });
+    } 
+
     const freelancerId = req.user.userId;
 
     const job = await getJobById(jobId);
@@ -12,6 +20,13 @@ const createProposalController = async (req, res) => {
         return res.status(404).json({
             success: false,
             message: "Job not found",
+        });
+    }
+
+    if (job.clientId === freelancerId) {
+        return res.status(403).json({
+            success: false,
+            message: "You cannot submit a proposal to your own job",
         });
     }
 
@@ -50,7 +65,14 @@ const createProposalController = async (req, res) => {
 };
 
 const getProposalsByJobIdController = async (req, res) => {
-    const jobId = parseInt(req.params.jobId);
+    const jobId = Number(req.params.jobId);
+
+    if (!Number.isInteger(jobId) || jobId <= 0) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid job ID",
+        });
+    }
 
     const job = await getJobById(jobId);
 
@@ -77,7 +99,15 @@ const getProposalsByJobIdController = async (req, res) => {
 };
 
 const acceptProposalController = async (req, res) => {
-    const proposalId = parseInt(req.params.proposalId);
+    const proposalId = Number(req.params.proposalId);
+
+    if (!Number.isInteger(proposalId) || proposalId <= 0) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid proposal ID",
+        });
+    }
+
     const proposal = await getProposalById(proposalId);
 
     if (!proposal) {
@@ -111,7 +141,7 @@ const acceptProposalController = async (req, res) => {
         message: "Proposal accepted successfully",
         proposal: acceptedProposal,
     });
-}
+};
 
 module.exports = {
     createProposalController,

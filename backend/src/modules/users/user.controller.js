@@ -22,7 +22,7 @@ const getMyProfile = async (req, res) => {
             success: false,
             message: "User not found",
         });
-    };
+    }
 
     return res.status(200).json({
         success: true, 

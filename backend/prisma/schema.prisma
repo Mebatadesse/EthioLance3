@@ -20,8 +20,11 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  loginOtps      LoginOtp[]
-  trustedDevices TrustedDevice[]
+  registrationOtp RegistrationOtp?
+  loginOtps       LoginOtp[]
+  trustedDevices  TrustedDevice[]
+
+  passwordResetToken PasswordResetToken?
 
   jobs      Job[]
   proposals Proposal[]
@@ -298,4 +301,27 @@ model TrustedDevice {
 
   @@unique([userId, deviceId])
   @@index([userId])
+}
+
+model RegistrationOtp {
+  id         Int       @id @default(autoincrement())
+  userId     Int       @unique
+  otpHash    String
+  expiresAt  DateTime
+  attempts   Int       @default(0)
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PasswordResetToken {
+  id        Int       @id @default(autoincrement())
+  userId    Int       @unique
+  tokenHash String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

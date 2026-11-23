@@ -27,7 +27,14 @@ const getJobsController = async (req, res) => {
 };
 
 const getJobByIdController = async (req, res) => {
-    const jobId = parseInt(req.params.id);
+    const jobId = Number(req.params.id);
+
+    if (!Number.isInteger(jobId) || jobId <= 0) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid job ID",
+        });
+    }
 
     const job = await getJobById(jobId);
 
@@ -45,7 +52,14 @@ const getJobByIdController = async (req, res) => {
 };
 
 const updateJobController = async (req, res) => {
-    const jobId = parseInt(req.params.id);
+    const jobId = Number(req.params.id);
+
+    if (!Number.isInteger(jobId) || jobId <= 0) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid job ID",
+        });
+    }
 
     const existingJob = await getJobById(jobId);
 
@@ -79,9 +93,23 @@ const updateJobController = async (req, res) => {
 };
 
 const deleteJobController = async (req, res) => {
-    const jobId = parseInt(req.params.id);
+    const jobId = Number(req.params.id);
+
+    if (!Number.isInteger(jobId) || jobId <= 0) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid job ID",
+        });
+    }
 
     const existingJob = await getJobById(jobId);
+
+    if (!existingJob) {
+        return res.status(404).json({
+            success: false,
+            message: "Job not found",
+        });
+    }
 
     if (existingJob.clientId !== req.user.userId) {
         return res.status(403).json({

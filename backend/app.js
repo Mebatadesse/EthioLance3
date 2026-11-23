@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
-const errorMiddleware = require("./src/middleware/errorMiddleware");
+const errorMiddleware = require("./src/middleware/error.middleware");
 const authRoutes = require("./src/modules/auth/auth.routes");
 const userRoutes = require("./src/modules/users/user.routes");
 const jobRoutes = require("./src/jobs/job.routes");

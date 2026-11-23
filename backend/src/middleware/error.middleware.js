@@ -1,21 +1,31 @@
-// creating a function called middleware
-// err - error thet happend
-// req - incoming request
-// res - the response that send back
-// next - pass the control to another middleware
-const errorMiddleware = (err, req, res, next) => {
-    // prints the error information
-    console.error(err.stack);
 
-    const statusCode = err.statusCode || 500;
-    
-    // send the response to wo=ho ever called the API
-    // res.status(statusCode)  sets the HTTPs status
-    res.status(statusCode).json({
+const errorMiddleware = (err, req, res, next) => {
+    // If the response has already been sent, pass the error onward
+    if (res.headersSent) {
+        return next(err);
+    }
+
+    // Log the full error for debugging
+    console.error(err);
+
+    // Determine the HTTP status code
+    const statusCode =
+        Number.isInteger(err.statusCode) &&
+        err.statusCode >= 400 &&
+        err.statusCode <= 599
+            ? err.statusCode
+            : 500;
+
+    // Avoid exposing internal error details in production
+    const message =
+        statusCode === 500 && process.env.NODE_ENV === "production"
+            ? "Internal Server Error"
+            : err.message || "Internal Server Error";
+
+    return res.status(statusCode).json({
         success: false,
-        message: err.message || "Internal Server Error",
+        message,
     });
 };
 
-// to use it in another file
 module.exports = errorMiddleware;

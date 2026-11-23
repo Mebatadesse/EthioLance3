@@ -1,7 +1,11 @@
-
-const { error } = require("console");
 const prisma = require("../config/prisma");
 const { randomUUID } = require("crypto");
+
+const createChapaError = (message, statusCode = 502) => {
+    const error = new Error(message);
+    error.statusCode = statusCode;
+    return error;
+};
 
 const getMilestoneForPayment = async (milestoneId) => {
     return await prisma.milestone.findUnique({
@@ -30,7 +34,10 @@ const initializeChapaPayment = async (milestone) => {
     const secretKey = process.env.CHAPA_SECRET_KEY;
 
     if (!secretKey || secretKey.includes("•")) {
-        throw new Error("Check CHAPA_SECRET_KEY in backend/.env");
+        throw createChapaError(
+            "Chapa configuration is missing or invalid",
+            500
+        );
     }
 
     const existingPayment = milestone.payment;
@@ -100,7 +107,9 @@ const initializeChapaPayment = async (milestone) => {
             }
         );
     } catch (error) {
-        throw new Error( "Could not connect to Chapa. Verify this transaction before retrying.");
+        throw createChapaError(
+            "Could not connect to Chapa. Verify this transaction before retrying."
+        );
     }
 
     const result = await response.json().catch(() => null);
@@ -115,7 +124,7 @@ const initializeChapaPayment = async (milestone) => {
             },
         });
 
-        throw new Error(
+        throw createChapaError(
             result?.message ||
             `Chapa initialization failed with HTTP ${response.status}`
         );
@@ -130,8 +139,11 @@ const initializeChapaPayment = async (milestone) => {
 const verifyChapaPayment = async (txRef) => {
     const secretKey = process.env.CHAPA_SECRET_KEY;
 
-    if(!secretKey || secretKey.includes("•")) {
-        throw new Error("Check CHAPA_SECRET_KEY in backend/.env");
+    if (!secretKey || secretKey.includes("•")) {
+        throw createChapaError(
+            "Chapa configuration is missing or invalid",
+            500
+        );
     }
 
     let response;
@@ -148,13 +160,15 @@ const verifyChapaPayment = async (txRef) => {
             }
         );
     } catch (error) {
-        throw new Error("Could not connect to chapa verification service");
+        throw createChapaError(
+            "Could not connect to Chapa verification service"
+        );
     }
 
     const result = await response.json().catch(() => null);
 
     if (!response.ok || result?.status !== "success" || !result?.data) {
-        throw new Error(
+        throw createChapaError(
             typeof result?.message === "string"
                 ? result.message
                 : "Chapa could not verify this transaction"

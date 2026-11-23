@@ -1,7 +1,14 @@
 const { createContract, getProposalById, getContractByProposalId, getContractById, acceptContract } = require("./contract.service");
 
 const createContractController = async (req, res) => {
-    const proposalId = parseInt(req.params.proposalId);
+    const proposalId = Number(req.params.proposalId);
+
+    if (!Number.isInteger(proposalId) || proposalId <= 0) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid proposal ID",
+        });
+    }
 
     const proposal = await getProposalById(proposalId);
 
@@ -50,7 +57,7 @@ const createContractController = async (req, res) => {
 };
 
 const acceptContractController = async (req, res) => {
-    const contractId = parseInt(req.params.contractId, 10);
+    const contractId = Number(req.params.contractId);
 
     if (!Number.isInteger(contractId) || contractId <= 0) {
         return res.status(400).json({
@@ -71,7 +78,7 @@ const acceptContractController = async (req, res) => {
     if (contract.freelancerId !== req.user.userId) {
         return res.status(403).json({
             success: false,
-            message: " Only the assigned freelancer can accept this contract",
+            message: "Only the assigned freelancer can accept this contract",
         });
     }
 
