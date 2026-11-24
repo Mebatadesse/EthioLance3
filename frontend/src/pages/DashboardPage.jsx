@@ -233,7 +233,7 @@ function DashboardPage({ role = "FREELANCER" }) {
         return <MyProposals />;
 
       case "My Contracts":
-        return <MyContracts />;
+        return <MyContracts onNavigate={handleNavigation} />;
 
       case "Messages":
         return <Messages />;

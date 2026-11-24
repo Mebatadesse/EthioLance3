@@ -1,8 +1,9 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRight,
+  ArrowLeft,
   UserRound,
   Mail,
   LockKeyhole,
@@ -10,6 +11,8 @@ import {
   EyeOff,
   Code2,
   BriefcaseBusiness,
+  MailCheck,
+  ShieldCheck,
   X,
 } from "lucide-react";
 
@@ -34,6 +37,17 @@ function RegisterPage({ onClose, onLoginClick }) {
   const [message, setMessage] = useState("");
   const [googleMessage, setGoogleMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isResendingRegistrationOtp, setIsResendingRegistrationOtp] = useState(false);
+  const [registrationResendCooldown, setRegistrationResendCooldown] = useState(0);
+  const [requiresOtp, setRequiresOtp] = useState(false);
+  const [registrationOtp, setRegistrationOtp] = useState("");
+  const registrationOtpRefs = useRef([]);
+  const [registrationOtpMessageType, setRegistrationOtpMessageType] = useState("success");
+  const [verificationMessage, setVerificationMessage] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [requiresLoginOtp, setRequiresLoginOtp] = useState(false);
+  const [loginOtp, setLoginOtp] = useState("");
+  const [loginOtpMessageType, setLoginOtpMessageType] = useState("info");
 
   const handleClose = () => {
     if (onClose) {
@@ -64,10 +78,45 @@ function RegisterPage({ onClose, onLoginClick }) {
     };
   }, [onClose, navigate]);
 
+  useEffect(() => {
+    if (!requiresOtp || requiresLoginOtp) return undefined;
+    const focusTimer = window.setTimeout(() => registrationOtpRefs.current[0]?.focus(), 100);
+    return () => window.clearTimeout(focusTimer);
+  }, [requiresOtp, requiresLoginOtp]);
+
+  useEffect(() => {
+    if (!registrationResendCooldown) return undefined;
+    const timer = window.setTimeout(() => {
+      setRegistrationResendCooldown((remaining) => Math.max(remaining - 1, 0));
+    }, 1000);
+    return () => window.clearTimeout(timer);
+  }, [registrationResendCooldown]);
+
   function handleGoogleSignUp() {
     setGoogleMessage(
       "Google sign-up is not configured yet. Google authentication needs to be connected."
     );
+  }
+
+  function handleRegistrationOtpChange(value, index) {
+    const digit = value.replace(/\D/g, "").slice(-1);
+    const digits = registrationOtp.split("");
+    digits[index] = digit;
+    setRegistrationOtp(Array.from({ length: 6 }, (_, position) => digits[position] || "").join(""));
+    if (digit && index < 5) registrationOtpRefs.current[index + 1]?.focus();
+  }
+
+  function handleRegistrationOtpKeyDown(event, index) {
+    if (event.key === "Backspace" && !registrationOtp[index] && index > 0) registrationOtpRefs.current[index - 1]?.focus();
+    if (event.key === "ArrowLeft" && index > 0) registrationOtpRefs.current[index - 1]?.focus();
+    if (event.key === "ArrowRight" && index < 5) registrationOtpRefs.current[index + 1]?.focus();
+  }
+
+  function handleRegistrationOtpPaste(event) {
+    event.preventDefault();
+    const pasted = event.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    setRegistrationOtp(pasted);
+    registrationOtpRefs.current[Math.min(pasted.length, 5)]?.focus();
   }
 
   async function handleSubmit(event) {
@@ -114,10 +163,23 @@ function RegisterPage({ onClose, onLoginClick }) {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok || !data.success) {
+        if (data.message?.toLowerCase().includes("already registered")) {
+          setMessage("This email is already registered. Please log in to your account.");
+          return;
+        }
         setMessage(
           data.message ||
             "Registration failed. Please check your details and try again."
         );
+        return;
+      }
+
+      if (data.requiresOtp) {
+        setRequiresOtp(true);
+        setRegistrationOtp("");
+        setRegistrationOtpMessageType("success");
+        setRegistrationResendCooldown(60);
+        setVerificationMessage(data.message || "Enter the verification code sent to your email.");
         return;
       }
 
@@ -147,38 +209,7 @@ function RegisterPage({ onClose, onLoginClick }) {
         return;
       }
 
-      localStorage.setItem(
-        "ethioLanceUser",
-        JSON.stringify(registeredUser)
-      );
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify(registeredUser)
-      );
-
-      localStorage.setItem("ethioLanceToken", data.token);
-
-      sessionStorage.removeItem("ethioLanceToken");
-      sessionStorage.removeItem("ethioLanceUser");
-
-      localStorage.removeItem("ethioLanceProfile");
-      localStorage.removeItem("ethioLanceProfileSkipped");
-      localStorage.removeItem("token");
-
-      if (registeredUser.role === "FREELANCER") {
-        navigate("/freelancer/create-profile", {
-          replace: true,
-        });
-      } else if (registeredUser.role === "CLIENT") {
-        navigate("/client/create-profile", {
-          replace: true,
-        });
-      } else {
-        setMessage(
-          "Account created, but the account type is invalid."
-        );
-      }
+      saveLoggedInUser({ token: data.token, user: registeredUser });
     } catch (error) {
       console.error("Registration error:", error);
 
@@ -188,6 +219,340 @@ function RegisterPage({ onClose, onLoginClick }) {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  function saveLoggedInUser(data) {
+    const { token, user } = data;
+    if (!token || !user) throw new Error("The server did not return a login session.");
+
+    localStorage.setItem("ethioLanceToken", token);
+    localStorage.setItem("ethioLanceUser", JSON.stringify(user));
+    localStorage.setItem("user", JSON.stringify(user));
+    sessionStorage.removeItem("ethioLanceToken");
+    sessionStorage.removeItem("ethioLanceUser");
+    localStorage.removeItem("token");
+    onClose?.();
+
+    if (user.role === "CLIENT") {
+      navigate("/client-dashboard", { replace: true });
+    } else if (user.role === "FREELANCER") {
+      navigate("/freelancer-dashboard", { replace: true });
+    } else {
+      throw new Error("Your account has an unsupported role.");
+    }
+  }
+
+  async function attemptLogin(loginPassword = password) {
+    if (!loginPassword) {
+      setIsEmailVerified(true);
+      setVerificationMessage("Email verified. Enter your password to sign in.");
+      return;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ email: email.trim().toLowerCase(), password: loginPassword }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Email verified, but automatic login failed.");
+    }
+    if (data.requiresOtp) {
+      setIsEmailVerified(true);
+      setRequiresLoginOtp(true);
+      setLoginOtp("");
+      setLoginOtpMessageType("info");
+      setVerificationMessage(data.message || "Enter the login verification code sent to your email.");
+      return;
+    }
+    saveLoggedInUser(data);
+  }
+
+  async function handleVerifyRegistrationOtp(event) {
+    event.preventDefault();
+    setVerificationMessage("");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/verify-registration-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          otp: registrationOtp,
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Could not verify the code.");
+      }
+      setIsEmailVerified(true);
+      setRegistrationOtpMessageType("success");
+      setVerificationMessage("Email verified. Signing you in…");
+      saveLoggedInUser(data);
+    } catch (error) {
+      setRegistrationOtpMessageType("error");
+      setVerificationMessage(error.message || "Email verified, but automatic login failed.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handlePasswordLogin(event) {
+    event.preventDefault();
+    setIsLoading(true);
+    setVerificationMessage("");
+    try {
+      await attemptLogin(password);
+    } catch (error) {
+      setVerificationMessage(error.message || "Could not sign in. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleVerifyLoginOtp(event) {
+    event.preventDefault();
+    setIsLoading(true);
+    setVerificationMessage("");
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email: email.trim().toLowerCase(), otp: loginOtp }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Could not verify the login code.");
+      }
+      saveLoggedInUser(data);
+    } catch (error) {
+      setLoginOtpMessageType("error");
+      setVerificationMessage(error.message || "Could not verify the login code.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleResendLoginOtp() {
+    setIsLoading(true);
+    setVerificationMessage("");
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/resend-login-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.message || "Could not resend the login code.");
+      setLoginOtpMessageType("info");
+      setVerificationMessage(data.message || "A new login code has been sent.");
+    } catch (error) {
+      setLoginOtpMessageType("error");
+      setVerificationMessage(error.message || "Could not resend the login code.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleResendRegistrationOtp() {
+    setIsResendingRegistrationOtp(true);
+    setVerificationMessage("");
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/resend-registration-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) {
+        const waitSeconds = Number(data.message?.match(/wait\s+(\d+)\s+seconds?/i)?.[1]);
+        if (response.status === 429 && waitSeconds) {
+          setRegistrationResendCooldown(waitSeconds);
+          setRegistrationOtpMessageType("info");
+        } else {
+          setRegistrationOtpMessageType("error");
+        }
+        throw new Error(data.message || "Could not resend the verification code.");
+      }
+
+      setRegistrationOtp("");
+      setRegistrationOtpMessageType("success");
+      setRegistrationResendCooldown(60);
+      setVerificationMessage(data.message || "A new verification code has been sent to your email.");
+      registrationOtpRefs.current[0]?.focus();
+    } catch (error) {
+      setVerificationMessage(error.message || "Could not resend the verification code.");
+    } finally {
+      setIsResendingRegistrationOtp(false);
+    }
+  }
+
+  if (requiresOtp) {
+    return (
+      <div
+        className="ethio-register-overlay"
+        onMouseDown={(event) => {
+          if (event.target === event.currentTarget) handleClose();
+        }}
+      >
+        <main className="ethio-register-page ethio-register-verification-page" role="dialog" aria-modal="true" aria-labelledby="register-verify-title">
+          <button type="button" className="ethio-register-close-button" onClick={handleClose} aria-label="Close registration form">
+            <X size={20} />
+          </button>
+          <section className="ethio-register-card ethio-register-verification-card">
+            <Link className="ethio-register-brand" to="/" onClick={handleClose}>
+              <img className="ethio-register-brand-logo" src="/ethiolance-emblem.png" alt="EthioLance emblem" />
+              <span>Ethio<span className="ethio-register-brand-accent">Lance</span></span>
+            </Link>
+            <div className="ethio-verification-icon"><ShieldCheck size={25} strokeWidth={1.8} /></div>
+            <div className="ethio-register-heading">
+              <h1 id="register-verify-title">
+                {requiresLoginOtp ? "Confirm it’s you" : isEmailVerified ? "Email verified" : "Verify your email"}
+              </h1>
+              <p>
+                {requiresLoginOtp
+                    ? "Enter the sign-in code we sent to your email to finish signing in."
+                    : isEmailVerified
+                      ? "Your email is confirmed. We’re getting your account ready."
+                      : "We sent a six-digit code to the email address below."}
+              </p>
+              <div className="ethio-verification-email"><Mail size={15} />{email}</div>
+            </div>
+            {requiresLoginOtp ? (
+              <>
+                <p className={`ethio-register-message ${loginOtpMessageType === "info" ? "info" : ""}`} role={loginOtpMessageType === "error" ? "alert" : "status"}>{verificationMessage}</p>
+                <form className="ethio-register-form" onSubmit={handleVerifyLoginOtp}>
+                  <div className="ethio-register-field">
+                    <label htmlFor="login-verification-otp">Login code</label>
+                    <div className="ethio-register-input-wrapper">
+                      <input
+                        id="login-verification-otp"
+                        className="ethio-verification-code"
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="one-time-code"
+                        pattern="[0-9]{6}"
+                        maxLength={6}
+                        required
+                        value={loginOtp}
+                        onChange={(event) => setLoginOtp(event.target.value.replace(/\D/g, "").slice(0, 6))}
+                        disabled={isLoading}
+                      />
+                    </div>
+                  </div>
+                  <button className="ethio-register-submit" type="submit" disabled={isLoading || loginOtp.length !== 6}>
+                    {isLoading ? "Signing in…" : "Verify and sign in"}
+                  </button>
+                </form>
+                <p className="ethio-register-resend">
+                  Didn’t receive the code?{" "}
+                  <button type="button" onClick={handleResendLoginOtp} disabled={isLoading}>Resend login code</button>
+                </p>
+              </>
+            ) : isEmailVerified ? (
+              <>
+                <p className="ethio-register-message success" role="status">{verificationMessage}</p>
+                {!password && (
+                  <form className="ethio-register-form" onSubmit={handlePasswordLogin}>
+                    <div className="ethio-register-field">
+                      <label htmlFor="verified-account-password">Password</label>
+                      <div className="ethio-register-input-wrapper">
+                        <input
+                          id="verified-account-password"
+                          type="password"
+                          autoComplete="current-password"
+                          required
+                          value={password}
+                          onChange={(event) => setPassword(event.target.value)}
+                          disabled={isLoading}
+                        />
+                      </div>
+                    </div>
+                    <button className="ethio-register-submit" type="submit" disabled={isLoading}>
+                      {isLoading ? "Signing in…" : "Sign in"}
+                    </button>
+                  </form>
+                )}
+                {password && (
+                  <button type="button" className="ethio-register-submit" onClick={() => (onLoginClick ? onLoginClick() : navigate("/login", { replace: true }))}>
+                    Continue to login
+                  </button>
+                )}
+              </>
+            ) : (
+              <>
+                <form className="ethio-register-otp-form" onSubmit={handleVerifyRegistrationOtp}>
+                  <div className="ethio-register-otp-inputs" aria-label="Six digit email verification code">
+                    {Array.from({ length: 6 }).map((_, index) => (
+                      <input
+                        key={index}
+                        ref={(element) => { registrationOtpRefs.current[index] = element; }}
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete={index === 0 ? "one-time-code" : "off"}
+                        maxLength={1}
+                        value={registrationOtp[index] || ""}
+                        onChange={(event) => handleRegistrationOtpChange(event.target.value, index)}
+                        onKeyDown={(event) => handleRegistrationOtpKeyDown(event, index)}
+                        onPaste={index === 0 ? handleRegistrationOtpPaste : undefined}
+                        disabled={isLoading}
+                        aria-label={`Verification digit ${index + 1}`}
+                        required
+                      />
+                    ))}
+                  </div>
+                  <p className="ethio-register-otp-security"><LockKeyhole size={14} />Your verification code is private and secure.</p>
+                  {verificationMessage && (
+                    <p id="registration-otp-message" className={`ethio-register-message ${registrationOtpMessageType === "success" ? "success" : registrationOtpMessageType === "info" ? "info" : ""}`} role={registrationOtpMessageType === "error" ? "alert" : "status"}>
+                      {verificationMessage}
+                    </p>
+                  )}
+                  <button className="ethio-register-submit" type="submit" disabled={isLoading || registrationOtp.length !== 6}>
+                    {isLoading ? "Verifying…" : "Verify email"}
+                  </button>
+                </form>
+                <p className="ethio-register-resend">
+                  Didn’t receive the code?{" "}
+                  <button
+                    type="button"
+                    onClick={handleResendRegistrationOtp}
+                    disabled={isLoading || isResendingRegistrationOtp || registrationResendCooldown > 0}
+                  >
+                    {isResendingRegistrationOtp
+                      ? "Sending..."
+                      : registrationResendCooldown > 0
+                        ? `Resend in ${registrationResendCooldown}s`
+                        : "Resend verification code"}
+                  </button>
+                </p>
+                <button type="button" className="ethio-register-back-button" onClick={() => { setRequiresOtp(false); setVerificationMessage(""); }}>
+                  <ArrowLeft size={15} /> Back to registration
+                </button>
+              </>
+            )}
+          </section>
+          <aside className="ethio-register-brand-panel">
+            <div className="ethio-register-brand-panel-content">
+              <span className="ethio-register-panel-eyebrow">A SECURE START</span>
+              <h2>One quick step to your next opportunity.</h2>
+              <p>Confirm your email to keep your EthioLance account secure and continue building your professional future.</p>
+              <div className="ethio-register-panel-decoration">
+                <div className="ethio-register-decoration-circle ethio-register-circle-one" />
+                <div className="ethio-register-decoration-circle ethio-register-circle-two" />
+                <div className="ethio-register-decoration-icon"><MailCheck size={35} /></div>
+              </div>
+            </div>
+          </aside>
+        </main>
+      </div>
+    );
   }
 
   return (

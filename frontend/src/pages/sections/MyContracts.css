@@ -1,0 +1,114 @@
+.freelancer-contracts-page {
+  min-height: 100%;
+  padding: clamp(20px, 3vw, 34px);
+  color: #24211d;
+}
+
+.freelancer-contracts-heading {
+  margin-bottom: 24px;
+}
+
+.freelancer-contracts-heading > div > span {
+  color: #9a6b16;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.freelancer-contracts-heading h1 {
+  margin: 6px 0;
+  color: #1d2431;
+  font-size: clamp(25px, 3vw, 31px);
+  font-weight: 800;
+  letter-spacing: -0.7px;
+}
+
+.freelancer-contracts-heading p {
+  margin: 0;
+  color: #727987;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.freelancer-contracts-empty {
+  display: flex;
+  min-height: 350px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 38px 24px;
+  border: 1px solid #ebe8e1;
+  border-radius: 15px;
+  background: linear-gradient(145deg, #fff, #fdfbf7);
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(38, 34, 26, 0.03);
+}
+
+.freelancer-contracts-empty-icon {
+  display: grid;
+  width: 62px;
+  height: 62px;
+  place-items: center;
+  margin-bottom: 17px;
+  border: 1px solid #f2e3c4;
+  border-radius: 18px;
+  background: #fff1d5;
+  color: #a87519;
+}
+
+.freelancer-contracts-empty-kicker {
+  color: #a87519;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.freelancer-contracts-empty h2 {
+  margin: 9px 0 7px;
+  color: #222a39;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.freelancer-contracts-empty p {
+  max-width: 430px;
+  margin: 0;
+  color: #727987;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.freelancer-contracts-empty button {
+  display: inline-flex;
+  min-height: 43px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 21px;
+  padding: 0 17px;
+  border: 1px solid #d99a25;
+  border-radius: 9px;
+  background: #f4ad28;
+  color: #241b0c;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(194, 130, 23, 0.16);
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.freelancer-contracts-empty button:hover {
+  transform: translateY(-1px);
+  background: #e7a020;
+  box-shadow: 0 9px 18px rgba(194, 130, 23, 0.22);
+}
+
+.freelancer-contracts-empty button:focus-visible {
+  outline: 3px solid rgba(217, 155, 36, 0.35);
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  .freelancer-contracts-page { padding: 20px 14px; }
+  .freelancer-contracts-empty { min-height: 300px; padding: 30px 18px; }
+}

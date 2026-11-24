@@ -20,6 +20,9 @@ import {
   LogOut,
 } from "lucide-react";
 import "./Settings.css";
+import { readUserData, writeUserData } from "../../services/api";
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const defaultSettings = {
   fullName: "",
@@ -58,16 +61,13 @@ export default function SettingsPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordMessage, setPasswordMessage] = useState("");
+  const [passwordMessageType, setPasswordMessageType] = useState("error");
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   useEffect(() => {
     try {
-      const stored = JSON.parse(
-        localStorage.getItem("ethioLanceSettings") || "{}"
-      );
-
-      const profile = JSON.parse(
-        localStorage.getItem("ethioLanceProfile") || "{}"
-      );
+      const stored = readUserData("ethioLanceSettings", {});
+      const profile = readUserData("ethioLanceProfile", {});
       const user = JSON.parse(
         localStorage.getItem("ethioLanceUser") ||
           sessionStorage.getItem("ethioLanceUser") ||
@@ -104,24 +104,19 @@ export default function SettingsPage() {
 
   const saveSettings = () => {
     try {
-      localStorage.setItem("ethioLanceSettings", JSON.stringify(settings));
+      writeUserData("ethioLanceSettings", settings);
       window.dispatchEvent(new Event("ethio-theme-change"));
 
       // Keep the settings form and freelancer profile in sync locally.
-      const profile = JSON.parse(
-        localStorage.getItem("ethioLanceProfile") || "{}"
-      );
-      localStorage.setItem(
-        "ethioLanceProfile",
-        JSON.stringify({
-          ...profile,
-          name: settings.fullName,
-          email: settings.email,
-          phone: settings.phone,
-          location: settings.location,
-          bio: settings.bio,
-        })
-      );
+      const profile = readUserData("ethioLanceProfile", {});
+      writeUserData("ethioLanceProfile", {
+        ...profile,
+        name: settings.fullName,
+        email: settings.email,
+        phone: settings.phone,
+        location: settings.location,
+        bio: settings.bio,
+      });
 
       const userStorage = localStorage.getItem("ethioLanceUser")
         ? localStorage
@@ -144,9 +139,10 @@ export default function SettingsPage() {
     }
   };
 
-  const handlePasswordChange = (event) => {
+  const handlePasswordChange = async (event) => {
     event.preventDefault();
     setPasswordMessage("");
+    setPasswordMessageType("error");
 
     if (!currentPassword || !newPassword || !confirmPassword) {
       setPasswordMessage("Please fill in all password fields.");
@@ -163,12 +159,50 @@ export default function SettingsPage() {
       return;
     }
 
-    setPasswordMessage(
-      "Password change UI is ready. Connect it to your backend API to update your password."
-    );
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
+    const token =
+      localStorage.getItem("ethioLanceToken") ||
+      sessionStorage.getItem("ethioLanceToken");
+
+    if (!token) {
+      setPasswordMessage("Your session has expired. Please sign in again.");
+      return;
+    }
+
+    setIsChangingPassword(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/change-password`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Could not update your password.");
+      }
+
+      setPasswordMessage(data.message || "Password changed successfully. Please sign in again.");
+      setPasswordMessageType("success");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+
+      // The backend increments tokenVersion, so the current session is no longer valid.
+      localStorage.removeItem("ethioLanceToken");
+      localStorage.removeItem("ethioLanceUser");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      sessionStorage.removeItem("ethioLanceToken");
+      sessionStorage.removeItem("ethioLanceUser");
+      window.setTimeout(() => navigate("/login", { replace: true }), 1800);
+    } catch (error) {
+      setPasswordMessage(error.message || "Unable to contact the server. Please try again.");
+    } finally {
+      setIsChangingPassword(false);
+    }
   };
 
   const handleLogout = () => {
@@ -420,6 +454,8 @@ export default function SettingsPage() {
                   Current password
                   <input
                     type="password"
+                    autoComplete="current-password"
+                    required
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
                     placeholder="Enter current password"
@@ -430,6 +466,9 @@ export default function SettingsPage() {
                   New password
                   <input
                     type="password"
+                    autoComplete="new-password"
+                    minLength={8}
+                    required
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="At least 8 characters"
@@ -440,6 +479,9 @@ export default function SettingsPage() {
                   Confirm new password
                   <input
                     type="password"
+                    autoComplete="new-password"
+                    minLength={8}
+                    required
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Confirm new password"
@@ -447,20 +489,19 @@ export default function SettingsPage() {
                 </label>
 
                 {passwordMessage && (
-                  <p className="settings-message">{passwordMessage}</p>
+                  <p className={`settings-message ${passwordMessageType}`} role={passwordMessageType === "error" ? "alert" : "status"}>
+                    {passwordMessage}
+                  </p>
                 )}
 
-                <button className="settings-save-button" type="submit">
-                  <Lock size={17} /> Update password
+                <button className="settings-save-button" type="submit" disabled={isChangingPassword}>
+                  <Lock size={17} /> {isChangingPassword ? "Updating password…" : "Update password"}
                 </button>
               </form>
 
               <div className="settings-info-note">
                 <Shield size={18} />
-                <p>
-                  For real password changes, connect this form to your
-                  authenticated backend password-update endpoint.
-                </p>
+                <p>For your security, changing your password signs you out. Sign in again with your new password.</p>
               </div>
             </section>
           )}

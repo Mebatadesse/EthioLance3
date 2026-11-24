@@ -483,6 +483,19 @@
   line-height: 1.6;
 }
 
+.settings-message.error {
+  color: #a52f2f;
+}
+
+.settings-message.success {
+  color: #28723d;
+}
+
+.settings-password-form .settings-save-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .settings-info-note {
   display: flex;
   align-items: flex-start;

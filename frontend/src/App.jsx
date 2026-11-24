@@ -7,6 +7,8 @@ import HomePage from "./pages/HomePage.jsx";
 import LoginPage from "./pages/Login.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
+import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 
 import CreateProfile from "./pages/freelancer/CreateProfile.jsx";
 import CreateClientProfile from "./pages/Client/CreateClientProfile.jsx";
@@ -108,6 +110,9 @@ function App() {
         path="/login"
         element={<LoginPage />}
       />
+
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
       <Route
         path="/register"

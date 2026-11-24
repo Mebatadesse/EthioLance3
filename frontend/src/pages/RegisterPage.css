@@ -310,6 +310,139 @@
   border-right: 1px solid #e6e1dc;
 }
 
+.ethio-register-verification-card {
+  justify-content: center;
+  padding-top: 48px;
+  padding-bottom: 40px;
+}
+
+.ethio-verification-icon {
+  display: grid;
+  width: 62px;
+  height: 62px;
+  place-items: center;
+  margin: 4px auto 18px;
+  border: 1px solid rgba(201, 142, 35, 0.3);
+  border-radius: 20px;
+  background: linear-gradient(145deg, #fff7e5, #f8e6bd);
+  color: #9a620d;
+  box-shadow: 0 10px 24px rgba(169, 106, 19, 0.12);
+}
+
+.ethio-verification-email {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 9px 13px;
+  overflow-wrap: anywhere;
+  border: 1px solid #eee2ca;
+  border-radius: 999px;
+  background: #fffaf0;
+  color: #765317;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.ethio-verification-email svg {
+  flex: 0 0 auto;
+  color: #b47714;
+}
+
+.ethio-register-input-wrapper input.ethio-verification-code {
+  padding: 0 10px;
+  text-align: center;
+  font-size: 21px;
+  font-weight: 750;
+  letter-spacing: 0.48em;
+  font-variant-numeric: tabular-nums;
+}
+
+.ethio-register-dark-mode .ethio-verification-icon {
+  border-color: #5d4929;
+  background: linear-gradient(145deg, #332b1d, #49371a);
+  color: #ffd47c;
+}
+
+.ethio-register-dark-mode .ethio-verification-email {
+  border-color: #51483a;
+  background: #29251f;
+  color: #f1d8a7;
+}
+
+.ethio-register-otp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+}
+
+.ethio-register-otp-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin: 5px 0;
+}
+
+.ethio-register-otp-inputs input {
+  width: 43px;
+  height: 49px;
+  border: 1.5px solid #dedde5;
+  border-radius: 11px;
+  outline: none;
+  background: #fff;
+  color: #171d2a;
+  font-size: 21px;
+  font-weight: 750;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.ethio-register-otp-inputs input:focus {
+  border-color: #d99b24;
+  background: #fffcf5;
+  box-shadow: 0 0 0 4px rgba(217, 155, 36, 0.13);
+  transform: translateY(-2px);
+}
+
+.ethio-register-otp-inputs input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ethio-register-otp-security {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  color: #858b98;
+  font-size: 11px;
+}
+
+.ethio-register-otp-security svg {
+  flex-shrink: 0;
+  color: #bd8018;
+}
+
+.ethio-register-dark-mode .ethio-register-otp-inputs input {
+  border-color: #51483a;
+  background: #29251f;
+  color: #fff;
+}
+
+.ethio-register-dark-mode .ethio-register-otp-inputs input:focus {
+  border-color: #e8a323;
+  background: #332c20;
+}
+
+.ethio-register-dark-mode .ethio-register-otp-security {
+  color: #c4bdaf;
+}
+
 /* =====================================
    BRAND LOGO
 ===================================== */
@@ -671,6 +804,57 @@
   color: #286a36;
 }
 
+.ethio-register-message.info {
+  border-color: #ead6ad;
+  background: #fff8e9;
+  color: #765317;
+}
+
+.ethio-register-dark-mode .ethio-register-message.info {
+  border-color: #66512e;
+  background: #302719;
+  color: #f1d8a7;
+}
+
+.ethio-register-back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin: 14px auto 0;
+  padding: 4px 8px;
+  border: 0;
+  background: transparent;
+  color: #8b5609;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.ethio-register-resend {
+  margin: 14px 0 0;
+  color: #596174;
+  font-size: 12px;
+  text-align: center;
+}
+
+.ethio-register-resend button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #8b5609;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.ethio-register-resend button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
 /* =====================================
    LOGIN LINK
 ===================================== */
@@ -865,6 +1049,10 @@
     border-right: none;
   }
 
+  .ethio-register-verification-card {
+    padding-top: 65px;
+  }
+
   .ethio-register-brand-panel {
     display: none;
   }
@@ -906,6 +1094,10 @@
     padding: 62px 17px 22px;
   }
 
+  .ethio-register-verification-card {
+    padding-top: 62px;
+  }
+
   .ethio-register-brand {
     gap: 8px;
     margin-bottom: 12px;
@@ -927,6 +1119,32 @@
 
   .ethio-register-heading p {
     font-size: 11px;
+  }
+
+  .ethio-verification-icon {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 15px;
+  }
+
+  .ethio-verification-email {
+    max-width: 100%;
+    font-size: 11px;
+  }
+
+  .ethio-register-otp-inputs {
+    gap: 6px;
+  }
+
+  .ethio-register-otp-inputs input {
+    width: 39px;
+    height: 45px;
+    font-size: 19px;
+  }
+
+  .ethio-register-input-wrapper input.ethio-verification-code {
+    font-size: 19px;
+    letter-spacing: 0.38em;
   }
 
   .ethio-register-form {

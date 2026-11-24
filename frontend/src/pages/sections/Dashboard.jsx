@@ -13,8 +13,32 @@ import {
 } from "lucide-react";
 
 import "./Dashboard.css";
+import { readUserData } from "../../services/api";
+
+function getProfileCompletion() {
+  try {
+    const profile = readUserData("ethioLanceProfile", {});
+    const checks = [
+      profile.name || "Your Name",
+      profile.title || "Add your professional title",
+      profile.location,
+      profile.bio,
+      profile.avatar,
+      profile.hourlyRate,
+      Array.isArray(profile.skills) && profile.skills.length,
+      Array.isArray(profile.experienceHistory) && profile.experienceHistory.length,
+      Array.isArray(profile.educationHistory) && profile.educationHistory.length,
+      Array.isArray(profile.portfolio) && profile.portfolio.length,
+      Array.isArray(profile.certifications) && profile.certifications.length,
+    ];
+    return Math.round((checks.filter(Boolean).length / checks.length) * 100);
+  } catch {
+    return 0;
+  }
+}
 
 function Dashboard({ displayName = "there", onNavigate = () => {} }) {
+  const profileCompletion = getProfileCompletion();
   const metrics = [
     { label: "Active projects", value: "—", icon: BriefcaseBusiness, tone: "gold" },
     { label: "Completed jobs", value: "—", icon: CircleCheckBig, tone: "green" },
@@ -45,6 +69,28 @@ function Dashboard({ displayName = "there", onNavigate = () => {} }) {
           <Search size={18} /> Find work
         </button>
       </header>
+
+      {profileCompletion < 100 && (
+        <section className="freelancer-dashboard-profile-strength" aria-label="Profile completion">
+          <span className="freelancer-dashboard-profile-strength-icon"><UserRound size={20} /></span>
+          <div className="freelancer-dashboard-profile-strength-content">
+            <div className="freelancer-dashboard-profile-strength-heading">
+              <div>
+                <span className="freelancer-dashboard-eyebrow">PROFILE STRENGTH</span>
+                <h2>Complete your profile to stand out</h2>
+                <p>Add your experience, skills, and work samples to help clients choose you.</p>
+              </div>
+              <strong>{profileCompletion}%</strong>
+            </div>
+            <div className="freelancer-dashboard-profile-progress" role="progressbar" aria-label="Profile completion" aria-valuemin={0} aria-valuemax={100} aria-valuenow={profileCompletion}>
+              <span style={{ width: `${profileCompletion}%` }} />
+            </div>
+          </div>
+          <button type="button" className="freelancer-dashboard-complete-profile" onClick={() => onNavigate("My Profile")}>
+            Complete profile <ArrowRight size={16} />
+          </button>
+        </section>
+      )}
 
       <section className="freelancer-dashboard-overview" aria-label="Account overview">
         <article className="freelancer-dashboard-balance">

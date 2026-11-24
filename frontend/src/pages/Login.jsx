@@ -290,8 +290,7 @@ function Login({ onClose, onRegisterClick }) {
   // ================================
 
   const handleForgotPassword = () => {
-    // Connect this to your forgot-password flow when available.
-    alert("Forgot password functionality will be available soon.");
+    navigate("/forgot-password");
   };
 
   const handleGoogleLogin = () => {
@@ -658,7 +657,7 @@ function Login({ onClose, onRegisterClick }) {
 
                   <div className="login-divider">
                     <span />
-                    <p>OR CONTINUE WITH</p>
+                    <p>OR </p>
                     <span />
                   </div>
 
