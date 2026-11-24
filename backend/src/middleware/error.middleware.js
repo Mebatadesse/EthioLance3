@@ -8,6 +8,23 @@ const errorMiddleware = (err, req, res, next) => {
     // Log the full error for debugging
     console.error(err);
 
+    // Handle Multer upload errors
+if (err.name === "MulterError") {
+    const multerError = new Error(
+        err.code === "LIMIT_FILE_SIZE"
+            ? "File size exceeds the 5 MB limit"
+            : err.message
+    );
+
+    multerError.statusCode = 400;
+    err = multerError;
+}
+
+// Handle unsupported file types
+if (err.message === "Unsupported file type") {
+    err.statusCode = 400;
+}
+
     // Determine the HTTP status code
     const statusCode =
         Number.isInteger(err.statusCode) &&

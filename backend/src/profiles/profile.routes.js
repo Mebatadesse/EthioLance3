@@ -3,6 +3,8 @@ const express = require("express");
 const authenticate = require("../middleware/auth.middleware");
 const authorize = require("../middleware/role.middleware");
 
+const { uploadCertificate, uploadPortfolio, uploadProfileImage } = require("../middleware/upload.middleware");
+
 const { getMyFreelancerProfile, createMyFreelancerProfile, updateMyFreelancerProfile,
         getMyClientProfile, createMyClientProfile, updateMyClientProfile } = require("./profile.controller");
 const { getMyExperiences, createMyExperience, updateMyExperience, deleteMyExperience } = require("./experience.controller");
@@ -23,6 +25,7 @@ router.post(
     "/freelancer/me",
     authenticate,
     authorize("FREELANCER"),
+    uploadProfileImage.single("profileImage"),
     createMyFreelancerProfile
 );
 
@@ -30,6 +33,7 @@ router.put(
     "/freelancer/me",
     authenticate,
     authorize("FREELANCER"),
+    uploadProfileImage.single("profileImage"),
     updateMyFreelancerProfile
 );
 
@@ -101,6 +105,7 @@ router.post(
     "/freelancer/certifications",
     authenticate,
     authorize("FREELANCER"),
+    uploadCertificate.single("certificate"),
     createMyCertification
 );
 
@@ -108,6 +113,7 @@ router.put(
     "/freelancer/certifications/:id",
     authenticate,
     authorize("FREELANCER"),
+    uploadCertificate.single("certificate"),
     updateMyCertification
 );
 
@@ -130,6 +136,7 @@ router.post(
     "/freelancer/portfolio",
     authenticate,
     authorize("FREELANCER"),
+    uploadPortfolio.single("file"),
     createMyPortfolioItem
 );
 
@@ -137,6 +144,7 @@ router.put(
     "/freelancer/portfolio/:id",
     authenticate,
     authorize("FREELANCER"),
+    uploadPortfolio.single("file"),
     updateMyPortfolioItem
 );
 
@@ -159,6 +167,7 @@ router.post(
     "/client/me",
     authenticate,
     authorize("CLIENT"),
+    uploadProfileImage.single("profileImage"),
     createMyClientProfile
 );
 
@@ -166,6 +175,7 @@ router.put(
     "/client/me",
     authenticate,
     authorize("CLIENT"),
+    uploadProfileImage.single("profileImage"),
     updateMyClientProfile
 );
 

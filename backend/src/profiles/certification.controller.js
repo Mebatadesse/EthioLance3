@@ -1,4 +1,3 @@
-
 const {
     getCertifications,
     createCertification,
@@ -18,7 +17,8 @@ const getMyCertifications = async (req, res) => {
 const createMyCertification = async (req, res) => {
     const certification = await createCertification(
         req.user.userId,
-        req.body
+        req.body,
+        req.file
     );
 
     if (!certification) {
@@ -48,7 +48,8 @@ const updateMyCertification = async (req, res) => {
     const certification = await updateCertification(
         req.user.userId,
         certificationId,
-        req.body
+        req.body,
+        req.file
     );
 
     if (!certification) {

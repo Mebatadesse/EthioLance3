@@ -231,7 +231,9 @@ model FreelancerCertification {
   issuingOrganization String
   issueDate           DateTime?
   expiryDate          DateTime?
+  description         String?   @db.Text
   credentialId        String?
+  certificateUrl      String?
   credentialUrl       String?
 
   freelancerProfile FreelancerProfile @relation(fields: [freelancerProfileId], references: [id], onDelete: Cascade)
@@ -248,7 +250,7 @@ model PortfolioItem {
   title               String
   description         String?  @db.Text
   projectUrl          String?
-  imageUrl            String?
+  fileUrl             String?
   technologies        String[] @default([])
 
   freelancerProfile FreelancerProfile @relation(fields: [freelancerProfileId], references: [id], onDelete: Cascade)

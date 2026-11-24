@@ -6,6 +6,7 @@ const {
     deletePortfolioItem,
 } = require("./portfolio.service");
 
+// GET my portfolio
 const getMyPortfolio = async (req, res) => {
     const portfolioItems = await getPortfolioItems(req.user.userId);
 
@@ -15,10 +16,40 @@ const getMyPortfolio = async (req, res) => {
     });
 };
 
+// Convert technologies from form-data string to array
+const parseTechnologies = (technologies) => {
+    if (technologies === undefined) return undefined;
+
+    if (Array.isArray(technologies)) return technologies;
+
+    try {
+        const parsed = JSON.parse(technologies);
+
+        if (!Array.isArray(parsed)) {
+            throw new Error("Technologies must be an array");
+        }
+
+        return parsed;
+    } catch {
+        const error = new Error(
+            "Technologies must be a valid JSON array"
+        );
+        error.statusCode = 400;
+        throw error;
+    }
+};
+
+// CREATE portfolio item
 const createMyPortfolioItem = async (req, res) => {
+    const portfolioData = {
+        ...req.body,
+        technologies: parseTechnologies(req.body.technologies),
+    };
+
     const portfolioItem = await createPortfolioItem(
         req.user.userId,
-        req.body
+        portfolioData,
+        req.file
     );
 
     if (!portfolioItem) {
@@ -35,6 +66,7 @@ const createMyPortfolioItem = async (req, res) => {
     });
 };
 
+// UPDATE portfolio item
 const updateMyPortfolioItem = async (req, res) => {
     const portfolioId = Number(req.params.id);
 
@@ -45,10 +77,16 @@ const updateMyPortfolioItem = async (req, res) => {
         });
     }
 
+    const portfolioData = {
+        ...req.body,
+        technologies: parseTechnologies(req.body.technologies),
+    };
+
     const portfolioItem = await updatePortfolioItem(
         req.user.userId,
         portfolioId,
-        req.body
+        portfolioData,
+        req.file
     );
 
     if (!portfolioItem) {
@@ -65,6 +103,7 @@ const updateMyPortfolioItem = async (req, res) => {
     });
 };
 
+// DELETE portfolio item
 const deleteMyPortfolioItem = async (req, res) => {
     const portfolioId = Number(req.params.id);
 

@@ -29,7 +29,8 @@ const createMyFreelancerProfile = async (req, res) => {
 
     const profile = await createFreelancerProfile(
         req.user.userId,
-        req.body
+        req.body,
+        req.file
     );
 
     return res.status(201).json({
@@ -42,7 +43,8 @@ const createMyFreelancerProfile = async (req, res) => {
 const updateMyFreelancerProfile = async (req, res) => {
     const profile = await updateFreelancerProfile(
         req.user.userId,
-        req.body
+        req.body,
+        req.file
     );
 
     return res.status(200).json({
@@ -80,7 +82,8 @@ const createMyClientProfile = async (req, res) => {
 
     const profile = await createClientProfile(
         req.user.userId,
-        req.body
+        req.body,
+        req.file
     );
 
     return res.status(201).json({
@@ -93,7 +96,8 @@ const createMyClientProfile = async (req, res) => {
 const updateMyClientProfile = async (req, res) => {
     const profile = await updateClientProfile(
         req.user.userId,
-        req.body
+        req.body,
+        req.file
     );
 
     return res.status(200).json({

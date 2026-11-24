@@ -101,6 +101,7 @@ const register = async (req, res) => {
 
 
 
+
 const verifyRegistrationOtp = async (req, res) => {
     const { email, otp } = req.body;
 
@@ -226,10 +227,44 @@ const verifyRegistrationOtp = async (req, res) => {
         });
     }
 
-    // 8. Return success
+    // 8. Generate a trusted device token
+    const deviceToken = crypto.randomBytes(32).toString("hex");
+    const deviceId = hashOtp(deviceToken);
+
+    // 9. Save the browser as a trusted device
+    await prisma.trustedDevice.upsert({
+        where: {
+            userId_deviceId: {
+                userId: verifiedUser.id,
+                deviceId,
+            },
+        },
+        update: {
+            lastUsedAt: new Date(),
+        },
+        create: {
+            userId: verifiedUser.id,
+            deviceId,
+            deviceName: "Trusted Browser",
+        },
+    });
+
+    // 10. Set trusted-device cookie
+    res.cookie("trustedDevice", deviceToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
+    // 11. Generate JWT
+    const token = generateToken(verifiedUser);
+
+    // 12. Return success
     return res.status(200).json({
         success: true,
-        message: "Email verified successfully. You can now log in.",
+        message: "Email verified successfully. You are now logged in.",
+        token,
         user: {
             id: verifiedUser.id,
             firstName: verifiedUser.firstName,
@@ -240,6 +275,7 @@ const verifyRegistrationOtp = async (req, res) => {
         },
     });
 };
+
 
 const resendRegistrationOtp = async (req, res) => {
     const { email } = req.body;
