@@ -42,27 +42,60 @@ enum UserRole {
   ADMIN
 }
 
+
+
 model Job {
-  id          Int       @id @default(autoincrement())
-  title       String
-  description String
-  budget      Float
+  id           Int       @id @default(autoincrement())
+  title        String
+  description  String    @db.Text
+
+  contractType JobContractType
+
+  hourlyMinRate Float?
+  hourlyMaxRate Float?
+  fixedBudget   Float?
+
+  deadline        DateTime
+  requiredSkills  String[] @default([])
+  attachments     String[] @default([])
+
+  location        String?
+  isRemote        Boolean @default(false)
+
   status      JobStatus @default(OPEN)
 
-  clientId Int
-  client   User @relation(fields: [clientId], references: [id])
+  clientId    Int
+  client      User      @relation(fields: [clientId], references: [id])
+
+  categoryId  Int
+  category    JobCategory @relation(fields: [categoryId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  proposals   Proposal[]
+}
+
+model JobCategory {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  jobs      Job[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  proposals Proposal[]
 }
+
 
 enum JobStatus {
   OPEN
   IN_PROGRESS
   COMPLETED
   CANCELLED
+}
+
+enum JobContractType {
+  HOURLY
+  FIXED_PRICE
 }
 
 model Proposal {

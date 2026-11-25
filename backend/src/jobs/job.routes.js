@@ -3,7 +3,8 @@ const express = require("express");
 const authenticate = require("../middleware/auth.middleware");
 const authorize = require("../middleware/role.middleware");
 
-const { createJobController, getJobsController, getJobByIdController, updateJobController, deleteJobController } = require("./job.controller");
+const { createJobController, getJobsController, getJobByIdController, 
+        updateJobController, deleteJobController, getJobCategoriesController } = require("./job.controller");
 
 const router =  express.Router();
 
@@ -12,6 +13,12 @@ router.get(
     "/",
     authenticate,
     getJobsController
+);
+
+router.get(
+    "/categories",
+    authenticate,
+    getJobCategoriesController
 );
 
 // authenticated isers see one specific job
